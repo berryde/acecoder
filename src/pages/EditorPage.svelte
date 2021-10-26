@@ -3,7 +3,7 @@
 </script>
 
 <div class="h-screen bg-bluegray-dark flex flex-row">
-	<div class="flex-grow">
+	<div class="flex-grow max-h-screen">
 		<Editor language="jsx" />
 	</div>
 	<div class="bg-white w-1/5" />

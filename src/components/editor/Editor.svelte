@@ -64,3 +64,12 @@
 </script>
 
 <div bind:this={element} />
+
+<style>
+	:global(.cm-scroller) {
+		max-height: 100vh;
+	}
+	:global(.cm-scroller::-webkit-scrollbar) {
+		display: none;
+	}
+</style>
