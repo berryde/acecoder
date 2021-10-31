@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { EditorView } from '@codemirror/view';
 	import { EditorState } from '@codemirror/state';
-	import { defaultExtensions, getLanguageSupport } from '../../utils/codemirror';
+	import { defaultExtensions, getLanguageSupport } from '../../utils/codemirror/codemirror';
 	import type { ViewUpdate } from '@codemirror/view';
 
 	/**
