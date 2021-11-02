@@ -26,10 +26,20 @@
 		createFolder
 	} from '../../utils/filesystem/filesystem';
 	import type { Filesystem } from '../../utils/types';
+	import { renameTabs, closeTabs } from '../../utils/state/state';
 
 	// Props
+	/**
+	 * The path to this folder.
+	 */
 	export let path: string;
+	/**
+	 * The children of this folder (more folders and files).
+	 */
 	export let children: Filesystem;
+	/**
+	 * The depth of this folder in the filesystem.
+	 */
 	export let depth: number = 0;
 
 	// Variables
@@ -94,24 +104,48 @@
 		dragCount = 0;
 	}
 
+	/**
+	 * Rename this folder. Any tabs containing this folder's path should also be renamed.
+	 * @param newName
+	 */
 	function handleRename(newName: string) {
 		if (path.includes('/')) {
 			const parent = getParentDir(path);
-			renameFile(path, parent + '/' + newName);
+			rename(parent + '/' + newName);
 		} else {
-			renameFile(path, newName);
+			rename(newName);
 		}
 		renaming = false;
 	}
 
+	/**
+	 * Called when the user clicks the delete button for this folder.
+	 */
 	function handleDelete() {
 		deleteFile(path);
+		closeTabs(path);
 	}
 
+	/**
+	 * Rename the path to this folder.
+	 * @param name The new value for the path to this folder.
+	 */
+	function rename(name: string) {
+		renameFile(path, name);
+		renameTabs(path, name);
+	}
+
+	/**
+	 * Show/hide the folder's contents.
+	 */
 	function toggleCollapse() {
 		collapsed = !collapsed;
 	}
 
+	/**
+	 * Called when the user clicks either of the buttons to create a child object in this folder.
+	 * @param name The name of the new child object.
+	 */
 	function handleCreate(name: string) {
 		if (creatingFile) {
 			createFile(path + '/' + name, '');
