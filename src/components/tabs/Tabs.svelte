@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tabs, openTab, selectedTab } from '../../utils/state/state';
+	import { tabs, openTab, selectedTab } from '../../utils/tabs/tabs';
 </script>
 
 <div class="flex flex-row text-bluegray-light bg-bluegray-dark h-8">

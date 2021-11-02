@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
-import type { Filesystem, FSFolder } from '../types';
+import type { Filesystem, FSFile, FSFolder } from '../types';
+import type { File } from '../../utils/types';
 
 /**
  * The file system in memory for the application.
@@ -70,6 +71,24 @@ export const deleteFile = (path: string) => {
 	});
 };
 
+export const compareFile = (
+	a: [string, FSFile | FSFolder],
+	b: [string, FSFile | FSFolder]
+): number => {
+	// folders come before files
+	if (
+		(a[1].type == 'file' && b[1].type == 'file') ||
+		(a[1].type == 'folder' && b[1].type == 'folder')
+	) {
+		return a[0].localeCompare(b[0]);
+	}
+	if (a[1].type == 'file' && b[1].type == 'folder') {
+		return 1;
+	}
+	if (a[1].type == 'folder' && b[1].type == 'file') {
+		return -1;
+	}
+};
 /**
  * Move the object at path to target.
  *
@@ -179,7 +198,7 @@ export const tail = (path: string) => {
 export const getExtension = (path: string) => {
 	const name = tail(path);
 	if (!name.includes('.')) {
-		throw new Error(name + 'has no extension');
+		return '';
 	}
 	const split = name.split('.');
 	return split[split.length - 1];
@@ -233,4 +252,28 @@ export const getFile = (state: Filesystem, path: string) => {
 	const parent = navigateToFile(state, path);
 	const name = tail(path);
 	return parent[name];
+};
+
+/**
+ * Recursively walks through the filesystem, collecting files and their values.
+ *
+ * @param state The filesystem
+ * @returns A list of all files in the filesystem with their values.
+ */
+export const getAllFiles = (prefix: string, state: Filesystem): File[] => {
+	let files: File[] = [];
+	console.log(state);
+	for (var [name, file] of Object.entries(state)) {
+		console.log(name, state[name]);
+		if (file.type === 'file') {
+			files.push({
+				code: file.value,
+				name: prefix + name
+			});
+		} else {
+			const children = getAllFiles(prefix + name + '/', file.children);
+			files = files.concat(children);
+		}
+	}
+	return files;
 };

@@ -54,6 +54,17 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 };
 
 /**
+ * Check if a given language is supported.
+ *
+ * @param language The file extension of the language to check.
+ * @returns Whether the language is supported.
+ */
+export const isSupported = (language: string): boolean => {
+	const result = supportedExtensions.includes(language);
+	return result;
+};
+
+/**
  * The list of default extensions to use for the codemirror editor configuration.
  */
 export const defaultExtensions = [

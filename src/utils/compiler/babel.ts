@@ -5,13 +5,18 @@ import { transform } from '@babel/standalone';
 const CDN_URL = 'https://cdn.skypack.dev';
 
 export const resolveRelativePath = (importee: string, importer: string) => {
-	// Remove the filename (anything after the last /) to resolve relative imports.
-	const split = importer.split('/');
-	split.pop();
-	const filename = importee.slice(1, importee.length);
-	const result = split.join('/') + filename;
-	console.log('Created relative import', result);
-	return result;
+	// If the importer is not in a directory then the import is not actually relative.
+	if (importer.includes('/')) {
+		// Remove the filename (anything after the last /) to resolve relative imports.
+		const split = importer.split('/');
+		split.pop();
+		const filename = importee.slice(1, importee.length);
+		const result = split.join('/') + filename;
+		console.log('Created relative import', result);
+		return result;
+	} else {
+		return importee.slice(2);
+	}
 };
 
 /**

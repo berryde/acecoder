@@ -13,11 +13,13 @@
 	// Utils
 	import type { Filesystem } from '../../utils/types';
 	import {
+		compareFile,
 		createFile,
 		createFolder,
 		filesystem,
 		getExistingFiles
 	} from '../../utils/filesystem/filesystem';
+	import { openTab } from '../../utils/tabs/tabs';
 
 	// Props
 	export let files: Filesystem;
@@ -43,6 +45,7 @@
 	function handleCreate(name: string) {
 		if (creatingFile) {
 			createFile(name);
+			openTab(name);
 		} else {
 			createFolder(name);
 		}
@@ -60,7 +63,7 @@
 		</div>
 	</div>
 
-	{#each Object.entries(files) as [path, object]}
+	{#each Object.entries(files).sort(compareFile) as [path, object]}
 		{#if object.type === 'file'}
 			<File {path} value={object.value} />
 		{:else}

@@ -23,10 +23,11 @@
 		filesystem,
 		navigateToFile,
 		createFile,
-		createFolder
+		createFolder,
+		compareFile
 	} from '../../utils/filesystem/filesystem';
 	import type { Filesystem } from '../../utils/types';
-	import { renameTabs, closeTabs } from '../../utils/state/state';
+	import { renameTabs, closeTabs, openTab } from '../../utils/tabs/tabs';
 
 	// Props
 	/**
@@ -147,10 +148,12 @@
 	 * @param name The name of the new child object.
 	 */
 	function handleCreate(name: string) {
+		const fullPath = path + '/' + name;
 		if (creatingFile) {
-			createFile(path + '/' + name, '');
+			createFile(fullPath, '');
+			openTab(fullPath);
 		} else {
-			createFolder(path + '/' + name);
+			createFolder(fullPath);
 		}
 		creating = false;
 	}
@@ -212,7 +215,7 @@
 	{/if}
 	{#if !collapsed}
 		<div>
-			{#each Object.entries(children) as [name, object]}
+			{#each Object.entries(children).sort(compareFile) as [name, object]}
 				{#if object.type === 'file'}
 					<File value={object.value} path={path + '/' + name} depth={depth + 1} />
 				{:else}

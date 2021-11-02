@@ -18,8 +18,7 @@
 		navigateToFile,
 		renameFile
 	} from '../../utils/filesystem/filesystem';
-	import { closeTab, openTab, renameTab } from '../../utils/state/state';
-	import { onMount } from 'svelte';
+	import { closeTab, openTab, renameTab } from '../../utils/tabs/tabs';
 
 	// Props
 	/**
@@ -95,11 +94,6 @@
 	function handleClick() {
 		openTab(path);
 	}
-
-	//Open a tab to edit this file when it is created.
-	onMount(() => {
-		openTab(path);
-	});
 </script>
 
 <div>
