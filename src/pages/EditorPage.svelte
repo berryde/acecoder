@@ -6,19 +6,23 @@
 	import Tabs from '../components/tabs/Tabs.svelte';
 	import { tabs, selectedTab } from '../utils/tabs/tabs';
 	import {
+		createFile,
 		filesystem,
 		getAllFiles,
 		getExtension,
+		getFile,
 		updateFile
 	} from '../utils/filesystem/filesystem';
 	import { onMount } from 'svelte';
+	import { reactTemplate } from '../utils/templates/templates';
 
 	let files: Filesystem;
 	filesystem.subscribe((state) => (files = state));
 
 	let compiled: WorkerResponse = {
 		css: '',
-		js: ''
+		js: '',
+		html: ''
 	};
 
 	let worker: Worker;
@@ -36,9 +40,32 @@
 	// Send the results to the preview.
 	function handleCodeChanged(code: string) {
 		updateFile($selectedTab, code);
+		updatePreview();
+	}
+
+	function updatePreview() {
 		const files = getAllFiles('', $filesystem);
 		console.log('Sending', files);
 		worker.postMessage(files);
+	}
+
+	function loadTemplate(template: { [key: string]: string }) {
+		for (const [path, value] of Object.entries(template)) {
+			createFile(path, value);
+		}
+		updatePreview();
+	}
+
+	onMount(() => {
+		loadTemplate(reactTemplate);
+	});
+
+	function loadEditorContent(tab: string) {
+		const result = getFile($filesystem, tab);
+		if (result.type == 'file') {
+			return result.value;
+		}
+		return '';
 	}
 </script>
 
@@ -51,6 +78,7 @@
 				selected={tab === $selectedTab}
 				language={getExtension(tab)}
 				on:docchanged={(e) => handleCodeChanged(e.detail)}
+				initialValue={loadEditorContent(tab)}
 			/>
 		{/each}
 	</div>

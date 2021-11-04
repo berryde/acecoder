@@ -18,17 +18,14 @@
 		navigateToFile,
 		renameFile
 	} from '../../utils/filesystem/filesystem';
-	import { closeTab, openTab, renameTab } from '../../utils/tabs/tabs';
+	import { closeTab, openTab, renameTab, selectedTab } from '../../utils/tabs/tabs';
 
 	// Props
 	/**
 	 * The full path to this file including the filename.
 	 */
 	export let path: string;
-	/**
-	 * The contents of this file.
-	 */
-	export let value: string;
+
 	/**
 	 * The depth of this file in the file tree.
 	 */
@@ -110,7 +107,8 @@
 	{:else}
 		<Hoverable let:hovering>
 			<div
-				class="flex transition flex-row items-center space-x-2 text-bluegray-light h-8"
+				class="flex transition flex-row items-center space-x-2 text-bluegray-light h-8 {$selectedTab ===
+					path && 'bg-gray-800'}"
 				style="padding-left: {(depth + 1) * 0.5}rem;"
 				draggable="true"
 				on:dragstart={handleDragStart}

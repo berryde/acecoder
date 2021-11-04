@@ -4,34 +4,35 @@
 	export let compiled: WorkerResponse;
 
 	const style = 'style';
-	$: srcdoc = `
-<!doctype html>
-<html>
-	<head>
-		<${style}>
-			html {
-				overflow: hidden;
-				height: 100%;
-			}
-			body {
-				margin: 0;
-				height: 100%;
-				width: 100%;
-			}
-			#root {
-				height: 100%;
-			}
-			${compiled ? compiled.css : ''}
-		</${style}>
-	</head>
-	<body>
-        <div id="root"></div>
-		<script type="module">
-			${compiled ? compiled.js : ''}
-		<\/script>    
-    </body>
-</html>
-    `;
+	$: srcdoc = compiled ? build() : '';
+
+	function build(): string {
+		let html = compiled.html;
+		// Include a body tag if missing.
+		if (!html.match(/\<body\>[\s\S]*\<\/body\>/)) {
+			html = '<body>' + html + '</body>';
+		}
+		// Wrap the HTML with a HTML tag if missing.
+		if (!html.match(/\<html\>[\s\S]*\<\/html\>/)) {
+			html = '<html>' + html + '</html>';
+		}
+		// Include a head tag if missing.
+		if (!html.match(/\<head\>[\s\S]*\<\/head\>/)) {
+			const split = html.split('<html>');
+			html = split[0] + '<html><head></head>' + split[1];
+		}
+		// Inject the JS.
+		if (compiled.js) {
+			const split = html.split('<body>');
+			html = split[0] + "<body><script type='module'>" + compiled.js + '</' + 'script>' + split[1];
+		}
+		// Inject the CSS.
+		if (compiled.css) {
+			const split = html.split('<head>');
+			html = split[0] + '<head><style>' + compiled.css + '</' + 'style>' + split[1];
+		}
+		return html;
+	}
 </script>
 
 <iframe title="Preview" class="h-full bg-white" {srcdoc} />

@@ -69,7 +69,7 @@ export const isSupported = (language: string): boolean => {
  */
 export const defaultExtensions = [
 	oneDark,
-	new Compartment().of(EditorState.tabSize.of(2)),
+	new Compartment().of(EditorState.tabSize.of(4)),
 	lineNumbers(),
 	highlightActiveLineGutter(),
 	highlightSpecialChars(),

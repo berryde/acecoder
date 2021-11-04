@@ -65,7 +65,7 @@
 
 	{#each Object.entries(files).sort(compareFile) as [path, object]}
 		{#if object.type === 'file'}
-			<File {path} value={object.value} />
+			<File {path} />
 		{:else}
 			<Folder {path} children={object.children} />
 		{/if}

@@ -217,7 +217,7 @@
 		<div>
 			{#each Object.entries(children).sort(compareFile) as [name, object]}
 				{#if object.type === 'file'}
-					<File value={object.value} path={path + '/' + name} depth={depth + 1} />
+					<File path={path + '/' + name} depth={depth + 1} />
 				{:else}
 					<svelte:self children={object.children} path={path + '/' + name} depth={depth + 1} />
 				{/if}
