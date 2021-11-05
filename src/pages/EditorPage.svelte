@@ -4,7 +4,7 @@
 	import type { Filesystem, WorkerResponse } from '../utils/types';
 	import Explorer from '../components/explorer/Explorer.svelte';
 	import Tabs from '../components/tabs/Tabs.svelte';
-	import { tabs, selectedTab } from '../utils/tabs/tabs';
+	import { tabs, selectedTab, unsavedTabs } from '../utils/tabs/tabs';
 	import {
 		createFile,
 		filesystem,
@@ -27,20 +27,38 @@
 
 	let worker: Worker;
 
+	let editorContent: { [key: string]: string } = {};
+
 	onMount(() => {
 		worker = new Worker('./worker.js');
 
+		// Add a listener for compiler responses.
 		worker.addEventListener('message', (event) => {
 			console.log('Received compiled code', event.data);
 			compiled = event.data as WorkerResponse;
+		});
+
+		// Load the react template.
+		loadTemplate(reactTemplate);
+
+		// Add a ctrl+s listener.
+		document.addEventListener('keydown', (e) => {
+			if ((window.navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey) && e.keyCode == 83) {
+				e.preventDefault();
+				// Process the event here (such as click on submit button)
+				console.log('SAVED');
+				handleSave();
+			}
 		});
 	});
 
 	// When the editor source is changed, send it to the web worker.
 	// Send the results to the preview.
 	function handleCodeChanged(code: string) {
-		updateFile($selectedTab, code);
-		updatePreview();
+		editorContent[$selectedTab] = code;
+		unsavedTabs.update((unsavedTabs) =>
+			unsavedTabs.includes($selectedTab) ? unsavedTabs : [...unsavedTabs, $selectedTab]
+		);
 	}
 
 	function updatePreview() {
@@ -56,9 +74,17 @@
 		updatePreview();
 	}
 
-	onMount(() => {
-		loadTemplate(reactTemplate);
-	});
+	function handleSave() {
+		if ($selectedTab != '') {
+			updateFile($selectedTab, editorContent[$selectedTab]);
+			updatePreview();
+			unsavedTabs.update((unsavedTabs) =>
+				unsavedTabs.includes($selectedTab)
+					? unsavedTabs.filter((t) => t != $selectedTab)
+					: unsavedTabs
+			);
+		}
+	}
 
 	function loadEditorContent(tab: string) {
 		const result = getFile($filesystem, tab);

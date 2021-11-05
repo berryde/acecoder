@@ -3,6 +3,7 @@ import { writable } from 'svelte/store';
 // open editors
 export const tabs = writable<string[]>([]);
 export const selectedTab = writable<string>('');
+export const unsavedTabs = writable<string[]>([]);
 
 /**
  * Create a new tab if it doesn't exist and select it.

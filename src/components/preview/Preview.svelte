@@ -1,9 +1,11 @@
 <script lang="ts">
 	import type { WorkerResponse } from 'src/utils/types';
-
 	export let compiled: WorkerResponse;
 
 	const style = 'style';
+	const useTailwind = true;
+	const tailwindCDN =
+		'<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">';
 	$: srcdoc = compiled ? build() : '';
 
 	function build(): string {
@@ -19,6 +21,7 @@
 		// Include a head tag if missing.
 		if (!html.match(/\<head\>[\s\S]*\<\/head\>/)) {
 			const split = html.split('<html>');
+
 			html = split[0] + '<html><head></head>' + split[1];
 		}
 		// Inject the JS.
@@ -29,7 +32,15 @@
 		// Inject the CSS.
 		if (compiled.css) {
 			const split = html.split('<head>');
-			html = split[0] + '<head><style>' + compiled.css + '</' + 'style>' + split[1];
+			html =
+				split[0] +
+				'<head>' +
+				(useTailwind && tailwindCDN) +
+				'<style>' +
+				compiled.css +
+				'</' +
+				'style>' +
+				split[1];
 		}
 		return html;
 	}
