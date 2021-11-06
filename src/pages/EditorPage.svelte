@@ -97,7 +97,7 @@
 
 <div class="h-screen bg-bluegray-default flex flex-row">
 	<Explorer {files} />
-	<div class="flex-grow max-h-screen">
+	<div class="flex flex-col flex-grow overflow-auto">
 		<Tabs />
 		{#each $tabs as tab}
 			<Editor

@@ -13,6 +13,9 @@ import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets';
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { commentKeymap } from '@codemirror/comment';
+
+import parserBabel from 'prettier/parser-babel';
+import parserHtml from 'prettier/parser-html';
 import { rectangularSelection } from '@codemirror/rectangular-selection';
 import { defaultHighlightStyle } from '@codemirror/highlight';
 import { Compartment } from '@codemirror/state';
@@ -53,6 +56,26 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 	}
 };
 
+export const getParser = (language: string): { parser: string; plugins: [any] } => {
+	switch (language) {
+		case 'html':
+		case 'css':
+			return {
+				parser: 'html',
+				plugins: [parserHtml]
+			};
+		case 'tsx':
+		case 'jsx':
+		case 'ts':
+		case 'js':
+		case 'json':
+			return {
+				parser: 'babel',
+				plugins: [parserBabel]
+			};
+	}
+};
+
 /**
  * Check if a given language is supported.
  *
@@ -85,6 +108,7 @@ export const defaultExtensions = [
 	rectangularSelection(),
 	highlightActiveLine(),
 	highlightSelectionMatches(),
+
 	keymap.of([
 		...closeBracketsKeymap,
 		...defaultKeymap,
