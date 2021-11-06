@@ -1,38 +1,52 @@
-import type { File, WorkerResponse } from '../types';
+import type { File } from '../types';
 import * as rollup from 'rollup/dist/es/rollup.browser.js';
 import babel from './babel';
 import css from './css';
 
-const fileLookup: Map<string, File> = new Map();
+const filesystem: { [key: string]: File } = {};
 
 function generateLookup(files: File[]): void {
 	files.forEach((file) => {
-		fileLookup.set(file.name, file);
+		filesystem[file.name] = file;
 	});
 }
 
 self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<void> => {
-	console.log('Received event: ', event.data);
-	// Read the package.json file.
-	const packageJSON = JSON.parse(event.data.filter((file) => file.name == 'package.json')[0].code);
-	const entryPoint = packageJSON['main'];
-
-	// Javascript files need to be converted into a JS bundle.
-	// All CSS files should be merged into a css bundle
-
+	// Recreate the filesystem in memory.
 	generateLookup(event.data);
-	console.log('Created file system', fileLookup);
-	const bundle = await rollup.rollup({
-		input: entryPoint,
-		plugins: [css(fileLookup), babel(fileLookup)]
-	});
 
-	const result = await bundle.generate({ format: 'esm' });
-	console.log('Completed bundling', result);
-	const output: WorkerResponse = {
-		js: result.output[0].code,
-		css: result.output[1].source
-	};
+	if (!('package.json' in filesystem)) {
+		const html = 'public/index.html' in filesystem ? filesystem['public/index.html'].code : '';
 
-	self.postMessage(output);
+		self.postMessage({
+			js: '',
+			css: '',
+			html: html
+		});
+	} else {
+		// Read the package JSON file.
+		const packageJSON = JSON.parse(filesystem['package.json'].code);
+		// Determine the entry point.
+		const entryPoint = packageJSON['main'];
+
+		// Rollup the files.
+		const result = await rollup.rollup({
+			input: entryPoint,
+			plugins: [css(filesystem), babel(filesystem)]
+		});
+
+		// Generate an esm bundle from the result.
+		const bundle = await result.generate({ format: 'esm' });
+
+		// Return the bundle.
+		const scripts = bundle.output[0] ? bundle.output[0].code : '';
+		const styles = bundle.output[1] ? bundle.output[1].source : '';
+		const html = 'public/index.html' in filesystem ? filesystem['public/index.html'].code : '';
+
+		self.postMessage({
+			js: scripts,
+			css: styles,
+			html: html
+		});
+	}
 });

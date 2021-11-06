@@ -1,11 +1,12 @@
 import type { Plugin } from 'rollup';
+import type { File } from '../types';
 import { resolveRelativePath } from './babel';
 
 /**
  * A browser port of rollup-plugin-import-css.
  * @returns A rollup plugin providing CSS support.
  */
-export default function css(files: any): Plugin {
+export default function css(files: { [key: string]: File }): Plugin {
 	const styles = {};
 	return {
 		name: 'import-css',
@@ -17,7 +18,6 @@ export default function css(files: any): Plugin {
 		 */
 		async resolveId(importee, importer) {
 			if (/.*\.css/.test(importee)) {
-				console.log('Running CSS plugin on', importee, importer);
 				if (importee.startsWith('./')) {
 					return resolveRelativePath(importee, importer);
 				}
@@ -32,8 +32,8 @@ export default function css(files: any): Plugin {
 		 */
 		async load(id) {
 			if (/.*\.css/.test(id)) {
-				if (files.has(id)) {
-					return files.get(id).code;
+				if (id in files) {
+					return files[id].code;
 				}
 			}
 			return null;

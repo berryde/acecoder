@@ -13,6 +13,9 @@ import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets';
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { commentKeymap } from '@codemirror/comment';
+
+import parserBabel from 'prettier/parser-babel';
+import parserHtml from 'prettier/parser-html';
 import { rectangularSelection } from '@codemirror/rectangular-selection';
 import { defaultHighlightStyle } from '@codemirror/highlight';
 import { Compartment } from '@codemirror/state';
@@ -53,12 +56,43 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 	}
 };
 
+export const getParser = (language: string): { parser: string; plugins: [any] } => {
+	switch (language) {
+		case 'html':
+		case 'css':
+			return {
+				parser: 'html',
+				plugins: [parserHtml]
+			};
+		case 'tsx':
+		case 'jsx':
+		case 'ts':
+		case 'js':
+		case 'json':
+			return {
+				parser: 'babel',
+				plugins: [parserBabel]
+			};
+	}
+};
+
+/**
+ * Check if a given language is supported.
+ *
+ * @param language The file extension of the language to check.
+ * @returns Whether the language is supported.
+ */
+export const isSupported = (language: string): boolean => {
+	const result = supportedExtensions.includes(language);
+	return result;
+};
+
 /**
  * The list of default extensions to use for the codemirror editor configuration.
  */
 export const defaultExtensions = [
 	oneDark,
-	new Compartment().of(EditorState.tabSize.of(2)),
+	new Compartment().of(EditorState.tabSize.of(4)),
 	lineNumbers(),
 	highlightActiveLineGutter(),
 	highlightSpecialChars(),
@@ -74,6 +108,7 @@ export const defaultExtensions = [
 	rectangularSelection(),
 	highlightActiveLine(),
 	highlightSelectionMatches(),
+
 	keymap.of([
 		...closeBracketsKeymap,
 		...defaultKeymap,

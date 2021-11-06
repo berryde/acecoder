@@ -13,11 +13,13 @@
 	// Utils
 	import type { Filesystem } from '../../utils/types';
 	import {
+		compareFile,
 		createFile,
 		createFolder,
 		filesystem,
 		getExistingFiles
 	} from '../../utils/filesystem/filesystem';
+	import { openTab } from '../../utils/tabs/tabs';
 
 	// Props
 	export let files: Filesystem;
@@ -43,6 +45,7 @@
 	function handleCreate(name: string) {
 		if (creatingFile) {
 			createFile(name);
+			openTab(name);
 		} else {
 			createFolder(name);
 		}
@@ -50,7 +53,7 @@
 	}
 </script>
 
-<div class="bg-bluegray-dark h-screen w-64 text-bluegray-light">
+<div class="bg-bluegray-dark h-screen text-bluegray-light">
 	<div class="flex flex-row p-2 space-x-2">
 		<div on:click={() => setCreatingFile(true)} class="">
 			<FilePlus />
@@ -60,9 +63,9 @@
 		</div>
 	</div>
 
-	{#each Object.entries(files) as [path, object]}
+	{#each Object.entries(files).sort(compareFile) as [path, object]}
 		{#if object.type === 'file'}
-			<File {path} value={object.value} />
+			<File {path} />
 		{:else}
 			<Folder {path} children={object.children} />
 		{/if}

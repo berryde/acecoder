@@ -38,7 +38,6 @@
 			dispatch('cancelled');
 		} else if (key === 'Enter') {
 			if (!error || value + key == initialValue) {
-				console.log('Submitting', value);
 				dispatch('submit', value);
 			}
 		} else {

@@ -23,13 +23,24 @@
 		filesystem,
 		navigateToFile,
 		createFile,
-		createFolder
+		createFolder,
+		compareFile
 	} from '../../utils/filesystem/filesystem';
 	import type { Filesystem } from '../../utils/types';
+	import { renameTabs, closeTabs, openTab } from '../../utils/tabs/tabs';
 
 	// Props
+	/**
+	 * The path to this folder.
+	 */
 	export let path: string;
+	/**
+	 * The children of this folder (more folders and files).
+	 */
 	export let children: Filesystem;
+	/**
+	 * The depth of this folder in the filesystem.
+	 */
 	export let depth: number = 0;
 
 	// Variables
@@ -94,29 +105,55 @@
 		dragCount = 0;
 	}
 
+	/**
+	 * Rename this folder. Any tabs containing this folder's path should also be renamed.
+	 * @param newName
+	 */
 	function handleRename(newName: string) {
 		if (path.includes('/')) {
 			const parent = getParentDir(path);
-			renameFile(path, parent + '/' + newName);
+			rename(parent + '/' + newName);
 		} else {
-			renameFile(path, newName);
+			rename(newName);
 		}
 		renaming = false;
 	}
 
+	/**
+	 * Called when the user clicks the delete button for this folder.
+	 */
 	function handleDelete() {
 		deleteFile(path);
+		closeTabs(path);
 	}
 
+	/**
+	 * Rename the path to this folder.
+	 * @param name The new value for the path to this folder.
+	 */
+	function rename(name: string) {
+		renameFile(path, name);
+		renameTabs(path, name);
+	}
+
+	/**
+	 * Show/hide the folder's contents.
+	 */
 	function toggleCollapse() {
 		collapsed = !collapsed;
 	}
 
+	/**
+	 * Called when the user clicks either of the buttons to create a child object in this folder.
+	 * @param name The name of the new child object.
+	 */
 	function handleCreate(name: string) {
+		const fullPath = path + '/' + name;
 		if (creatingFile) {
-			createFile(path + '/' + name, '');
+			createFile(fullPath, '');
+			openTab(fullPath);
 		} else {
-			createFolder(path + '/' + name);
+			createFolder(fullPath);
 		}
 		creating = false;
 	}
@@ -178,9 +215,9 @@
 	{/if}
 	{#if !collapsed}
 		<div>
-			{#each Object.entries(children) as [name, object]}
+			{#each Object.entries(children).sort(compareFile) as [name, object]}
 				{#if object.type === 'file'}
-					<File value={object.value} path={path + '/' + name} depth={depth + 1} />
+					<File path={path + '/' + name} depth={depth + 1} />
 				{:else}
 					<svelte:self children={object.children} path={path + '/' + name} depth={depth + 1} />
 				{/if}

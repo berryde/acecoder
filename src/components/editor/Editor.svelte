@@ -1,15 +1,24 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { onMount } from 'svelte';
-	import { EditorView } from '@codemirror/view';
+	import { EditorView, keymap } from '@codemirror/view';
 	import { EditorState } from '@codemirror/state';
-	import { defaultExtensions, getLanguageSupport } from '../../utils/codemirror/codemirror';
+	import {
+		defaultExtensions,
+		getLanguageSupport,
+		getParser,
+		isSupported
+	} from '../../utils/codemirror/codemirror';
+	import prettier from 'prettier';
 	import type { ViewUpdate } from '@codemirror/view';
+	import type { KeyBinding, Command } from '@codemirror/view';
 
 	/**
 	 * The langauge to use for this editor.
 	 */
 	export let language: string;
+
+	export let selected: boolean;
 
 	/**
 	 * The initial text value of the editor.
@@ -32,20 +41,52 @@
 	let element: HTMLDivElement;
 
 	/**
+	 * The basic editor config before language specific features.
+	 */
+	const baseConfig = [
+		defaultExtensions,
+		EditorView.updateListener.of((viewUpdate: ViewUpdate) => {
+			// Emit an event to allow parent components to listen to the editor's value.
+			if (viewUpdate.docChanged) {
+				dispatch('docchanged', getValue());
+			}
+		})
+	];
+
+	/**
+	 * CodeMirror command to format the editor with prettier.
+	 *
+	 * @param view The editor to format
+	 * @returns Whether the format was successful
+	 */
+	const format: Command = (view: EditorView): boolean => {
+		console.log('FORMATTING', view);
+		if (isSupported(language)) {
+			const result = prettier.format(view.state.doc.toString(), getParser(language));
+			view.dispatch({
+				changes: { from: 0, to: view.state.doc.length, insert: result }
+			});
+			return true;
+		}
+		return false;
+	};
+
+	/**
+	 * A key binding to run prettier formatting on save.
+	 */
+	const autoformat: KeyBinding = {
+		key: 'Ctrl-Alt-l',
+		run: format
+	};
+
+	/**
 	 * The state of the editor.
 	 */
 	const state = EditorState.create({
 		doc: initialValue,
-		extensions: [
-			defaultExtensions,
-			EditorView.updateListener.of((viewUpdate: ViewUpdate) => {
-				// Emit an event to allow parent components to listen to the editor's value.
-				if (viewUpdate.docChanged) {
-					dispatch('docchanged', getValue());
-				}
-			}),
-			getLanguageSupport(language)
-		]
+		extensions: isSupported(language)
+			? [baseConfig, getLanguageSupport(language), keymap.of([autoformat])]
+			: baseConfig
 	});
 
 	/**
@@ -63,13 +104,20 @@
 	});
 </script>
 
-<div bind:this={element} />
+<section>
+	<div bind:this={element} class="editor {!selected && 'hidden'}" />
+</section>
 
-<style>
-	:global(.cm-scroller) {
-		max-height: 100vh;
+<style lang="postcss">
+	.editor {
+		flex-grow: 1;
 	}
+	:global(.cm-editor) {
+		@apply h-full overflow-auto;
+	}
+
+	/* 
 	:global(.cm-scroller::-webkit-scrollbar) {
 		display: none;
-	}
+	} */
 </style>

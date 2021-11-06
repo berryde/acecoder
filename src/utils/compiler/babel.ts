@@ -5,13 +5,18 @@ import { transform } from '@babel/standalone';
 const CDN_URL = 'https://cdn.skypack.dev';
 
 export const resolveRelativePath = (importee: string, importer: string) => {
-	// Remove the filename (anything after the last /) to resolve relative imports.
-	const split = importer.split('/');
-	split.pop();
-	const filename = importee.slice(1, importee.length);
-	const result = split.join('/') + filename;
-	console.log('Created relative import', result);
-	return result;
+	// If the importer is not in a directory then the import is not actually relative.
+	if (importer.includes('/')) {
+		// Remove the filename (anything after the last /) to resolve relative imports.
+		const split = importer.split('/');
+		split.pop();
+		const filename = importee.slice(1, importee.length);
+		const result = split.join('/') + filename;
+		console.log('Created relative import', result);
+		return result;
+	} else {
+		return importee.slice(2);
+	}
 };
 
 /**
@@ -19,7 +24,7 @@ export const resolveRelativePath = (importee: string, importer: string) => {
  * @param files A map of filename to file data.
  * @returns A rollup plugin.
  */
-export default function babel(files: Map<string, File>): Plugin {
+export default function babel(files: { [key: string]: File }): Plugin {
 	return {
 		name: 'babel-standalone',
 		/**
@@ -32,7 +37,7 @@ export default function babel(files: Map<string, File>): Plugin {
 		async resolveId(importee: string, importer: string) {
 			console.log('Resolving', importee);
 			// Check if the import refers to another source file, else it's a node module.
-			if (files.has(importee)) {
+			if (importee in files) {
 				return importee;
 			}
 			if (importee.startsWith('./')) {
@@ -52,8 +57,8 @@ export default function babel(files: Map<string, File>): Plugin {
 		 */
 		async load(id) {
 			// Check if the import refers to another source file, else it's a node module.
-			if (files.has(id)) {
-				return files.get(id).code;
+			if (id in files) {
+				return files[id].code;
 			}
 		},
 		/**
@@ -65,7 +70,6 @@ export default function babel(files: Map<string, File>): Plugin {
 		 */
 		async transform(code, id) {
 			// Babel options: https://babeljs.io/docs/en/options
-
 			// We only want to babel transform tsx, ts, js and jsx files.
 			if (/.*\.(js|ts)x?/.test(id)) {
 				console.log('Using babel to transform', id);

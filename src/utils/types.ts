@@ -24,6 +24,10 @@ export type WorkerResponse = {
 	 * The bundled css source.
 	 */
 	css: string;
+	/**
+	 * The index.html file.
+	 */
+	html: string;
 };
 
 /**
