@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Icons
 	import Trash from 'phosphor-svelte/lib/Trash';
-	import Hoverable from './Hoverable.svelte';
+	import Hoverable from '../common/Hoverable.svelte';
 	import File from 'phosphor-svelte/lib/File';
 	import Pencil from 'phosphor-svelte/lib/Pencil';
 
@@ -114,10 +114,12 @@
 				on:dragstart={handleDragStart}
 				on:click={handleClick}
 			>
-				<File />
-				<p class="flex-grow">{name}</p>
+				<div>
+					<File />
+				</div>
+				<p class="truncate">{name}</p>
 				<div
-					class="flex flex-row transition-opacity pr-2 space-x-1 {hovering
+					class="flex flex-row justify-end flex-grow transition-opacity pr-2 space-x-1 {hovering
 						? 'opacity-100'
 						: 'opacity-0'}"
 				>

@@ -214,7 +214,6 @@ export const getExtension = (path: string) => {
  */
 export const navigateToFile = (state: Filesystem, path: string) => {
 	const directories = getDirectories(path);
-
 	let dir = state;
 	for (let i = 0; i < directories.length; i++) {
 		if (!dir[directories[i]])
@@ -235,7 +234,7 @@ export const navigateToFile = (state: Filesystem, path: string) => {
  * @param path The object to check existence for.
  * @returns Whether there is an object at path.
  */
-export const fileExists = (state: Filesystem, path: string) => {
+export const exists = (state: Filesystem, path: string) => {
 	const parent = navigateToFile(state, path);
 	const name = tail(path);
 	return name in parent;
@@ -262,9 +261,7 @@ export const getFile = (state: Filesystem, path: string) => {
  */
 export const getAllFiles = (prefix: string, state: Filesystem): File[] => {
 	let files: File[] = [];
-	console.log(state);
 	for (var [name, file] of Object.entries(state)) {
-		console.log(name, state[name]);
 		if (file.type === 'file') {
 			files.push({
 				code: file.value,

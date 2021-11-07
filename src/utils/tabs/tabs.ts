@@ -53,6 +53,7 @@ export const renameTab = (oldName: string, newName: string): void => {
 		return tabs;
 	});
 	selectedTab.set(newName);
+	// Update the language support for this tab.
 };
 
 /**
@@ -74,4 +75,24 @@ export const closeTab = (name: string): void => {
  */
 export const closeTabs = (parent: string): void => {
 	tabs.update((tabs) => tabs.filter((path) => !path.startsWith(parent)));
+};
+
+/**
+ * Marks a tab as saved and removes it from unsaved tabs.
+ * @param name The name of the tab
+ */
+export const saveTab = (name: string) => {
+	unsavedTabs.update((unsavedTabs) =>
+		unsavedTabs.includes(name) ? unsavedTabs.filter((t) => t != name) : unsavedTabs
+	);
+};
+
+export const rearrange = (target: string, source: string) => {
+	// Move moved to the left of target
+	tabs.update((tabs) => {
+		tabs = tabs.filter((t) => t != source);
+		const targetIndex = tabs.indexOf(target);
+		tabs.splice(targetIndex, 0, source);
+		return tabs;
+	});
 };

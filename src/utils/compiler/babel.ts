@@ -12,7 +12,6 @@ export const resolveRelativePath = (importee: string, importer: string) => {
 		split.pop();
 		const filename = importee.slice(1, importee.length);
 		const result = split.join('/') + filename;
-		console.log('Created relative import', result);
 		return result;
 	} else {
 		return importee.slice(2);
@@ -35,7 +34,6 @@ export default function babel(files: { [key: string]: File }): Plugin {
 		 * @returns The resolved filename/URL.
 		 */
 		async resolveId(importee: string, importer: string) {
-			console.log('Resolving', importee);
 			// Check if the import refers to another source file, else it's a node module.
 			if (importee in files) {
 				return importee;
@@ -72,7 +70,6 @@ export default function babel(files: { [key: string]: File }): Plugin {
 			// Babel options: https://babeljs.io/docs/en/options
 			// We only want to babel transform tsx, ts, js and jsx files.
 			if (/.*\.(js|ts)x?/.test(id)) {
-				console.log('Using babel to transform', id);
 				const options = {
 					filename: id,
 					presets: ['react']

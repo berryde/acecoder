@@ -4,7 +4,7 @@
 	import type { Filesystem, WorkerResponse } from '../utils/types';
 	import Explorer from '../components/explorer/Explorer.svelte';
 	import Tabs from '../components/tabs/Tabs.svelte';
-	import { tabs, selectedTab, unsavedTabs } from '../utils/tabs/tabs';
+	import { tabs, selectedTab, unsavedTabs, saveTab } from '../utils/tabs/tabs';
 	import {
 		createFile,
 		filesystem,
@@ -34,21 +34,18 @@
 
 		// Add a listener for compiler responses.
 		worker.addEventListener('message', (event) => {
-			console.log('Received compiled code', event.data);
 			compiled = event.data as WorkerResponse;
 		});
 
 		// Load the react template.
 		loadTemplate(reactTemplate);
 
-		// Add a ctrl+s listener.
-		document.addEventListener('keydown', (e) => {
-			if ((window.navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey) && e.keyCode == 83) {
-				e.preventDefault();
-				// Process the event here (such as click on submit button)
-				console.log('SAVED');
-				handleSave();
-			}
+		/**
+		 * Reload the preview whenever the filesystem is changed.
+		 */
+		filesystem.subscribe((fs) => {
+			const files = getAllFiles('', fs);
+			worker.postMessage(files);
 		});
 	});
 
@@ -61,28 +58,16 @@
 		);
 	}
 
-	function updatePreview() {
-		const files = getAllFiles('', $filesystem);
-		console.log('Sending', files);
-		worker.postMessage(files);
-	}
-
 	function loadTemplate(template: { [key: string]: string }) {
 		for (const [path, value] of Object.entries(template)) {
 			createFile(path, value);
 		}
-		updatePreview();
 	}
 
 	function handleSave() {
 		if ($selectedTab != '') {
+			saveTab($selectedTab);
 			updateFile($selectedTab, editorContent[$selectedTab]);
-			updatePreview();
-			unsavedTabs.update((unsavedTabs) =>
-				unsavedTabs.includes($selectedTab)
-					? unsavedTabs.filter((t) => t != $selectedTab)
-					: unsavedTabs
-			);
 		}
 	}
 
@@ -103,6 +88,7 @@
 			<Editor
 				selected={tab === $selectedTab}
 				language={getExtension(tab)}
+				on:save={(e) => handleSave()}
 				on:docchanged={(e) => handleCodeChanged(e.detail)}
 				initialValue={loadEditorContent(tab)}
 			/>

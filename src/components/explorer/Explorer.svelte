@@ -53,7 +53,7 @@
 	}
 </script>
 
-<div class="bg-bluegray-dark h-screen text-bluegray-light">
+<div class="bg-bluegray-dark h-screen text-bluegray-light w-56">
 	<div class="flex flex-row p-2 space-x-2">
 		<div on:click={() => setCreatingFile(true)} class="">
 			<FilePlus />

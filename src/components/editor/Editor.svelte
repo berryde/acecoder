@@ -40,6 +40,8 @@
 	 */
 	let element: HTMLDivElement;
 
+	let mounted = false;
+
 	/**
 	 * The basic editor config before language specific features.
 	 */
@@ -59,8 +61,7 @@
 	 * @param view The editor to format
 	 * @returns Whether the format was successful
 	 */
-	const format: Command = (view: EditorView): boolean => {
-		console.log('FORMATTING', view);
+	const formatEditor: Command = (view: EditorView): boolean => {
 		if (isSupported(language)) {
 			const result = prettier.format(view.state.doc.toString(), getParser(language));
 			view.dispatch({
@@ -71,21 +72,34 @@
 		return false;
 	};
 
+	const saveContent: Command = (view: EditorView): boolean => {
+		dispatch('save');
+		return true;
+	};
+
 	/**
-	 * A key binding to run prettier formatting on save.
+	 * A key binding to run prettier formatting.
 	 */
-	const autoformat: KeyBinding = {
+	const format: KeyBinding = {
 		key: 'Ctrl-Alt-l',
-		run: format
+		run: formatEditor
+	};
+
+	/**
+	 * A key binding to save the file.
+	 */
+	const save: KeyBinding = {
+		key: 'Ctrl-s',
+		run: saveContent
 	};
 
 	/**
 	 * The state of the editor.
 	 */
-	const state = EditorState.create({
+	$: state = EditorState.create({
 		doc: initialValue,
 		extensions: isSupported(language)
-			? [baseConfig, getLanguageSupport(language), keymap.of([autoformat])]
+			? [baseConfig, getLanguageSupport(language), keymap.of([format, save])]
 			: baseConfig
 	});
 
@@ -96,12 +110,23 @@
 		return view == undefined ? '' : view.state.doc.toString();
 	}
 
-	onMount(() => {
+	onMount(updateEditor);
+
+	$: changeLanguage(language);
+
+	function changeLanguage(language: string) {
+		updateEditor();
+	}
+
+	function updateEditor() {
+		if (view) {
+			view.destroy();
+		}
 		view = new EditorView({
 			state: state,
 			parent: element
 		});
-	});
+	}
 </script>
 
 <section>

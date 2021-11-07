@@ -34,14 +34,19 @@
 	 * @param key The most recently entered key.
 	 */
 	function handleFilenameChanged(key: string) {
+		const submission = value + key;
 		if (key === 'Escape') {
 			dispatch('cancelled');
 		} else if (key === 'Enter') {
-			if (!error || value + key == initialValue) {
-				dispatch('submit', value);
+			if (!error) {
+				if (value == initialValue) {
+					dispatch('cancelled');
+				} else {
+					dispatch('submit', value);
+				}
 			}
 		} else {
-			if (reservedNames.includes(value + key)) {
+			if (submission != initialValue && reservedNames.includes(submission)) {
 				error = true;
 				errorMessage = `A file/folder called '${value + key}' already exists in this directory.`;
 			} else {

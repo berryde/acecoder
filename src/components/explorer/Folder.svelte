@@ -11,7 +11,7 @@
 	// Components
 	import ExplorerInput from './ExplorerInput.svelte';
 	import File from './File.svelte';
-	import Hoverable from './Hoverable.svelte';
+	import Hoverable from '../common/Hoverable.svelte';
 
 	// Utils
 	import {
@@ -24,16 +24,19 @@
 		navigateToFile,
 		createFile,
 		createFolder,
-		compareFile
+		compareFile,
+		exists
 	} from '../../utils/filesystem/filesystem';
 	import type { Filesystem } from '../../utils/types';
 	import { renameTabs, closeTabs, openTab } from '../../utils/tabs/tabs';
+	import Droppable from '../common/Droppable.svelte';
+	import Draggable from '../common/Draggable.svelte';
 
 	// Props
 	/**
 	 * The path to this folder.
 	 */
-	export let path: string;
+	export let path: string = '';
 	/**
 	 * The children of this folder (more folders and files).
 	 */
@@ -44,11 +47,25 @@
 	export let depth: number = 0;
 
 	// Variables
+	/**
+	 * Whether the renaming text area should be shown.
+	 */
 	let renaming = false;
+	/**
+	 * Whether the user is creating a new child object.
+	 */
 	let creating = false;
+	/**
+	 * Whether the user is creating a new child file.
+	 */
 	let creatingFile = false;
-	let dragCount = 0;
+	/**
+	 * Whether the children section is collapsed.
+	 */
 	let collapsed = false;
+	/**
+	 * The name of the folder.
+	 */
 	$: name = tail(path);
 
 	/**
@@ -69,40 +86,20 @@
 	}
 
 	/**
-	 * Called when the user starts dragging this folder to move it to another folder.
-	 * @param e The drag event.
+	 * Called when a draggable object is hovered over this folder.
+	 * @param data The drag event data.
 	 */
-	function handleDragStart(e: DragEvent) {
-		e.dataTransfer.setData('text', path);
-	}
-
-	/**
-	 * Called when a folder being dragged starts passing over this folder.
-	 * A drag count is used to cancel out any unintented dragenter or dragleave events.
-	 */
-	function handleDragEnter() {
-		dragCount += 1;
-	}
-
-	/**
-	 * Called when a folder being dragged stops passing over this folder.
-	 */
-	function handleDragLeave() {
-		dragCount -= 1;
-	}
-
-	/**
-	 * Called when an object is dropped onto this folder
-	 * @param e The DragEvent of the drop.
-	 */
-	function handleFileDropped(e: DragEvent) {
-		const oldPath = e.dataTransfer.getData('text');
+	function dropped(data: string) {
 		// A file can't be moved into itself or into the parent directory as it's already in it.
-		if (path !== oldPath && getParentDir(oldPath) !== path && getParentDir(path) !== oldPath) {
-			const oldName = tail(oldPath);
-			renameFile(oldPath, path + '/' + oldName);
+		if (
+			exists($filesystem, data) &&
+			path !== data &&
+			getParentDir(data) !== path &&
+			getParentDir(path) !== data
+		) {
+			const oldName = tail(data);
+			renameFile(data, path + '/' + oldName);
 		}
-		dragCount = 0;
 	}
 
 	/**
@@ -172,45 +169,42 @@
 		</ExplorerInput>
 	{:else}
 		<Hoverable let:hovering>
-			<div
-				class="flex transition flex-row items-center space-x-2 text-bluegray-light h-8 {dragCount >
-					0 && 'bg-blue-500'}"
-				draggable="true"
-				on:dragstart={handleDragStart}
-				on:dragenter={handleDragEnter}
-				on:dragover={(e) => e.preventDefault()}
-				on:dragleave={handleDragLeave}
-				on:drop={handleFileDropped}
-				style="padding-left: {(depth + 1) * 0.5}rem;"
-			>
-				<div class="flex flex-row items-center flex-grow space-x-2" on:click={toggleCollapse}>
-					{#if collapsed}
-						<Folder />
-					{:else}
-						<FolderOpen />
-					{/if}
-					<p>{name}</p>
-				</div>
-
-				<div
-					class="flex flex-row transition-opacity pr-2 space-x-1 {hovering
-						? 'opacity-100'
-						: 'opacity-0'}"
-				>
-					<div on:click={() => setRenaming(true)}>
-						<Pencil />
+			<Draggable data={path} variant="explorer">
+				<Droppable let:dropping on:dropped={(e) => dropped(e.detail)} variant="explorer">
+					<div
+						class="flex transition flex-row items-center space-x-2 text-bluegray-light h-8 {dropping &&
+							'bg-blue-500'}"
+						style="padding-left: {(depth + 1) * 0.5}rem;"
+					>
+						<div on:click={toggleCollapse}>
+							{#if collapsed}
+								<Folder />
+							{:else}
+								<FolderOpen />
+							{/if}
+						</div>
+						<p class="truncate">{name}</p>
+						<div
+							class="flex flex-row flex-grow justify-end transition-opacity pr-2 space-x-1 {hovering
+								? 'opacity-100'
+								: 'opacity-0'}"
+						>
+							<div on:click={() => setRenaming(true)}>
+								<Pencil />
+							</div>
+							<div on:click={() => setCreating(true, true)}>
+								<FilePlus />
+							</div>
+							<div on:click={() => setCreating(true, false)}>
+								<FolderPlus />
+							</div>
+							<div on:click={handleDelete}>
+								<Trash />
+							</div>
+						</div>
 					</div>
-					<div on:click={() => setCreating(true, true)}>
-						<FilePlus />
-					</div>
-					<div on:click={() => setCreating(true, false)}>
-						<FolderPlus />
-					</div>
-					<div on:click={handleDelete}>
-						<Trash />
-					</div>
-				</div>
-			</div>
+				</Droppable>
+			</Draggable>
 		</Hoverable>
 	{/if}
 	{#if !collapsed}
