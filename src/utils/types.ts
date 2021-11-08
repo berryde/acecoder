@@ -25,9 +25,23 @@ export type WorkerResponse = {
 	 */
 	css: string;
 	/**
-	 * The index.html file.
+	 * Any static files.
 	 */
-	html: string;
+	public: { [key: string]: string };
+};
+
+export type ReloadMessage = {
+	compiled: WorkerResponse;
+	type: 'reload';
+};
+
+export type UrlMessage = {
+	type: 'url';
+};
+
+export type TestMessage = {
+	compiled: WorkerResponse;
+	type: 'test';
 };
 
 /**

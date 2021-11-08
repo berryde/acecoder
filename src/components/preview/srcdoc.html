@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<script>
+			// Create a public directory
+			let static = {};
+
+			// Create the script tag
+			const script = document.createElement('script');
+			script.setAttribute('type', 'module');
+			document.head.appendChild(script);
+
+			// Create the style tag
+			const style = document.createElement('style');
+			document.head.appendChild(style);
+
+			function update(e) {
+				console.log(e);
+				switch (e.data.type) {
+					case 'test':
+						console.log('testing');
+						break;
+					case 'url':
+						console.log('creating url listener');
+						document.body.addEventListener('click', (clickEvent) => {
+							// If it's not a left click, ignore it
+							if (event.which !== 1) return;
+							// If it's a click combined with some key combination, ignore it.
+							if (event.metaKey || event.ctrlKey || event.shiftKey) return;
+							// If the event default has already been prevented, ignore it.
+							if (event.defaultPrevented) return;
+
+							// Traverse the event target to find the link node if present, else return.
+							// Inspired by https://github.com/sveltejs/svelte-repl
+							let link = event.target;
+							while (link && link.nodeName !== 'A') link = link.parentNode;
+							if (!link || link.nodeName !== 'A') return;
+
+							// If it's not an application link, ignore it.
+							if (
+								link.hasAttribute('download') ||
+								link.getAttribute('rel') === 'external' ||
+								link.target
+							)
+								return;
+
+							// All base cases are now handled, so consume this event and prevent the default behavior.
+							event.preventDefault();
+
+							// Handle relative and hash URLs as these should redirect to within the application.
+							// Hash URLs are used by libraries like react-router.
+							if (link.href.startsWith(e.origin)) {
+								const url = new URL(link.href);
+								if (url.hash[0] === '#') {
+									// Load the hash url
+									window.location.hash = url.hash;
+									return;
+								} else if (url.pathname.endsWith('.html')) {
+									// Load the static file
+									document.body.innerHTML = static['public' + url.pathname];
+									return;
+								}
+							}
+
+							// Open the link in a new window as this is the expected behavior.
+							window.open(link.href, '_blank');
+						});
+						break;
+					default:
+						console.log('rendering');
+						// Update the filesystem for public files
+						static = e.data.compiled.public;
+
+						// Load the index.html file
+						document.body.innerHTML = static['public/index.html'];
+
+						// Load the script bundle
+						import(e.data.compiled.js);
+
+						// Load the styles
+						style.innerHTML = e.data.compiled.css;
+						break;
+				}
+			}
+			window.addEventListener('message', update);
+		</script>
+	</head>
+	<body></body>
+</html>

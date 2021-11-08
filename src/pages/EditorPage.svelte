@@ -22,7 +22,7 @@
 	let compiled: WorkerResponse = {
 		css: '',
 		js: '',
-		html: ''
+		public: {}
 	};
 
 	let worker: Worker;
