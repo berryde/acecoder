@@ -16,6 +16,7 @@ import { commentKeymap } from '@codemirror/comment';
 
 import parserBabel from 'prettier/parser-babel';
 import parserHtml from 'prettier/parser-html';
+import parserCss from 'prettier/parser-postcss';
 import { rectangularSelection } from '@codemirror/rectangular-selection';
 import { defaultHighlightStyle } from '@codemirror/highlight';
 import { Compartment } from '@codemirror/state';
@@ -59,10 +60,14 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 export const getParser = (language: string): { parser: string; plugins: [any] } => {
 	switch (language) {
 		case 'html':
-		case 'css':
 			return {
 				parser: 'html',
 				plugins: [parserHtml]
+			};
+		case 'css':
+			return {
+				parser: 'css',
+				plugins: [parserCss]
 			};
 		case 'tsx':
 		case 'jsx':

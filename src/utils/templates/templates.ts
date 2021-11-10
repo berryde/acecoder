@@ -31,9 +31,11 @@ export default function App() {
 }`,
 
 	'src/styles.css': `.App {
-    font-family: "sans-serif";
+    font-family: sans-serif;
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
 }
 `,
 
