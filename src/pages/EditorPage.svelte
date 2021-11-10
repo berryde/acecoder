@@ -83,7 +83,7 @@
 <div class="h-screen bg-bluegray-default flex flex-row">
 	<Explorer {files} />
 	<div class="flex flex-col flex-grow overflow-auto">
-		<Tabs />
+		<Tabs selected={$selectedTab} tabs={$tabs} unsaved={$unsavedTabs} />
 		{#each $tabs as tab}
 			<Editor
 				selected={tab === $selectedTab}

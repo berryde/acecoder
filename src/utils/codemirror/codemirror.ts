@@ -13,13 +13,11 @@ import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets';
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { commentKeymap } from '@codemirror/comment';
-
 import parserBabel from 'prettier/parser-babel';
 import parserHtml from 'prettier/parser-html';
 import parserCss from 'prettier/parser-postcss';
 import { rectangularSelection } from '@codemirror/rectangular-selection';
 import { defaultHighlightStyle } from '@codemirror/highlight';
-import { Compartment } from '@codemirror/state';
 import { lintKeymap } from '@codemirror/lint';
 import {
 	keymap,
@@ -97,7 +95,6 @@ export const isSupported = (language: string): boolean => {
  */
 export const defaultExtensions = [
 	oneDark,
-	new Compartment().of(EditorState.tabSize.of(4)),
 	lineNumbers(),
 	highlightActiveLineGutter(),
 	highlightSpecialChars(),
@@ -114,6 +111,7 @@ export const defaultExtensions = [
 	highlightActiveLine(),
 	highlightSelectionMatches(),
 
+	indentOnInput(),
 	keymap.of([
 		...closeBracketsKeymap,
 		...defaultKeymap,

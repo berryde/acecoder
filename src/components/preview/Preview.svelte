@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ReloadMessage, TestMessage, UrlMessage, WorkerResponse } from 'src/utils/types';
 	import { onMount } from 'svelte';
-	import template from './srcdoc.html?raw';
+	import template from './template/template';
 	export let compiled: WorkerResponse;
 
 	let iframe: HTMLIFrameElement;
@@ -30,10 +30,13 @@
 
 	onMount(() => {
 		iframe.addEventListener('load', () => {
+			// Add the URL click interceptor
 			const message: UrlMessage = {
 				type: 'url'
 			};
 			iframe.contentWindow.postMessage(message);
+			// Do an initial render
+			build(compiled);
 		});
 	});
 </script>

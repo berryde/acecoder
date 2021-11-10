@@ -4,7 +4,7 @@
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-
+		<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
 		<script>
 			// Create a public directory
 			let static = {};
@@ -25,13 +25,11 @@
 			}
 
 			function update(e) {
-				console.log(e);
 				switch (e.data.type) {
 					case 'test':
 						console.log('testing');
 						break;
 					case 'url':
-						console.log('creating url listener');
 						document.body.addEventListener('click', (clickEvent) => {
 							// If it's not a left click, ignore it
 							if (event.which !== 1) return;
@@ -77,13 +75,11 @@
 						});
 						break;
 					default:
-						console.log('rendering');
 						// Update the filesystem for public files
 						static = e.data.compiled.public;
 
 						// Load the index.html file
 						document.body.innerHTML = static['public/index.html'];
-
 						// Load the script bundle
 						document.head.removeChild(script);
 						script = createScript(e.data.compiled.js);

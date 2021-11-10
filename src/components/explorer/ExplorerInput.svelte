@@ -63,7 +63,11 @@
 </script>
 
 <div class={error ? 'bg-red-800' : 'bg-bluegray-default'} style="padding-left: {depth * 0.5}rem;">
-	<div class="flex flex-row items-center  pl-2 {error ? ' ring-inset ring-red-800 ring-2' : ''}">
+	<div
+		class="flex flex-row items-center text-bluegray-light pl-2 {error
+			? ' ring-inset ring-red-800 ring-2'
+			: ''}"
+	>
 		<slot />
 		<input
 			class="focus:outline-none bg-transparent ring-inset pl-2 w-full h-8"
