@@ -10,13 +10,19 @@
 			let static = {};
 
 			// Create the script tag
-			const script = document.createElement('script');
-			script.setAttribute('type', 'module');
+			let script = createScript('');
 			document.head.appendChild(script);
 
 			// Create the style tag
 			const style = document.createElement('style');
 			document.head.appendChild(style);
+
+			function createScript(src) {
+				const script = document.createElement('script');
+				script.setAttribute('type', 'module');
+				script.innerHTML = src;
+				return script;
+			}
 
 			function update(e) {
 				console.log(e);
@@ -79,7 +85,9 @@
 						document.body.innerHTML = static['public/index.html'];
 
 						// Load the script bundle
-						import(e.data.compiled.js);
+						document.head.removeChild(script);
+						script = createScript(e.data.compiled.js);
+						document.head.appendChild(script);
 
 						// Load the styles
 						style.innerHTML = e.data.compiled.css;

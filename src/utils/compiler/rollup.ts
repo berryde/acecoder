@@ -39,8 +39,7 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 		const bundle = await result.generate({ format: 'esm' });
 
 		// The JS bundle is URI encoded so that we can import() it to run it in the browser.
-		let scripts = bundle.output[0] ? bundle.output[0].code : '';
-		scripts = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(scripts);
+		const scripts = bundle.output[0] ? bundle.output[0].code : '';
 
 		const styles = bundle.output[1] ? bundle.output[1].source : '';
 		const publicResources = Object.fromEntries(
