@@ -28,6 +28,7 @@ import {
 import { oneDark } from '@codemirror/theme-one-dark';
 import { indentWithTab } from '@codemirror/commands';
 import { EditorState } from '@codemirror/state';
+import type { Parser } from 'prettier';
 
 /**
  * Supported file extensions.
@@ -55,7 +56,9 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 	}
 };
 
-export const getParser = (language: string): { parser: string; plugins: [any] } => {
+export const getParser = (
+	language: string
+): { parser: string; plugins: [{ parsers: { [key: string]: Parser<string> } }] } => {
 	switch (language) {
 		case 'html':
 			return {
@@ -110,7 +113,6 @@ export const defaultExtensions = [
 	rectangularSelection(),
 	highlightActiveLine(),
 	highlightSelectionMatches(),
-
 	indentOnInput(),
 	keymap.of([
 		...closeBracketsKeymap,
