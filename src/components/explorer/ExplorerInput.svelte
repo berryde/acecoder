@@ -4,7 +4,7 @@
 	// Props
 	export let reservedNames: string[] = [];
 	export let depth: number = 0;
-	export let initialValue: string = '';
+	export let initialValue: string = undefined;
 
 	// Variables
 	/**
@@ -34,7 +34,6 @@
 	 * @param key The most recently entered key.
 	 */
 	function handleFilenameChanged(key: string) {
-		const submission = value + key;
 		if (key === 'Escape') {
 			dispatch('cancelled');
 		} else if (key === 'Enter') {
@@ -45,20 +44,25 @@
 					dispatch('submit', value);
 				}
 			}
-		} else {
-			if (submission != initialValue && reservedNames.includes(submission)) {
-				error = true;
-				errorMessage = `A file/folder called '${value + key}' already exists in this directory.`;
-			} else {
-				error = false;
-			}
 		}
+	}
+
+	/**
+	 * Called when value is changed. Determines whether the requested value is valid.
+	 */
+	$: if (value != initialValue && reservedNames.includes(value)) {
+		error = true;
+		errorMessage = `A file/folder called '${value}' already exists in this directory.`;
+	} else {
+		error = false;
 	}
 
 	// Focus the input by default.
 	onMount(() => {
 		input.focus();
-		value = initialValue;
+		if (initialValue != undefined) {
+			value = initialValue;
+		}
 	});
 </script>
 
@@ -71,11 +75,11 @@
 		<slot />
 		<input
 			class="focus:outline-none bg-transparent ring-inset pl-2 w-full h-8"
+			data-testid="explorer-input"
 			bind:value
 			bind:this={input}
 			on:focusout={() => dispatch('cancelled')}
 			on:keydown={(e) => handleFilenameChanged(e.key)}
-			on:submit={(e) => e.preventDefault()}
 		/>
 	</div>
 	{#if error}

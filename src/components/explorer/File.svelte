@@ -1,9 +1,9 @@
 <script lang="ts">
 	// Icons
-	import Trash from 'phosphor-svelte/lib/Trash';
+	import Trash from 'svelte-icons/io/IoMdTrash.svelte';
 	import Hoverable from '../common/Hoverable.svelte';
-	import File from 'phosphor-svelte/lib/File';
-	import Pencil from 'phosphor-svelte/lib/Pencil';
+	import FileIcon from 'svelte-icons/io/IoMdDocument.svelte';
+	import Pen from 'svelte-icons/fa/FaPen.svelte';
 
 	// Components
 	import ExplorerInput from './ExplorerInput.svelte';
@@ -102,7 +102,9 @@
 			on:submit={(e) => handleRename(e.detail)}
 			on:cancelled={() => setRenaming(false)}
 		>
-			<File />
+			<div class="h-4">
+				<FileIcon />
+			</div>
 		</ExplorerInput>
 	{:else}
 		<Hoverable let:hovering>
@@ -114,19 +116,19 @@
 				on:dragstart={handleDragStart}
 				on:click={handleClick}
 			>
-				<div>
-					<File />
+				<div class="h-4">
+					<FileIcon />
 				</div>
 				<p class="truncate">{name}</p>
 				<div
-					class="flex flex-row justify-end flex-grow transition-opacity pr-2 space-x-1 {hovering
+					class="flex flex-row justify-end items-center flex-grow transition-opacity pr-2 space-x-1 {hovering
 						? 'opacity-100'
 						: 'opacity-0'}"
 				>
-					<div on:click={() => setRenaming(true)}>
-						<Pencil />
+					<div on:click={() => setRenaming(true)} class="h-3" data-testid="rename-file">
+						<Pen />
 					</div>
-					<div on:click={handleDelete}>
+					<div on:click={handleDelete} class="h-4" data-testid="delete-file">
 						<Trash />
 					</div>
 				</div>

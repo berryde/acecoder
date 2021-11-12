@@ -24,6 +24,12 @@
 	}
 </script>
 
-<div on:dragenter={enter} on:dragleave={leave} on:dragover={over} on:drop={drop}>
+<div
+	on:dragenter={enter}
+	on:dragleave={leave}
+	on:dragover={over}
+	on:drop={drop}
+	data-testid="dropzone"
+>
 	<slot dropping={count > 0} />
 </div>

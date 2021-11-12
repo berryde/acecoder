@@ -1,12 +1,10 @@
 <script lang="ts">
 	// Icons
-	import FolderOpen from 'phosphor-svelte/lib/FolderOpen';
-	import Folder from 'phosphor-svelte/lib/Folder';
-	import FileIcon from 'phosphor-svelte/lib/File';
-	import Pencil from 'phosphor-svelte/lib/Pencil';
-	import FilePlus from 'phosphor-svelte/lib/FilePlus';
-	import Trash from 'phosphor-svelte/lib/Trash';
-	import FolderPlus from 'phosphor-svelte/lib/FolderPlus';
+	import FolderOpen from 'svelte-icons/io/IoMdFolderOpen.svelte';
+	import Folder from 'svelte-icons/io/IoMdFolder.svelte';
+	import FileIcon from 'svelte-icons/io/IoMdDocument.svelte';
+	import Trash from 'svelte-icons/io/IoMdTrash.svelte';
+	import Pen from 'svelte-icons/fa/FaPen.svelte';
 
 	// Components
 	import ExplorerInput from './ExplorerInput.svelte';
@@ -165,7 +163,9 @@
 			on:submit={(e) => handleRename(e.detail)}
 			on:cancelled={() => setRenaming(false)}
 		>
-			<Folder />
+			<div class="h-4">
+				<Folder />
+			</div>
 		</ExplorerInput>
 	{:else}
 		<Hoverable let:hovering>
@@ -178,27 +178,39 @@
 					>
 						<div on:click={toggleCollapse}>
 							{#if collapsed}
-								<Folder />
+								<div class="h-4">
+									<Folder />
+								</div>
 							{:else}
-								<FolderOpen />
+								<div class="h-4">
+									<FolderOpen />
+								</div>
 							{/if}
 						</div>
 						<p class="truncate">{name}</p>
 						<div
-							class="flex flex-row flex-grow justify-end transition-opacity pr-2 space-x-1 {hovering
+							class="flex flex-row flex-grow items-center justify-end transition-opacity pr-2 space-x-1 {hovering
 								? 'opacity-100'
 								: 'opacity-0'}"
 						>
-							<div on:click={() => setRenaming(true)}>
-								<Pencil />
+							<div on:click={() => setRenaming(true)} class="h-4" data-testid="rename-folder">
+								<Pen />
 							</div>
-							<div on:click={() => setCreating(true, true)}>
-								<FilePlus />
+							<div
+								on:click={() => setCreating(true, true)}
+								class="h-4"
+								data-testid="create-child-file"
+							>
+								<FileIcon />
 							</div>
-							<div on:click={() => setCreating(true, false)}>
-								<FolderPlus />
+							<div
+								on:click={() => setCreating(true, false)}
+								class="h-4"
+								data-testid="create-child-folder"
+							>
+								<Folder />
 							</div>
-							<div on:click={handleDelete}>
+							<div on:click={handleDelete} class="h-4" data-testid="delete-folder">
 								<Trash />
 							</div>
 						</div>
@@ -226,9 +238,13 @@
 			reservedNames={getExistingFiles(children)}
 		>
 			{#if creatingFile}
-				<FileIcon />
+				<div class="h-4">
+					<FileIcon />
+				</div>
 			{:else}
-				<Folder />
+				<div class="h-4">
+					<Folder />
+				</div>
 			{/if}
 		</ExplorerInput>
 	{/if}

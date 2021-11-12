@@ -1,10 +1,8 @@
 <script lang="ts">
 	// Icons
-	import FilePlus from 'phosphor-svelte/lib/FilePlus';
-	import FolderPlus from 'phosphor-svelte/lib/FolderPlus';
+	import FolderIcon from 'svelte-icons/io/IoMdFolder.svelte';
+	import FileIcon from 'svelte-icons/io/IoMdDocument.svelte';
 	import ExplorerInput from './ExplorerInput.svelte';
-	import FolderIcon from 'phosphor-svelte/lib/Folder';
-	import FileIcon from 'phosphor-svelte/lib/File';
 
 	// Components
 	import File from './File.svelte';
@@ -54,12 +52,12 @@
 </script>
 
 <div class="bg-bluegray-dark h-screen text-bluegray-light w-56">
-	<div class="flex flex-row p-2 space-x-2">
-		<div on:click={() => setCreatingFile(true)} class="">
-			<FilePlus />
+	<div class="flex flex-row items-center p-2 space-x-2">
+		<div on:click={() => setCreatingFile(true)} data-testid="add-file" class="h-4">
+			<FileIcon />
 		</div>
-		<div on:click={() => setCreatingFolder(true)} class="">
-			<FolderPlus />
+		<div on:click={() => setCreatingFolder(true)} data-testid="add-folder" class="h-4">
+			<FolderIcon />
 		</div>
 	</div>
 
@@ -80,11 +78,13 @@
 			}}
 			reservedNames={getExistingFiles($filesystem)}
 		>
-			{#if creatingFile}
-				<FileIcon />
-			{:else}
-				<FolderIcon />
-			{/if}
+			<div class="h-4">
+				{#if creatingFile}
+					<FileIcon />
+				{:else}
+					<FolderIcon />
+				{/if}
+			</div>
 		</ExplorerInput>
 	{/if}
 </div>

@@ -5,7 +5,7 @@
 	export let selected: string;
 	export let unsaved: string[];
 
-	import X from 'phosphor-svelte/lib/X';
+	import IoMdClose from 'svelte-icons/io/IoMdClose.svelte';
 	import Hoverable from '../common/Hoverable.svelte';
 	import Draggable from '../common/Draggable.svelte';
 	import Droppable from '../common/Droppable.svelte';
@@ -35,7 +35,7 @@
 									on:click={() => closeTab(path)}
 									class="flex flex-col justify-center p-0.5 rounded hover:bg-gray-700"
 								>
-									<X size={12} />
+									<IoMdClose size={12} />
 								</div>
 							{:else}
 								<div
