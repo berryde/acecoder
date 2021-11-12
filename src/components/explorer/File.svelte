@@ -2,7 +2,7 @@
 	// Icons
 	import Trash from 'svelte-icons/io/IoMdTrash.svelte';
 	import Hoverable from '../common/Hoverable.svelte';
-	import FileIcon from 'svelte-icons/io/IoMdDocument.svelte';
+	import FileIcon from 'svelte-icons/fa/FaRegFile.svelte';
 	import Pen from 'svelte-icons/fa/FaPen.svelte';
 
 	// Components

@@ -3,8 +3,10 @@
 	import { onMount } from 'svelte';
 	import template from './template/template';
 	export let compiled: WorkerResponse;
+	export let resizing = false;
 
 	let iframe: HTMLIFrameElement;
+	let srcdoc: string = '';
 
 	$: build(compiled);
 
@@ -29,6 +31,7 @@
 	}
 
 	onMount(() => {
+		srcdoc = template;
 		iframe.addEventListener('load', () => {
 			// Add the URL click interceptor
 			const message: UrlMessage = {
@@ -41,4 +44,9 @@
 	});
 </script>
 
-<iframe title="Preview" class="h-full bg-white" bind:this={iframe} srcdoc={template} />
+<iframe
+	title="Preview"
+	class="h-full w-full bg-white {resizing && 'pointer-events-none'}"
+	bind:this={iframe}
+	{srcdoc}
+/>

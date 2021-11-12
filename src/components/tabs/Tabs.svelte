@@ -23,7 +23,7 @@
 		<Draggable data={path} variant="tabs">
 			<Droppable let:dropping on:dropped={(e) => handleDropped(path, e.detail)} variant="tabs">
 				<div
-					class="pl-4 pr-2 py-1 selected flex flex-row space-x-1 justify-between items-center {path ==
+					class="transition-colors pl-4 pr-2 py-1 selected flex flex-row space-x-1 justify-between items-center {path ==
 						selected && 'bg-bluegray-default'} hover:bg-gray-800 {dropping && 'bg-blue-500'}"
 					on:click={() => openTab(path)}
 				>
@@ -33,14 +33,15 @@
 							{#if hovering}
 								<div
 									on:click={() => closeTab(path)}
-									class="flex flex-col justify-center p-0.5 rounded hover:bg-gray-700"
+									class="flex flex-col justify-center p-0.5 rounded bg-gray-700"
 								>
-									<IoMdClose size={12} />
+									<IoMdClose />
 								</div>
 							{:else}
 								<div
-									class="bg-bluegray-light rounded-full ml-1 h-1.5 w-1.5 {!unsaved.includes(path) &&
-										'invisible'}"
+									class="transition-all bg-bluegray-light rounded-full ml-1 h-1.5 w-1.5 {!unsaved.includes(
+										path
+									) && 'invisible'}"
 								/>
 							{/if}
 						</div>

@@ -1,7 +1,9 @@
 <script lang="ts">
 	// Icons
-	import FolderIcon from 'svelte-icons/io/IoMdFolder.svelte';
-	import FileIcon from 'svelte-icons/io/IoMdDocument.svelte';
+	import FolderIcon from 'svelte-icons/fa/FaFolder.svelte';
+	import FileIcon from 'svelte-icons/fa/FaFile.svelte';
+	import OutlineFileIcon from 'svelte-icons/fa/FaRegFile.svelte';
+	import OutlineFolderIcon from 'svelte-icons/fa/FaRegFolder.svelte';
 	import ExplorerInput from './ExplorerInput.svelte';
 
 	// Components
@@ -80,9 +82,9 @@
 		>
 			<div class="h-4">
 				{#if creatingFile}
-					<FileIcon />
+					<OutlineFileIcon />
 				{:else}
-					<FolderIcon />
+					<OutlineFolderIcon />
 				{/if}
 			</div>
 		</ExplorerInput>

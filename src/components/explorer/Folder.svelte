@@ -1,7 +1,8 @@
 <script lang="ts">
 	// Icons
-	import FolderOpen from 'svelte-icons/io/IoMdFolderOpen.svelte';
-	import Folder from 'svelte-icons/io/IoMdFolder.svelte';
+	import FolderOpen from 'svelte-icons/fa/FaRegFolderOpen.svelte';
+	import Folder from 'svelte-icons/fa/FaFolder.svelte';
+	import FolderOutline from 'svelte-icons/fa/FaRegFolder.svelte';
 	import FileIcon from 'svelte-icons/io/IoMdDocument.svelte';
 	import Trash from 'svelte-icons/io/IoMdTrash.svelte';
 	import Pen from 'svelte-icons/fa/FaPen.svelte';
@@ -164,7 +165,7 @@
 			on:cancelled={() => setRenaming(false)}
 		>
 			<div class="h-4">
-				<Folder />
+				<FolderOutline />
 			</div>
 		</ExplorerInput>
 	{:else}
@@ -179,7 +180,7 @@
 						<div on:click={toggleCollapse}>
 							{#if collapsed}
 								<div class="h-4">
-									<Folder />
+									<FolderOutline />
 								</div>
 							{:else}
 								<div class="h-4">
