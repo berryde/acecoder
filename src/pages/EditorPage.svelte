@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Preview from '../components/preview/Preview.svelte';
 	import Editor from '../components/editor/Editor.svelte';
-	import type { Filesystem, WorkerResponse } from '../utils/types';
+	import type { Filesystem, WorkerError, WorkerResponse } from '../utils/types';
 	import Explorer from '../components/explorer/Explorer.svelte';
 	import Tabs from '../components/tabs/Tabs.svelte';
+	import { addMessage, messages } from '../utils/console/console';
 	import { tabs, selectedTab, unsavedTabs, saveTab } from '../utils/tabs/tabs';
 	import {
 		createFile,
@@ -16,6 +17,7 @@
 	import { onMount } from 'svelte';
 	import { reactTemplate } from '../utils/templates/templates';
 	import SplitPane from '../components/splitpane/SplitPane.svelte';
+	import Console from '../components/console/Console.svelte';
 
 	let files: Filesystem;
 	filesystem.subscribe((state) => (files = state));
@@ -28,6 +30,8 @@
 
 	let worker: Worker;
 
+	let error: WorkerError;
+
 	let editorContent: { [key: string]: string } = {};
 
 	onMount(() => {
@@ -35,7 +39,17 @@
 
 		// Add a listener for compiler responses.
 		worker.addEventListener('message', (event) => {
-			compiled = event.data as WorkerResponse;
+			const e = event.data.error as WorkerError;
+			if (e) {
+				error = e;
+				addMessage({
+					data: error.raw.message,
+					type: 'error'
+				});
+			} else {
+				error = undefined;
+				compiled = event.data as WorkerResponse;
+			}
 		});
 
 		// Load the react template.
@@ -97,7 +111,10 @@
 			{/each}
 		</left>
 		<right slot="right" let:resizing>
-			<Preview {compiled} {resizing} />
+			<div class="flex flex-col h-full">
+				<Preview {compiled} {resizing} {error} />
+				<Console messages={$messages} />
+			</div>
 		</right>
 	</SplitPane>
 </div>

@@ -43,6 +43,20 @@
 			const style = document.createElement('style');
 			document.head.appendChild(style);
 
+			// Intercept console messages
+			const levels = ['log', 'warn', 'error'];
+			levels.forEach((level) => {
+				console[level] = (text) => reply(level, text);
+			});
+
+			function reply(type = 'log', data) {
+				parent.postMessage({
+					type: type,
+					data: data
+				});
+			}
+
+			// Generate a new script tag to re-run the script
 			function createScript(src) {
 				const script = document.createElement('script');
 				script.setAttribute('type', 'module');
@@ -116,6 +130,8 @@
 						break;
 				}
 			}
+
+			// Listen for new commands
 			window.addEventListener('message', update);
 		</script>
 	</head>

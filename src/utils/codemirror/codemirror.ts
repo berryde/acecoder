@@ -29,6 +29,7 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import { indentWithTab } from '@codemirror/commands';
 import { EditorState } from '@codemirror/state';
 import type { Parser } from 'prettier';
+import { completeFromList } from '@codemirror/autocomplete';
 
 /**
  * Supported file extensions.
@@ -45,8 +46,18 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 		case 'html':
 			return html();
 		case 'tsx':
+			return javascript({
+				typescript: true,
+				jsx: true
+			});
 		case 'jsx':
+			return javascript({
+				jsx: true
+			});
 		case 'ts':
+			return javascript({
+				typescript: true
+			});
 		case 'js':
 			return javascript();
 		case 'json':

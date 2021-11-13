@@ -1,9 +1,19 @@
 <script lang="ts">
-	import type { ReloadMessage, TestMessage, UrlMessage, WorkerResponse } from 'src/utils/types';
+	import { addMessage } from '../../utils/console/console';
+	import Error from './Error.svelte';
+	import type {
+		ConsoleMessage,
+		ReloadMessage,
+		TestMessage,
+		UrlMessage,
+		WorkerError,
+		WorkerResponse
+	} from 'src/utils/types';
 	import { onMount } from 'svelte';
 	import template from './template/template';
 	export let compiled: WorkerResponse;
 	export let resizing = false;
+	export let error: WorkerError = undefined;
 
 	let iframe: HTMLIFrameElement;
 	let srcdoc: string = '';
@@ -20,16 +30,6 @@
 		}
 	}
 
-	function test(compiled: WorkerResponse) {
-		if (iframe) {
-			const message: TestMessage = {
-				compiled: compiled,
-				type: 'test'
-			};
-			iframe.contentWindow.postMessage(message);
-		}
-	}
-
 	onMount(() => {
 		srcdoc = template;
 		iframe.addEventListener('load', () => {
@@ -41,12 +41,22 @@
 			// Do an initial render
 			build(compiled);
 		});
+		// Handle console messages.
+		window.addEventListener('message', (message: MessageEvent) => {
+			const data = message.data as ConsoleMessage;
+			addMessage(data);
+		});
 	});
 </script>
 
-<iframe
-	title="Preview"
-	class="h-full w-full bg-white {resizing && 'pointer-events-none'}"
-	bind:this={iframe}
-	{srcdoc}
-/>
+<div class="flex-grow w-full relative">
+	{#if error}
+		<Error {error} />
+	{/if}
+	<iframe
+		title="Preview"
+		class="h-full w-full z-0 bg-white {resizing && 'pointer-events-none'}"
+		bind:this={iframe}
+		{srcdoc}
+	/>
+</div>

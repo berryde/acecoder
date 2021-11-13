@@ -53,7 +53,7 @@
 	}
 </script>
 
-<div class="bg-bluegray-dark h-screen text-bluegray-light w-56">
+<div class="bg-bluegray-dark h-screen text-bluegray-light">
 	<div class="flex flex-row items-center p-2 space-x-2">
 		<div on:click={() => setCreatingFile(true)} data-testid="add-file" class="h-4">
 			<FileIcon />

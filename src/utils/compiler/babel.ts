@@ -74,12 +74,19 @@ export default function babel(files: { [key: string]: File }): Plugin {
 					filename: id,
 					presets: ['react']
 				};
-				const transformed = transform(code, options);
-
-				return {
-					code: transformed.code,
-					map: transformed.map
-				};
+				try {
+					const transformed = transform(code, options);
+					return {
+						code: transformed.code,
+						map: transformed.map
+					};
+				} catch (err) {
+					this.warn(err);
+					return {
+						code: null,
+						map: null
+					};
+				}
 			}
 		}
 	};
