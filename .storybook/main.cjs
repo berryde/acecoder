@@ -21,7 +21,28 @@ module.exports = {
 		const svelteLoader = config.module.rules.find(
 			(r) => r.loader && r.loader.includes('svelte-loader')
 		);
-		svelteLoader.options.preprocess = require('svelte-preprocess')({});
+		svelteLoader.options.preprocess = require('svelte-preprocess')({
+			babel: {
+				presets: [
+					[
+						'@babel/preset-env',
+						{
+							loose: true,
+							// No need for babel to resolve modules
+							modules: false,
+							targets: {
+								// ! Very important. Target es6+
+								esmodules: true
+							}
+						}
+					]
+				]
+			}
+		});
 		return config;
-	}
+	},
+	babel: async (options) => ({
+		...options,
+		plugins: ['@babel/plugin-proposal-nullish-coalescing-operator']
+	})
 };

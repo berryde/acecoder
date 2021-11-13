@@ -15,6 +15,7 @@
 	} from '../utils/filesystem/filesystem';
 	import { onMount } from 'svelte';
 	import { reactTemplate } from '../utils/templates/templates';
+	import SplitPane from '../components/splitpane/SplitPane.svelte';
 
 	let files: Filesystem;
 	filesystem.subscribe((state) => (files = state));
@@ -82,17 +83,21 @@
 
 <div class="h-screen bg-bluegray-default flex flex-row">
 	<Explorer {files} />
-	<div class="flex flex-col flex-grow overflow-auto">
-		<Tabs />
-		{#each $tabs as tab}
-			<Editor
-				selected={tab === $selectedTab}
-				language={getExtension(tab)}
-				on:save={(e) => handleSave()}
-				on:docchanged={(e) => handleCodeChanged(e.detail)}
-				initialValue={loadEditorContent(tab)}
-			/>
-		{/each}
-	</div>
-	<Preview {compiled} />
+	<SplitPane>
+		<left slot="left">
+			<Tabs selected={$selectedTab} tabs={$tabs} unsaved={$unsavedTabs} />
+			{#each $tabs as tab}
+				<Editor
+					selected={tab === $selectedTab}
+					language={getExtension(tab)}
+					on:save={(e) => handleSave()}
+					on:docchanged={(e) => handleCodeChanged(e.detail)}
+					initialValue={loadEditorContent(tab)}
+				/>
+			{/each}
+		</left>
+		<right slot="right" let:resizing>
+			<Preview {compiled} {resizing} />
+		</right>
+	</SplitPane>
 </div>

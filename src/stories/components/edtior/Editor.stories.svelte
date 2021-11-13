@@ -25,7 +25,8 @@
 		initialValue: `export const test = () => {
   console.log("Hello, world!")
 }`,
-		language: 'jsx'
+		language: 'jsx',
+		selected: true
 	}}
 />
 
@@ -35,7 +36,8 @@
 		initialValue: `<div>
   <p>Hello, world!</p>
 </div>`,
-		language: 'html'
+		language: 'html',
+		selected: true
 	}}
 />
 
@@ -45,6 +47,16 @@
 		initialValue: `.some-class {
   background-color: 'red';
 }`,
-		language: 'css'
+		language: 'css',
+		selected: true
+	}}
+/>
+
+<Story
+	name="Long line"
+	args={{
+		initialValue: `console.log("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ut arcu ante. Vivamus lacus urna, scelerisque eu dictum in, condimentum id dui. Cras sodales gravida nulla, vitae vulputate mauris laoreet ut. Aenean venenatis pulvinar ultrices. Vestibulum efficitur venenatis volutpat."`,
+		language: 'jsx',
+		selected: true
 	}}
 />

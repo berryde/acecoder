@@ -1,10 +1,12 @@
 <script lang="ts">
 	import type { ReloadMessage, TestMessage, UrlMessage, WorkerResponse } from 'src/utils/types';
 	import { onMount } from 'svelte';
-	import template from './srcdoc.html?raw';
+	import template from './template/template';
 	export let compiled: WorkerResponse;
+	export let resizing = false;
 
 	let iframe: HTMLIFrameElement;
+	let srcdoc: string = '';
 
 	$: build(compiled);
 
@@ -29,13 +31,22 @@
 	}
 
 	onMount(() => {
+		srcdoc = template;
 		iframe.addEventListener('load', () => {
+			// Add the URL click interceptor
 			const message: UrlMessage = {
 				type: 'url'
 			};
 			iframe.contentWindow.postMessage(message);
+			// Do an initial render
+			build(compiled);
 		});
 	});
 </script>
 
-<iframe title="Preview" class="h-full bg-white" bind:this={iframe} srcdoc={template} />
+<iframe
+	title="Preview"
+	class="h-full w-full bg-white {resizing && 'pointer-events-none'}"
+	bind:this={iframe}
+	{srcdoc}
+/>

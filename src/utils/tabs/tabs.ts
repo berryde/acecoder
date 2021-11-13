@@ -81,13 +81,13 @@ export const closeTabs = (parent: string): void => {
  * Marks a tab as saved and removes it from unsaved tabs.
  * @param name The name of the tab
  */
-export const saveTab = (name: string) => {
+export const saveTab = (name: string): void => {
 	unsavedTabs.update((unsavedTabs) =>
 		unsavedTabs.includes(name) ? unsavedTabs.filter((t) => t != name) : unsavedTabs
 	);
 };
 
-export const rearrange = (target: string, source: string) => {
+export const rearrange = (target: string, source: string): void => {
 	// Move moved to the left of target
 	tabs.update((tabs) => {
 		tabs = tabs.filter((t) => t != source);

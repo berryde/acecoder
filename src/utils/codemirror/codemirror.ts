@@ -13,13 +13,11 @@ import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets';
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { commentKeymap } from '@codemirror/comment';
-
 import parserBabel from 'prettier/parser-babel';
 import parserHtml from 'prettier/parser-html';
 import parserCss from 'prettier/parser-postcss';
 import { rectangularSelection } from '@codemirror/rectangular-selection';
 import { defaultHighlightStyle } from '@codemirror/highlight';
-import { Compartment } from '@codemirror/state';
 import { lintKeymap } from '@codemirror/lint';
 import {
 	keymap,
@@ -30,6 +28,7 @@ import {
 import { oneDark } from '@codemirror/theme-one-dark';
 import { indentWithTab } from '@codemirror/commands';
 import { EditorState } from '@codemirror/state';
+import type { Parser } from 'prettier';
 
 /**
  * Supported file extensions.
@@ -57,7 +56,9 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 	}
 };
 
-export const getParser = (language: string): { parser: string; plugins: [any] } => {
+export const getParser = (
+	language: string
+): { parser: string; plugins: [{ parsers: { [key: string]: Parser<string> } }] } => {
 	switch (language) {
 		case 'html':
 			return {
@@ -97,7 +98,6 @@ export const isSupported = (language: string): boolean => {
  */
 export const defaultExtensions = [
 	oneDark,
-	new Compartment().of(EditorState.tabSize.of(4)),
 	lineNumbers(),
 	highlightActiveLineGutter(),
 	highlightSpecialChars(),
@@ -113,7 +113,7 @@ export const defaultExtensions = [
 	rectangularSelection(),
 	highlightActiveLine(),
 	highlightSelectionMatches(),
-
+	indentOnInput(),
 	keymap.of([
 		...closeBracketsKeymap,
 		...defaultKeymap,

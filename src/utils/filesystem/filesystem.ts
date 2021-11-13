@@ -13,7 +13,7 @@ export const filesystem = writable<Filesystem>({});
  * @param filename The name of the new file.
  * @param value The initial value of the new file.
  */
-export const createFile = (path: string, value?: string) => {
+export const createFile = (path: string, value?: string): void => {
 	const name = tail(path);
 
 	filesystem.update((state) => {
@@ -37,8 +37,8 @@ export const createFile = (path: string, value?: string) => {
  *
  * @param filename The name of the new folder.
  */
-export const createFolder = (path: string) => {
-	let name = tail(path);
+export const createFolder = (path: string): void => {
+	const name = tail(path);
 
 	filesystem.update((state) => {
 		const dir = navigateToFile(state, path);
@@ -61,7 +61,7 @@ export const createFolder = (path: string) => {
  *
  * @param path The path of the object to delete.
  */
-export const deleteFile = (path: string) => {
+export const deleteFile = (path: string): void => {
 	const name = tail(path);
 
 	filesystem.update((state) => {
@@ -95,7 +95,7 @@ export const compareFile = (
  * @param path The previous path to the object.
  * @param target The new path to the object.
  */
-export const renameFile = (path: string, target: string) => {
+export const renameFile = (path: string, target: string): void => {
 	const oldName = tail(path);
 	const newName = tail(target);
 
@@ -120,7 +120,7 @@ export const renameFile = (path: string, target: string) => {
  * @param filename The name of the file.
  * @param contents The contents of the file.
  */
-export const updateFile = (filepath: string, contents: string) => {
+export const updateFile = (filepath: string, contents: string): void => {
 	const filename = tail(filepath);
 
 	filesystem.update((state) => {
@@ -142,7 +142,7 @@ export const updateFile = (filepath: string, contents: string) => {
  * @param filepath The path to split
  * @returns A list of directories from the path.
  */
-export const getDirectories = (path: string) => {
+export const getDirectories = (path: string): string[] => {
 	if (!path.includes('/')) {
 		return [];
 	} else {
@@ -157,7 +157,7 @@ export const getDirectories = (path: string) => {
  * @param path The path to find the parent from.
  * @returns The path of the parent directory
  */
-export const getParentDir = (path: string) => {
+export const getParentDir = (path: string): string => {
 	if (!path.includes('/')) {
 		return '';
 	}
@@ -171,7 +171,7 @@ export const getParentDir = (path: string) => {
  * @param dir The directory to check.
  * @returns The top level file names of the directory.
  */
-export const getExistingFiles = (dir: Filesystem) => {
+export const getExistingFiles = (dir: Filesystem): string[] => {
 	return Object.keys(dir).map((k) => tail(k));
 };
 
@@ -181,7 +181,7 @@ export const getExistingFiles = (dir: Filesystem) => {
  * @param path The path to trim.
  * @returns The file name.
  */
-export const tail = (path: string) => {
+export const tail = (path: string): string => {
 	if (path.includes('/')) {
 		const split = path.split('/');
 		return split[split.length - 1];
@@ -195,7 +195,7 @@ export const tail = (path: string) => {
  * @param path the path to get the extension for.
  * @returns The file extension of the file at path.
  */
-export const getExtension = (path: string) => {
+export const getExtension = (path: string): string => {
 	const name = tail(path);
 	if (!name.includes('.')) {
 		return '';
@@ -212,7 +212,7 @@ export const getExtension = (path: string) => {
  * @param filepath The filepath to navigate to.
  * @returns The directory containing the file specified by filepath.
  */
-export const navigateToFile = (state: Filesystem, path: string) => {
+export const navigateToFile = (state: Filesystem, path: string): Filesystem => {
 	const directories = getDirectories(path);
 	let dir = state;
 	for (let i = 0; i < directories.length; i++) {
@@ -234,7 +234,7 @@ export const navigateToFile = (state: Filesystem, path: string) => {
  * @param path The object to check existence for.
  * @returns Whether there is an object at path.
  */
-export const exists = (state: Filesystem, path: string) => {
+export const exists = (state: Filesystem, path: string): boolean => {
 	const parent = navigateToFile(state, path);
 	const name = tail(path);
 	return name in parent;
@@ -247,7 +247,7 @@ export const exists = (state: Filesystem, path: string) => {
  * @param path The path of the object to retrieve.
  * @returns The retrieved object.
  */
-export const getFile = (state: Filesystem, path: string) => {
+export const getFile = (state: Filesystem, path: string): FSFile | FSFolder => {
 	const parent = navigateToFile(state, path);
 	const name = tail(path);
 	return parent[name];
@@ -261,7 +261,7 @@ export const getFile = (state: Filesystem, path: string) => {
  */
 export const getAllFiles = (prefix: string, state: Filesystem): File[] => {
 	let files: File[] = [];
-	for (var [name, file] of Object.entries(state)) {
+	for (const [name, file] of Object.entries(state)) {
 		if (file.type === 'file') {
 			files.push({
 				code: file.value,

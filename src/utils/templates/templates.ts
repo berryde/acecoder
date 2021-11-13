@@ -1,9 +1,10 @@
 export const reactTemplate = {
 	'public/index.html': `<html>
-    <head></head>
-    <body>
-        <div id="root"></div>
-    </body>    
+ <head>
+ </head>
+ <body>
+    <div id="root"></div>
+  </body>    
 </html>`,
 
 	'src/index.js': `import React, { StrictMode } from "react";

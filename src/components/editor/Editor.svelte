@@ -40,8 +40,6 @@
 	 */
 	let element: HTMLDivElement;
 
-	let mounted = false;
-
 	/**
 	 * The basic editor config before language specific features.
 	 */
@@ -129,9 +127,7 @@
 	}
 </script>
 
-<section>
-	<div bind:this={element} class="editor {!selected && 'hidden'}" />
-</section>
+<div bind:this={element} class="editor {!selected && 'hidden'}" />
 
 <style lang="postcss">
 	.editor {
@@ -140,9 +136,4 @@
 	:global(.cm-editor) {
 		@apply h-full overflow-auto;
 	}
-
-	/* 
-	:global(.cm-scroller::-webkit-scrollbar) {
-		display: none;
-	} */
 </style>

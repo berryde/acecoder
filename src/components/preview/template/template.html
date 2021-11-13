@@ -4,7 +4,33 @@
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+		<style>
+			.loader {
+				border: 10px solid #f3f3f3;
+				border-top: 10px solid #282c34;
+				border-radius: 50%;
+				width: 60px;
+				height: 60px;
+				animation: spin 2s linear infinite;
+			}
 
+			.loader-wrapper {
+				height: 100vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+		</style>
 		<script>
 			// Create a public directory
 			let static = {};
@@ -25,13 +51,8 @@
 			}
 
 			function update(e) {
-				console.log(e);
 				switch (e.data.type) {
-					case 'test':
-						console.log('testing');
-						break;
 					case 'url':
-						console.log('creating url listener');
 						document.body.addEventListener('click', (clickEvent) => {
 							// If it's not a left click, ignore it
 							if (event.which !== 1) return;
@@ -77,12 +98,13 @@
 						});
 						break;
 					default:
-						console.log('rendering');
 						// Update the filesystem for public files
 						static = e.data.compiled.public;
 
 						// Load the index.html file
-						document.body.innerHTML = static['public/index.html'];
+						if ('public/index.html' in static) {
+							document.body.innerHTML = static['public/index.html'];
+						}
 
 						// Load the script bundle
 						document.head.removeChild(script);
@@ -97,5 +119,9 @@
 			window.addEventListener('message', update);
 		</script>
 	</head>
-	<body></body>
+	<body>
+		<div class="loader-wrapper">
+			<div class="loader"></div>
+		</div>
+	</body>
 </html>
