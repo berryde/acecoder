@@ -1,21 +1,25 @@
-import type { File, WorkerErrorRaw, WorkerResponse } from '../types';
+import type { File, WorkerError, WorkerResponse } from '../types';
 import * as rollup from 'rollup/dist/es/rollup.browser.js';
+import type { RollupWarning } from 'rollup';
 import babel from './babel';
 import css from './css';
 
-const filesystem: { [key: string]: File } = {};
-
-function generateLookup(files: File[]): void {
+/**
+ * Recreates the in memory filesystem with the given files
+ * @param files The files for the filesystem.
+ */
+function generateLookup(files: File[]): { [key: string]: File } {
+	const filesystem = {};
 	files.forEach((file) => {
 		filesystem[file.name] = file;
 	});
+	return filesystem;
 }
 
 self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<void> => {
 	// Recreate the filesystem in memory.
-	generateLookup(event.data);
-	var error: WorkerErrorRaw;
-
+	const filesystem = generateLookup(event.data);
+	var rollupWarning: RollupWarning;
 	if (!('package.json' in filesystem)) {
 		const html = 'public/index.html' in filesystem ? filesystem['public/index.html'].code : '';
 
@@ -37,9 +41,9 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 				input: entryPoint,
 				plugins: [css(filesystem), babel(filesystem)],
 				inlineDynamicImports: true,
-				onwarn(warning: WorkerErrorRaw) {
+				onwarn(warning: RollupWarning) {
 					// The warning will be a stack trace from babel. Passing it into a new error loses information so it is stored in a variable.
-					error = warning;
+					rollupWarning = warning;
 					throw new Error();
 				}
 			});
@@ -61,19 +65,37 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 				public: publicResources
 			};
 		} catch (e) {
-			const raw = error;
-			const metadata = JSON.parse(JSON.stringify(error));
-			const firstLine = raw.stack.split('\n')[0];
+			let outputError: WorkerError;
+			if (rollupWarning) {
+				outputError = {
+					location: rollupWarning.id,
+					message: rollupWarning.message,
+					name: rollupWarning.name,
+					pos: rollupWarning.pos
+				};
+			} else {
+				const error = e as Error;
+				// Remove the 'no FS in browser' warning from rollup when a file isn't found
+				if (
+					error.message.endsWith(
+						'Make sure you supply a plugin with custom resolveId and load hooks to Rollup.'
+					)
+				) {
+					error.message.substring(0, error.message.length - 169);
+				}
+				outputError = {
+					location: entryPoint,
+					message: error.message,
+					name: error.name,
+					pos: 0
+				};
+			}
+
 			output = {
 				js: '',
 				css: '',
 				public: {},
-				error: {
-					raw: raw,
-					metadata: metadata,
-					title: firstLine.split(':')[0],
-					subtitle: firstLine.substring(firstLine.indexOf(':') + 1)
-				}
+				error: outputError
 			};
 		}
 		self.postMessage(output);

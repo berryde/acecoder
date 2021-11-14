@@ -7,40 +7,43 @@
 	/**
 	 * The size of the left pane as a percentage of the split pane's width.
 	 */
-	export let leftPaneSize: number = 50;
+	export let pane1Size: number = 50;
 	/**
 	 * The size of the right pane as a percentage of the split pane's width.
 	 */
-	export let rightPaneSize: number = 50;
+	export let pane2Size: number = 50;
 	/**
-	 * The minimum allowed size of the left pane as a percentage of the split pane's width.
+	 * The minimum allowed size of the left pane as a CSS string.
 	 */
-	export let minLeftPaneSize: number = 0;
+	export let minPane1Size: string = '';
 	/**
-	 * The minimum allowed size of the right pane as a percentage of the split pane's width.
+	 * The minimum allowed size of the right pane as a CSS string.
 	 */
-	export let minRightPaneSize: number = 0;
+	export let minPane2Size: string = '';
+
+	export let isHorizontal: boolean;
 
 	/**
 	 * The left pane.
 	 */
-	let left: HTMLDivElement;
+	let pane1: HTMLDivElement;
 	/**
 	 * The right pane.
 	 */
-	let right: HTMLDivElement;
+	let pane2: HTMLDivElement;
 	/**
 	 * The separator.
 	 */
 	let separator: HTMLDivElement;
+
 	/**
 	 * Memoized data about the mouse event that started a drag.
 	 */
 	let mouseData: {
 		event: MouseEvent;
-		offsetX: number;
-		leftWidth: number;
-		rightWidth: number;
+		offset: number;
+		pane1Size: number;
+		pane2Size: number;
 	};
 	/**
 	 * Whether the user is currently dragging the separator.
@@ -69,10 +72,17 @@
 			y: e.clientY - mouseData.event.clientY
 		};
 
-		delta.x = Math.min(Math.max(delta.x, -mouseData.leftWidth), mouseData.rightWidth);
-		separator.style.left = mouseData.offsetX + delta.x + 'px';
-		left.style.width = mouseData.leftWidth + delta.x + 'px';
-		right.style.width = mouseData.rightWidth - delta.x + 'px';
+		if (isHorizontal) {
+			delta.x = Math.min(Math.max(delta.x, -mouseData.pane1Size), mouseData.pane2Size);
+			separator.style.left = mouseData.offset + delta.x + 'px';
+			pane1.style.width = mouseData.pane1Size + delta.x + 'px';
+			pane2.style.width = mouseData.pane2Size - delta.x + 'px';
+		} else {
+			delta.y = Math.min(Math.max(delta.y, -mouseData.pane1Size), mouseData.pane2Size);
+			separator.style.top = mouseData.offset + delta.y + 'px';
+			pane1.style.height = mouseData.pane1Size + delta.y + 'px';
+			pane2.style.height = mouseData.pane2Size - delta.y + 'px';
+		}
 	}
 
 	/**
@@ -101,9 +111,9 @@
 		if (e.button !== 0) return;
 		mouseData = {
 			event: e,
-			offsetX: separator.offsetLeft,
-			leftWidth: left.offsetWidth,
-			rightWidth: right.offsetWidth
+			offset: isHorizontal ? separator.offsetLeft : separator.offsetTop,
+			pane1Size: isHorizontal ? pane1.offsetWidth : pane1.offsetHeight,
+			pane2Size: isHorizontal ? pane2.offsetWidth : pane2.offsetHeight
 		};
 		if (window) {
 			resizing = true;
@@ -120,59 +130,82 @@
 		resetSize();
 	}
 
+	/**
+	 * Add a resize listener to reset the split ratio.
+	 */
 	onMount(() => {
 		if (window) {
 			window.addEventListener('resize', resize);
 		}
 	});
 
+	/**
+	 * Revert to the default split.
+	 */
 	function resetSize() {
-		if (left) left.removeAttribute('style');
-		if (right) right.removeAttribute('style');
+		if (pane1) pane1.removeAttribute('style');
+		if (pane2) pane2.removeAttribute('style');
 		if (separator) separator.removeAttribute('style');
 	}
 
-	$: leftPaneSize && resetSize();
-	$: rightPaneSize && resetSize();
+	$: pane1Size && resetSize();
+	$: pane2Size && resetSize();
 </script>
 
 <div
-	class="flex flex-row flex-grow"
-	style="--left-panel-size: {leftPaneSize}%; --right-panel-size: {rightPaneSize}%; --min-left-panel-size: {minLeftPaneSize}; --min-right-panel-size: {minRightPaneSize};"
+	class="flex {isHorizontal ? 'flex-row' : 'flex-col'} flex-grow h-full"
+	style="--left-pane-size: {pane1Size}%; --right-pane-size: {pane2Size}%; --min-left-pane-size: {minPane1Size}; --min-right-pane-size: {minPane2Size};"
 >
-	<div bind:this={left} class="left">
-		<slot name="left" {resizing} />
+	<div bind:this={pane1} class="pane1-{isHorizontal ? 'horizontal' : 'vertical'}">
+		<slot name="pane1" {resizing} />
 	</div>
 	<div
 		bind:this={separator}
-		class="bg-bluegray-dark flex flex-col justify-center items-center separator"
+		class="bg-black flex {isHorizontal
+			? 'flex-col'
+			: 'flex-row'} justify-center items-center separator-{isHorizontal
+			? 'horizontal'
+			: 'vertical'}"
 		on:mousedown={mouseDown}
 		on:mouseup={mouseUp}
 	>
 		<div
-			class="transition-colors w-1 mx-1 h-10  {resizing
+			class="transition-colors  {isHorizontal ? 'w-1 mx-0.5 h-10' : 'h-1 my-0.5 w-10'}  {resizing
 				? 'bg-bluegray-light'
-				: 'thumb'} rounded flex flex-col justify-center"
+				: 'thumb'} rounded"
 		/>
 	</div>
-	<div bind:this={right} class="right">
-		<slot name="right" {resizing} />
+	<div bind:this={pane2} class="pane2-{isHorizontal ? 'horizontal' : 'vertical'}">
+		<slot name="pane2" {resizing} />
 	</div>
 </div>
 
 <style lang="postcss">
-	.left {
-		width: var(--left-panel-size);
-		min-width: var(--min-left-panel-size);
+	.pane1-horizontal {
+		width: var(--left-pane-size);
+		min-width: var(--min-left-pane-size);
 		height: 100%;
 	}
-	.right {
-		width: var(--right-panel-size);
-		min-width: var(--min-right-panel-size);
+	.pane2-horizontal {
+		width: var(--right-pane-size);
+		min-width: var(--min-right-pane-size);
 		height: 100%;
 	}
-	.separator:hover {
+	.pane1-vertical {
+		height: var(--left-pane-size);
+		min-height: var(--min-left-pane-size);
+		width: 100%;
+	}
+	.pane2-vertical {
+		height: var(--right-pane-size);
+		min-height: var(--min-right-pane-size);
+		width: 100%;
+	}
+	.separator-horizontal:hover {
 		cursor: w-resize;
+	}
+	.separator-vertical:hover {
+		cursor: y-resize;
 	}
 	.thumb {
 		background-color: #484a4f;

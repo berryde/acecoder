@@ -16,7 +16,6 @@ import { commentKeymap } from '@codemirror/comment';
 import parserBabel from 'prettier/parser-babel';
 import parserHtml from 'prettier/parser-html';
 import parserCss from 'prettier/parser-postcss';
-import { rectangularSelection } from '@codemirror/rectangular-selection';
 import { defaultHighlightStyle } from '@codemirror/highlight';
 import { lintKeymap } from '@codemirror/lint';
 import {
@@ -29,7 +28,6 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import { indentWithTab } from '@codemirror/commands';
 import { EditorState } from '@codemirror/state';
 import type { Parser } from 'prettier';
-import { completeFromList } from '@codemirror/autocomplete';
 
 /**
  * Supported file extensions.
@@ -121,7 +119,6 @@ export const defaultExtensions = [
 	bracketMatching(),
 	closeBrackets(),
 	autocompletion(),
-	rectangularSelection(),
 	highlightActiveLine(),
 	highlightSelectionMatches(),
 	indentOnInput(),

@@ -101,17 +101,18 @@ export const renameFile = (path: string, target: string): void => {
 
 	filesystem.update((state) => {
 		// Clone the object at path.
-		let dir = navigateToFile(state, path);
-		const clone = Object.assign({}, dir[oldName]);
+		const src = navigateToFile(state, path);
+		const clone = Object.assign({}, src[oldName]);
 
 		// Write the clone to target.
-		dir = navigateToFile(state, target);
+		const dir = navigateToFile(state, target);
 		dir[newName] = clone;
+
+		// Delete the original
+		delete dir[oldName];
 
 		return state;
 	});
-	// Delete the original
-	deleteFile(path);
 };
 
 /**

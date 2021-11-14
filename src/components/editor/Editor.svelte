@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { EditorView, keymap } from '@codemirror/view';
 	import { EditorState } from '@codemirror/state';
+	import type { Extension } from '@codemirror/state';
 	import {
 		defaultExtensions,
 		getLanguageSupport,
@@ -12,12 +13,24 @@
 	import prettier from 'prettier';
 	import type { ViewUpdate } from '@codemirror/view';
 	import type { KeyBinding, Command } from '@codemirror/view';
+	import type { Diagnostic } from '@codemirror/lint';
+	import { linter } from '@codemirror/lint';
+	import { latestError } from '../../utils/console/console';
+	import { formatOnSave } from '../../utils/settings/settings';
 
 	/**
 	 * The langauge to use for this editor.
 	 */
 	export let language: string;
 
+	/**
+	 * The filename of the file being edited by this editor.
+	 */
+	export let filename: string;
+
+	/**
+	 * Whether this editor is currently used.
+	 */
 	export let selected: boolean;
 
 	/**
@@ -41,19 +54,6 @@
 	let element: HTMLDivElement;
 
 	/**
-	 * The basic editor config before language specific features.
-	 */
-	const baseConfig = [
-		defaultExtensions,
-		EditorView.updateListener.of((viewUpdate: ViewUpdate) => {
-			// Emit an event to allow parent components to listen to the editor's value.
-			if (viewUpdate.docChanged) {
-				dispatch('docchanged', getValue());
-			}
-		})
-	];
-
-	/**
 	 * CodeMirror command to format the editor with prettier.
 	 *
 	 * @param view The editor to format
@@ -71,8 +71,28 @@
 	};
 
 	const saveContent: Command = (view: EditorView): boolean => {
+		if ($formatOnSave) {
+			formatEditor(view);
+		}
 		dispatch('save');
 		return true;
+	};
+
+	const getError = (view: EditorView): readonly Diagnostic[] => {
+		const error = $latestError;
+		let output: readonly Diagnostic[] = [];
+		if (error && error.location == filename) {
+			output = [
+				{
+					from: Math.max(0, error.pos - 5),
+					to: Math.min(view.state.doc.toString().length, error.pos + 5),
+					message: error.message,
+					severity: 'error',
+					source: error.name
+				}
+			];
+		}
+		return output;
 	};
 
 	/**
@@ -92,14 +112,27 @@
 	};
 
 	/**
-	 * The state of the editor.
+	 * The basic editor config before language specific features.
 	 */
-	$: state = EditorState.create({
-		doc: initialValue,
-		extensions: isSupported(language)
-			? [baseConfig, getLanguageSupport(language), keymap.of([format, save])]
-			: baseConfig
-	});
+	const baseConfig = [
+		defaultExtensions,
+		EditorView.updateListener.of((viewUpdate: ViewUpdate) => {
+			// Emit an event to allow parent components to listen to the editor's value.
+			if (viewUpdate.docChanged) {
+				dispatch('docchanged', getValue());
+			}
+		}),
+		keymap.of([format, save]),
+		linter((view) => getError(view))
+	];
+
+	function getExtensions(): Extension {
+		const output = [...baseConfig];
+		if (isSupported(language)) {
+			output.push(getLanguageSupport(language));
+		}
+		return output;
+	}
 
 	/**
 	 * Get the text value of the editor.
@@ -108,11 +141,8 @@
 		return view == undefined ? '' : view.state.doc.toString();
 	}
 
-	onMount(updateEditor);
-
-	$: changeLanguage(language);
-
 	function changeLanguage(language: string) {
+		console.log('Changing language for', filename, language);
 		updateEditor();
 	}
 
@@ -125,9 +155,44 @@
 			parent: element
 		});
 	}
+
+	function mouseUp(e: MouseEvent) {
+		if (window) {
+			dispatch('drag', false);
+			window.removeEventListener('mouseup', mouseUp);
+		}
+	}
+
+	function mouseDown(e: MouseEvent) {
+		if (window) {
+			dispatch('drag', true);
+			window.addEventListener('mouseup', mouseUp);
+		}
+	}
+
+	/**
+	 * Update the editor state whenever any of the props change.
+	 */
+	$: state = EditorState.create({
+		doc: initialValue,
+		extensions: getExtensions()
+	});
+
+	/**
+	 * Update the editor when the language changes
+	 */
+	$: changeLanguage(language);
+
+	$: console.log(filename);
+
+	onMount(updateEditor);
 </script>
 
-<div bind:this={element} class="editor {!selected && 'hidden'}" />
+<div
+	bind:this={element}
+	class="editor {!selected && 'hidden'} overflow-y-auto flex-grow"
+	on:mousedown={mouseDown}
+/>
 
 <style lang="postcss">
 	.editor {

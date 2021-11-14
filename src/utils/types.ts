@@ -91,27 +91,21 @@ export type ConsoleMessage = {
 	data: string;
 };
 
-export type WorkerErrorRaw = {
-	message: string;
-	stack: string;
-};
-export type WorkerErrorMetadata = {
-	code: string;
-	hook: string;
-	id: string;
-	loc: {
-		line: number;
-		column: number;
-	};
-	plugin: string;
-	pluginCode: string;
-	pos: number;
-	reasonCode: string;
-};
-
 export type WorkerError = {
-	raw: WorkerErrorRaw;
-	metadata: WorkerErrorMetadata;
-	title: string;
-	subtitle: string;
+	/**
+	 * The error name.
+	 */
+	name: string;
+	/**
+	 * The error message.
+	 */
+	message: string;
+	/**
+	 * The charater position of the error.
+	 */
+	pos: number;
+	/**
+	 * The file where the error occured.
+	 */
+	location: string;
 };

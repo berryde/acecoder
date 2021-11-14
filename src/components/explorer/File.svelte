@@ -19,6 +19,7 @@
 		renameFile
 	} from '../../utils/filesystem/filesystem';
 	import { closeTab, openTab, renameTab, selectedTab } from '../../utils/tabs/tabs';
+	import { latestError } from '../../utils/console/console';
 
 	// Props
 	/**
@@ -109,9 +110,11 @@
 	{:else}
 		<Hoverable let:hovering>
 			<div
-				class="flex transition flex-row items-center space-x-2 text-bluegray-light h-8 {$selectedTab ===
-					path && 'bg-gray-800'}"
-				style="padding-left: {(depth + 1) * 0.5}rem;"
+				class="flex transition flex-row items-center space-x-2 {$latestError &&
+				$latestError.location == path
+					? 'text-red-400'
+					: 'text-bluegray-light'} h-8 {$selectedTab === path && 'bg-gray-800'}"
+				style="padding-left: {(depth + 1.5) * 0.5}rem;"
 				draggable="true"
 				on:dragstart={handleDragStart}
 				on:click={handleClick}
@@ -121,7 +124,7 @@
 				</div>
 				<p class="truncate">{name}</p>
 				<div
-					class="flex flex-row justify-end items-center flex-grow transition-opacity pr-2 space-x-1 {hovering
+					class="flex flex-row text-bluegray-light justify-end items-center flex-grow transition-opacity pr-2 space-x-1 {hovering
 						? 'opacity-100'
 						: 'opacity-0'}"
 				>

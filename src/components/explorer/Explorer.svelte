@@ -20,6 +20,7 @@
 		getExistingFiles
 	} from '../../utils/filesystem/filesystem';
 	import { openTab } from '../../utils/tabs/tabs';
+	import SidebarItem from '../common/SidebarItem.svelte';
 
 	// Props
 	export let files: Filesystem;
@@ -53,40 +54,43 @@
 	}
 </script>
 
-<div class="bg-bluegray-dark h-screen text-bluegray-light">
-	<div class="flex flex-row items-center p-2 space-x-2">
-		<div on:click={() => setCreatingFile(true)} data-testid="add-file" class="h-4">
-			<FileIcon />
+<SidebarItem title="explorer">
+	<div class="flex flex-col">
+		<div class="flex flex-row space-x-2 pl-3 pb-1">
+			<div on:click={() => setCreatingFile(true)} data-testid="add-file" class="h-4">
+				<FileIcon />
+			</div>
+			<div on:click={() => setCreatingFolder(true)} data-testid="add-folder" class="h-4">
+				<FolderIcon />
+			</div>
 		</div>
-		<div on:click={() => setCreatingFolder(true)} data-testid="add-folder" class="h-4">
-			<FolderIcon />
+		<div class="overflow-y-auto w-full flex-grow">
+			{#each Object.entries(files).sort(compareFile) as [path, object]}
+				{#if object.type === 'file'}
+					<File {path} />
+				{:else}
+					<Folder {path} children={object.children} />
+				{/if}
+			{/each}
+			{#if creating}
+				<ExplorerInput
+					on:submit={(e) => {
+						handleCreate(e.detail);
+					}}
+					on:cancelled={(e) => {
+						setCreating(false);
+					}}
+					reservedNames={getExistingFiles($filesystem)}
+				>
+					<div class="h-4">
+						{#if creatingFile}
+							<OutlineFileIcon />
+						{:else}
+							<OutlineFolderIcon />
+						{/if}
+					</div>
+				</ExplorerInput>
+			{/if}
 		</div>
 	</div>
-
-	{#each Object.entries(files).sort(compareFile) as [path, object]}
-		{#if object.type === 'file'}
-			<File {path} />
-		{:else}
-			<Folder {path} children={object.children} />
-		{/if}
-	{/each}
-	{#if creating}
-		<ExplorerInput
-			on:submit={(e) => {
-				handleCreate(e.detail);
-			}}
-			on:cancelled={(e) => {
-				setCreating(false);
-			}}
-			reservedNames={getExistingFiles($filesystem)}
-		>
-			<div class="h-4">
-				{#if creatingFile}
-					<OutlineFileIcon />
-				{:else}
-					<OutlineFolderIcon />
-				{/if}
-			</div>
-		</ExplorerInput>
-	{/if}
-</div>
+</SidebarItem>

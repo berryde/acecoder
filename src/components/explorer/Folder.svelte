@@ -175,7 +175,7 @@
 					<div
 						class="flex transition flex-row items-center space-x-2 text-bluegray-light h-8 {dropping &&
 							'bg-blue-500'}"
-						style="padding-left: {(depth + 1) * 0.5}rem;"
+						style="padding-left: {(depth + 1.5) * 0.5}rem;"
 					>
 						<div on:click={toggleCollapse}>
 							{#if collapsed}

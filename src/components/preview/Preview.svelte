@@ -49,10 +49,8 @@
 	});
 </script>
 
-<div class="flex-grow w-full relative">
-	{#if error}
-		<Error {error} />
-	{/if}
+<div class="flex-grow h-full w-full relative">
+	<Error {error} />
 	<iframe
 		title="Preview"
 		class="h-full w-full z-0 bg-white {resizing && 'pointer-events-none'}"

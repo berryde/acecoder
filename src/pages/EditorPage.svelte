@@ -4,7 +4,9 @@
 	import type { Filesystem, WorkerError, WorkerResponse } from '../utils/types';
 	import Explorer from '../components/explorer/Explorer.svelte';
 	import Tabs from '../components/tabs/Tabs.svelte';
-	import { addMessage, messages } from '../utils/console/console';
+	import { addMessage, latestError, messages } from '../utils/console/console';
+	import IoIosFiling from 'svelte-icons/io/IoIosFiling.svelte';
+	import IoIosSettings from 'svelte-icons/io/IoIosSettings.svelte';
 	import { tabs, selectedTab, unsavedTabs, saveTab } from '../utils/tabs/tabs';
 	import {
 		createFile,
@@ -18,9 +20,9 @@
 	import { reactTemplate } from '../utils/templates/templates';
 	import SplitPane from '../components/splitpane/SplitPane.svelte';
 	import Console from '../components/console/Console.svelte';
+	import Settings from '../components/settings/Settings.svelte';
 
-	let files: Filesystem;
-	filesystem.subscribe((state) => (files = state));
+	let files: Filesystem = {};
 
 	let compiled: WorkerResponse = {
 		css: '',
@@ -29,8 +31,6 @@
 	};
 
 	let worker: Worker;
-
-	let error: WorkerError;
 
 	let editorContent: { [key: string]: string } = {};
 
@@ -41,13 +41,13 @@
 		worker.addEventListener('message', (event) => {
 			const e = event.data.error as WorkerError;
 			if (e) {
-				error = e;
 				addMessage({
-					data: error.raw.message,
+					data: e.message,
 					type: 'error'
 				});
+				latestError.set(e);
 			} else {
-				error = undefined;
+				latestError.set(undefined);
 				compiled = event.data as WorkerResponse;
 			}
 		});
@@ -59,8 +59,8 @@
 		 * Reload the preview whenever the filesystem is changed.
 		 */
 		filesystem.subscribe((fs) => {
-			const files = getAllFiles('', fs);
-			worker.postMessage(files);
+			files = fs;
+			worker.postMessage(getAllFiles('', fs));
 		});
 	});
 
@@ -93,28 +93,76 @@
 		}
 		return '';
 	}
+
+	let selecting = false;
+	function toggleSelecting(e: CustomEvent<boolean>) {
+		selecting = e.detail;
+	}
+
+	let selectedIndex = 0;
+
+	function selectSidebar(index: number) {
+		if (selectedIndex == index) {
+			selectedIndex = undefined;
+		} else {
+			selectedIndex = index;
+		}
+	}
 </script>
 
 <div class="h-screen bg-bluegray-default flex flex-row">
-	<Explorer {files} />
-	<SplitPane>
-		<left slot="left">
+	<div class="h-screen">
+		<div
+			class=" text-bluegray-light p-4 {selectedIndex == 0
+				? 'border-l-2 border-aqua-default'
+				: 'ml-0.5'}"
+			on:click={() => selectSidebar(0)}
+		>
+			<div class="h-6">
+				<IoIosFiling />
+			</div>
+		</div>
+		<div
+			class=" text-bluegray-light p-4 {selectedIndex == 1
+				? 'border-l-2 border-aqua-default'
+				: 'ml-0.5'}"
+			on:click={() => selectSidebar(1)}
+		>
+			<div class="h-6">
+				<IoIosSettings />
+			</div>
+		</div>
+	</div>
+	{#if selectedIndex == 0}
+		<Explorer {files} />
+	{:else if selectedIndex == 1}
+		<Settings />
+	{/if}
+
+	<SplitPane isHorizontal={true}>
+		<left slot="pane1" class="h-full flex flex-col">
 			<Tabs selected={$selectedTab} tabs={$tabs} unsaved={$unsavedTabs} />
 			{#each $tabs as tab}
 				<Editor
 					selected={tab === $selectedTab}
 					language={getExtension(tab)}
-					on:save={(e) => handleSave()}
+					filename={tab}
+					on:save={() => handleSave()}
 					on:docchanged={(e) => handleCodeChanged(e.detail)}
+					on:drag={(e) => toggleSelecting(e)}
 					initialValue={loadEditorContent(tab)}
 				/>
 			{/each}
 		</left>
-		<right slot="right" let:resizing>
-			<div class="flex flex-col h-full">
-				<Preview {compiled} {resizing} {error} />
-				<Console messages={$messages} />
-			</div>
+		<right slot="pane2" let:resizing={resizingX}>
+			<SplitPane minPane2Size="2.5rem" isHorizontal={false} pane1Size={100} pane2Size={0}>
+				<top slot="pane1" let:resizing={resizingY}>
+					<Preview {compiled} resizing={resizingX || resizingY || selecting} error={$latestError} />
+				</top>
+				<bottom slot="pane2">
+					<Console messages={$messages} />
+				</bottom>
+			</SplitPane>
 		</right>
 	</SplitPane>
 </div>
