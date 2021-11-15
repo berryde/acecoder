@@ -17,6 +17,7 @@
 	import { linter } from '@codemirror/lint';
 	import { latestError } from '../../utils/console/console';
 	import { formatOnSave } from '../../utils/settings/settings';
+	import { unsavedTabs } from '../../utils/tabs/tabs';
 
 	/**
 	 * The langauge to use for this editor.
@@ -61,7 +62,12 @@
 	 */
 	const formatEditor: Command = (view: EditorView): boolean => {
 		if (isSupported(language)) {
-			const result = prettier.format(view.state.doc.toString(), getParser(language));
+			let result;
+			if (language == 'json') {
+				result = JSON.stringify(JSON.parse(view.state.doc.toString()), null, 2);
+			} else {
+				result = prettier.format(view.state.doc.toString(), getParser(language));
+			}
 			view.dispatch({
 				changes: { from: 0, to: view.state.doc.length, insert: result }
 			});
@@ -71,10 +77,12 @@
 	};
 
 	const saveContent: Command = (view: EditorView): boolean => {
-		if ($formatOnSave) {
-			formatEditor(view);
+		if ($unsavedTabs.includes(filename)) {
+			if ($formatOnSave) {
+				formatEditor(view);
+			}
+			dispatch('save');
 		}
-		dispatch('save');
 		return true;
 	};
 

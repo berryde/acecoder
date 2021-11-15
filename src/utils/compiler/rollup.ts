@@ -16,6 +16,20 @@ function generateLookup(files: File[]): { [key: string]: File } {
 	return filesystem;
 }
 
+function getDependencies(packageJSON: {
+	devDependencies: Record<string, string> | undefined;
+	dependencies: Record<string, string> | undefined;
+}): Record<string, string> {
+	let result = {};
+	if (packageJSON.devDependencies) {
+		result = { ...packageJSON.devDependencies };
+	}
+	if (packageJSON.dependencies) {
+		result = { ...packageJSON.dependencies };
+	}
+	return result;
+}
+
 self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<void> => {
 	// Recreate the filesystem in memory.
 	const filesystem = generateLookup(event.data);
@@ -34,12 +48,14 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 		// Determine the entry point.
 		const entryPoint = packageJSON['main'];
 
+		const dependencies = getDependencies(packageJSON);
+
 		let output: WorkerResponse;
 		// Rollup the files.
 		try {
 			const result = await rollup.rollup({
 				input: entryPoint,
-				plugins: [css(filesystem), babel(filesystem)],
+				plugins: [css(filesystem), babel(filesystem, dependencies)],
 				inlineDynamicImports: true,
 				onwarn(warning: RollupWarning) {
 					// The warning will be a stack trace from babel. Passing it into a new error loses information so it is stored in a variable.

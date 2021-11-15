@@ -18,6 +18,30 @@
 				return 'text-bluegray-light';
 		}
 	}
+
+	function groupMessages(messages: ConsoleMessage[]) {
+		const output: { message: ConsoleMessage; count: number }[] = [];
+		let count = 1;
+		for (let i = 1; i < messages.length; i++) {
+			if (messages[i].data == messages[i - 1].data) {
+				if (i == messages.length - 1) {
+					output.push({
+						message: messages[i],
+						count: count
+					});
+				} else {
+					count++;
+				}
+			} else {
+				output.push({
+					message: messages[i - 1],
+					count: count
+				});
+				count = 0;
+			}
+		}
+		return output;
+	}
 </script>
 
 <div class="flex flex-col h-full">
@@ -39,16 +63,28 @@
 	</div>
 	<div class="flex-grow overflow-y-auto bg-bluegray-dark text-sm">
 		{#if messages.length > 0}
-			{#each messages as message, index}
-				<div class="p-2 {getMessageClass(message.type)} {index > 0 && 'border-t'} flex flex-row">
-					<div class="h-3 mt-1 mr-2 w-5">
-						{#if message.type == 'error'}
+			{#each groupMessages(messages) as groupedMessage, index}
+				<div
+					class="p-2 {getMessageClass(groupedMessage.message.type)} {index > 0 &&
+						'border-t'} flex flex-row items-center"
+				>
+					<div
+						class="text-xs {getMessageClass(
+							groupedMessage.message.type
+						)} rounded-full h-4 w-4 text-center  {groupedMessage.count > 1
+							? 'visible'
+							: 'invisible'}"
+					>
+						{groupedMessage.count}
+					</div>
+					<div class="h-3 mx-1 w-5">
+						{#if groupedMessage.message.type == 'error'}
 							<IoIosCloseCircle />
-						{:else if message.type == 'warn'}
+						{:else if groupedMessage.message.type == 'warn'}
 							<IoIosWarning />
 						{/if}
 					</div>
-					<pre class="whitespace-pre-wrap">{message.data}</pre>
+					<pre class="whitespace-pre-wrap">{groupedMessage.message.data}</pre>
 				</div>
 			{/each}
 		{:else}
