@@ -4,6 +4,7 @@
 	import Folder from 'svelte-icons/fa/FaFolder.svelte';
 	import FolderOutline from 'svelte-icons/fa/FaRegFolder.svelte';
 	import FileIcon from 'svelte-icons/io/IoMdDocument.svelte';
+	import FileOutline from 'svelte-icons/fa/FaRegFile.svelte';
 	import Trash from 'svelte-icons/io/IoMdTrash.svelte';
 	import Pen from 'svelte-icons/fa/FaPen.svelte';
 
@@ -30,6 +31,7 @@
 	import { renameTabs, closeTabs, openTab } from '../../utils/tabs/tabs';
 	import Droppable from '../common/Droppable.svelte';
 	import Draggable from '../common/Draggable.svelte';
+	import Icon from '../common/Icon.svelte';
 
 	// Props
 	/**
@@ -164,56 +166,55 @@
 			on:submit={(e) => handleRename(e.detail)}
 			on:cancelled={() => setRenaming(false)}
 		>
-			<div class="h-4">
+			<Icon>
 				<FolderOutline />
-			</div>
+			</Icon>
 		</ExplorerInput>
 	{:else}
 		<Hoverable let:hovering>
 			<Draggable data={path} variant="explorer">
 				<Droppable let:dropping on:dropped={(e) => dropped(e.detail)} variant="explorer">
 					<div
-						class="flex transition flex-row items-center space-x-2 text-bluegray-light h-8 {dropping &&
+						class="flex transition flex-row items-center space-x-2 dark:text-bluegray-300 h-8 {dropping &&
 							'bg-blue-500'}"
-						style="padding-left: {(depth + 1) * 0.5}rem;"
+						style="padding-left: {(depth + 1.5) * 0.5}rem;"
 					>
 						<div on:click={toggleCollapse}>
 							{#if collapsed}
-								<div class="h-4">
+								<Icon>
 									<FolderOutline />
-								</div>
+								</Icon>
 							{:else}
-								<div class="h-4">
+								<Icon>
 									<FolderOpen />
-								</div>
+								</Icon>
 							{/if}
 						</div>
 						<p class="truncate">{name}</p>
 						<div
-							class="flex flex-row flex-grow items-center justify-end transition-opacity pr-2 space-x-1 {hovering
-								? 'opacity-100'
-								: 'opacity-0'}"
+							class="flex flex-row flex-grow items-center justify-end pr-2 space-x-1 {!hovering &&
+								'hidden'}"
 						>
-							<div on:click={() => setRenaming(true)} class="h-4" data-testid="rename-folder">
+							<Icon on:click={() => setRenaming(true)} testId="rename-folder" button={true}>
 								<Pen />
-							</div>
-							<div
+							</Icon>
+							<Icon
 								on:click={() => setCreating(true, true)}
-								class="h-4"
-								data-testid="create-child-file"
+								testId="create-child-file"
+								button={true}
 							>
 								<FileIcon />
-							</div>
-							<div
+							</Icon>
+							<Icon
 								on:click={() => setCreating(true, false)}
-								class="h-4"
-								data-testid="create-child-folder"
+								testId="create-child-folder"
+								button={true}
 							>
 								<Folder />
-							</div>
-							<div on:click={handleDelete} class="h-4" data-testid="delete-folder">
+							</Icon>
+							<Icon on:click={handleDelete} testId="delete-folder" button={true}>
 								<Trash />
-							</div>
+							</Icon>
 						</div>
 					</div>
 				</Droppable>
@@ -239,13 +240,13 @@
 			reservedNames={getExistingFiles(children)}
 		>
 			{#if creatingFile}
-				<div class="h-4">
-					<FileIcon />
-				</div>
+				<Icon>
+					<FileOutline />
+				</Icon>
 			{:else}
-				<div class="h-4">
+				<Icon>
 					<Folder />
-				</div>
+				</Icon>
 			{/if}
 		</ExplorerInput>
 	{/if}

@@ -16,7 +16,6 @@ import { commentKeymap } from '@codemirror/comment';
 import parserBabel from 'prettier/parser-babel';
 import parserHtml from 'prettier/parser-html';
 import parserCss from 'prettier/parser-postcss';
-import { rectangularSelection } from '@codemirror/rectangular-selection';
 import { defaultHighlightStyle } from '@codemirror/highlight';
 import { lintKeymap } from '@codemirror/lint';
 import {
@@ -25,7 +24,6 @@ import {
 	drawSelection,
 	highlightActiveLine
 } from '@codemirror/view';
-import { oneDark } from '@codemirror/theme-one-dark';
 import { indentWithTab } from '@codemirror/commands';
 import { EditorState } from '@codemirror/state';
 import type { Parser } from 'prettier';
@@ -45,8 +43,18 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 		case 'html':
 			return html();
 		case 'tsx':
+			return javascript({
+				typescript: true,
+				jsx: true
+			});
 		case 'jsx':
+			return javascript({
+				jsx: true
+			});
 		case 'ts':
+			return javascript({
+				typescript: true
+			});
 		case 'js':
 			return javascript();
 		case 'json':
@@ -97,7 +105,6 @@ export const isSupported = (language: string): boolean => {
  * The list of default extensions to use for the codemirror editor configuration.
  */
 export const defaultExtensions = [
-	oneDark,
 	lineNumbers(),
 	highlightActiveLineGutter(),
 	highlightSpecialChars(),
@@ -110,7 +117,6 @@ export const defaultExtensions = [
 	bracketMatching(),
 	closeBrackets(),
 	autocompletion(),
-	rectangularSelection(),
 	highlightActiveLine(),
 	highlightSelectionMatches(),
 	indentOnInput(),

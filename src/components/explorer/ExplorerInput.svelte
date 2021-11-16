@@ -66,9 +66,9 @@
 	});
 </script>
 
-<div class={error ? 'bg-red-800' : 'bg-bluegray-default'} style="padding-left: {depth * 0.5}rem;">
+<div class={error ? 'bg-red-800' : 'dark:bg-bluegray-600'} style="padding-left: {depth * 0.5}rem;">
 	<div
-		class="flex flex-row items-center text-bluegray-light pl-2 {error
+		class="flex flex-row items-center dark:text-bluegray-300 pl-3 {error
 			? ' ring-inset ring-red-800 ring-2'
 			: ''}"
 	>

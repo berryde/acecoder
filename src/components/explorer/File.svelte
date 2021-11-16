@@ -19,6 +19,8 @@
 		renameFile
 	} from '../../utils/filesystem/filesystem';
 	import { closeTab, openTab, renameTab, selectedTab } from '../../utils/tabs/tabs';
+	import { latestError } from '../../utils/console/console';
+	import Icon from '../common/Icon.svelte';
 
 	// Props
 	/**
@@ -102,35 +104,37 @@
 			on:submit={(e) => handleRename(e.detail)}
 			on:cancelled={() => setRenaming(false)}
 		>
-			<div class="h-4">
+			<Icon>
 				<FileIcon />
-			</div>
+			</Icon>
 		</ExplorerInput>
 	{:else}
 		<Hoverable let:hovering>
 			<div
-				class="flex transition flex-row items-center space-x-2 text-bluegray-light h-8 {$selectedTab ===
-					path && 'bg-gray-800'}"
-				style="padding-left: {(depth + 1) * 0.5}rem;"
+				class="flex transition flex-row items-center space-x-2 {$latestError &&
+				$latestError.location == path
+					? 'text-red-400'
+					: 'dark:text-bluegray-300'} h-8 {$selectedTab === path && 'dark:bg-gray-800'}"
+				style="padding-left: {(depth + 1.5) * 0.5}rem;"
 				draggable="true"
 				on:dragstart={handleDragStart}
 				on:click={handleClick}
 			>
-				<div class="h-4">
+				<Icon>
 					<FileIcon />
-				</div>
+				</Icon>
+
 				<p class="truncate">{name}</p>
 				<div
-					class="flex flex-row justify-end items-center flex-grow transition-opacity pr-2 space-x-1 {hovering
-						? 'opacity-100'
-						: 'opacity-0'}"
+					class="flex flex-row dark:text-bluegray-300 justify-end items-center flex-grow pr-2 space-x-1 {!hovering &&
+						'hidden'}"
 				>
-					<div on:click={() => setRenaming(true)} class="h-3" data-testid="rename-file">
+					<Icon on:click={() => setRenaming(true)} testId="rename-file" button={true}>
 						<Pen />
-					</div>
-					<div on:click={handleDelete} class="h-4" data-testid="delete-file">
+					</Icon>
+					<Icon on:click={handleDelete} testId="delete-file" button={true}>
 						<Trash />
-					</div>
+					</Icon>
 				</div>
 			</div>
 		</Hoverable>

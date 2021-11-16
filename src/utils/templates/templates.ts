@@ -41,6 +41,10 @@ export default function App() {
 `,
 
 	'package.json': `{
-    "main": "src/index.js"
+    "main": "src/index.js",
+    "dependencies": {
+        "react": "17.0.2",
+        "react-dom": "17.0.2"
+    }
 }`
 };

@@ -50,7 +50,7 @@
 			});
 
 			function reply(type = 'log', data) {
-				parent.postMessage({
+				window.opener.postMessage({
 					type: type,
 					data: data
 				});
@@ -131,8 +131,13 @@
 				}
 			}
 
+			// Let the application know that the popup has loaded successfully
+			reply('system', 'loaded');
 			// Listen for new commands
 			window.addEventListener('message', update);
+			window.addEventListener('beforeunload', () => {
+				reply('system', 'quit');
+			});
 		</script>
 	</head>
 	<body>

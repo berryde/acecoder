@@ -5,6 +5,7 @@ module.exports = {
 		'@storybook/addon-essentials',
 		'@storybook/addon-svelte-csf',
 		'@storybook/addon-a11y',
+		'storybook-tailwind-dark-mode',
 		{
 			name: '@storybook/addon-postcss',
 			options: {

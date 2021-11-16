@@ -28,6 +28,10 @@ export type WorkerResponse = {
 	 * Any static files.
 	 */
 	public: { [key: string]: string };
+	/**
+	 * The error message, if present
+	 */
+	error?: WorkerError;
 };
 
 export type ReloadMessage = {
@@ -80,4 +84,28 @@ export type Filesystem = {
 	 * A single filesystem object, either a file or a folder.
 	 */
 	[key: string]: FSFile | FSFolder;
+};
+
+export type PreviewMessage = {
+	type: 'system' | 'warn' | 'log' | 'error';
+	data: string;
+};
+
+export type WorkerError = {
+	/**
+	 * The error name.
+	 */
+	name: string;
+	/**
+	 * The error message.
+	 */
+	message: string;
+	/**
+	 * The charater position of the error.
+	 */
+	pos: number;
+	/**
+	 * The file where the error occured.
+	 */
+	location: string;
 };

@@ -87,8 +87,13 @@ export const saveTab = (name: string): void => {
 	);
 };
 
+/**
+ * Rearrange tabs such that source is immediately to the left of target
+ *
+ * @param target The tab to move to the left of
+ * @param source The tab being moved
+ */
 export const rearrange = (target: string, source: string): void => {
-	// Move moved to the left of target
 	tabs.update((tabs) => {
 		tabs = tabs.filter((t) => t != source);
 		const targetIndex = tabs.indexOf(target);
