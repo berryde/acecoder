@@ -1,6 +1,8 @@
 import { writable } from 'svelte/store';
 import type { Filesystem, FSFile, FSFolder } from '../types';
 import type { File } from '../../utils/types';
+import { saveAs } from 'file-saver';
+import JSZip from 'jszip';
 
 /**
  * The file system in memory for the application.
@@ -274,4 +276,24 @@ export const getAllFiles = (prefix: string, state: Filesystem): File[] => {
 		}
 	}
 	return files;
+};
+
+const createZip = (zip: JSZip, state: Filesystem) => {
+	// Create a zip from the file system by traversing it.
+	for (const [name, file] of Object.entries(state)) {
+		if (file.type === 'file') {
+			zip.file(name, file.value);
+		} else {
+			createZip(zip.folder(name), file.children);
+		}
+	}
+	return zip;
+};
+
+export const exportFilesystem = (state: Filesystem) => {
+	const zip = createZip(new JSZip(), state);
+
+	zip.generateAsync({ type: 'blob' }).then(function (content) {
+		saveAs(content, 'application.zip');
+	});
 };

@@ -23,8 +23,6 @@
 	import Settings from '../components/settings/Settings.svelte';
 	import Sidebar from '../components/sidebar/Sidebar.svelte';
 
-	let files: Filesystem = {};
-
 	let compiled: WorkerResponse = {
 		css: '',
 		js: '',
@@ -60,8 +58,7 @@
 		 * Reload the preview whenever the filesystem is changed.
 		 */
 		filesystem.subscribe((fs) => {
-			files = fs;
-			worker.postMessage(getAllFiles('', fs));
+			refresh(fs);
 		});
 	});
 
@@ -78,6 +75,10 @@
 		for (const [path, value] of Object.entries(template)) {
 			createFile(path, value);
 		}
+	}
+
+	function refresh(fs: Filesystem) {
+		worker.postMessage(getAllFiles('', fs));
 	}
 
 	function handleSave() {
@@ -102,7 +103,7 @@
 </script>
 
 <div class="h-screen bg-bluegray-default flex flex-row">
-	<SplitPane isHorizontal={true} minPane1Size="15rem">
+	<SplitPane isHorizontal={true} minPane1Size="15rem" pane1Size={10} pane2Size={90}>
 		<left slot="pane1">
 			<Sidebar />
 		</left>
@@ -129,6 +130,7 @@
 								{compiled}
 								resizing={resizingX || resizingY || selecting}
 								error={$latestError}
+								on:refresh={() => refresh($filesystem)}
 							/>
 						</top>
 						<bottom slot="pane2">

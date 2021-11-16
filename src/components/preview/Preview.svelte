@@ -4,29 +4,38 @@
 	import type {
 		ConsoleMessage,
 		ReloadMessage,
-		TestMessage,
 		UrlMessage,
 		WorkerError,
 		WorkerResponse
 	} from 'src/utils/types';
 	import { onMount } from 'svelte';
 	import template from './template/template';
+	import MdAutorenew from 'svelte-icons/md/MdAutorenew.svelte';
+	import IoIosExpand from 'svelte-icons/io/IoIosExpand.svelte';
+	import Icon from '../common/Icon.svelte';
+	import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher();
 	export let compiled: WorkerResponse;
 	export let resizing = false;
 	export let error: WorkerError = undefined;
 
 	let iframe: HTMLIFrameElement;
+	let popup: Window;
 	let srcdoc: string = '';
 
 	$: build(compiled);
 
 	function build(compiled: WorkerResponse) {
+		const message: ReloadMessage = {
+			compiled: compiled,
+			type: 'reload'
+		};
 		if (iframe) {
-			const message: ReloadMessage = {
-				compiled: compiled,
-				type: 'reload'
-			};
 			iframe.contentWindow.postMessage(message);
+		}
+		if (popup) {
+			popup.postMessage(message);
 		}
 	}
 
@@ -47,14 +56,37 @@
 			addMessage(data);
 		});
 	});
+
+	function handleRefresh() {
+		dispatch('refresh');
+	}
+
+	function handlePopout() {
+		popup = window.open();
+		popup.document.write(srcdoc);
+		handleRefresh();
+	}
 </script>
 
-<div class="flex-grow h-full w-full relative">
-	<Error {error} />
-	<iframe
-		title="Preview"
-		class="h-full w-full z-0 bg-white {resizing && 'pointer-events-none'}"
-		bind:this={iframe}
-		{srcdoc}
-	/>
+<div class="flex-grow h-full w-full relative flex flex-col overflow-x-auto">
+	<div class="text-bluegray-light flex flex-row justify-between w-full items-center p-2">
+		<div class="font-bold uppercase text-xs ">Preview</div>
+		<div class="flex flex-row space-x-2">
+			<Icon on:click={() => handlePopout()}>
+				<IoIosExpand />
+			</Icon>
+			<Icon on:click={() => handleRefresh()}>
+				<MdAutorenew />
+			</Icon>
+		</div>
+	</div>
+	<div class="flex-grow">
+		<Error {error} />
+		<iframe
+			title="Preview"
+			class="h-full w-full z-0 bg-white {resizing && 'pointer-events-none'}"
+			bind:this={iframe}
+			{srcdoc}
+		/>
+	</div>
 </div>

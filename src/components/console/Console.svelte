@@ -2,7 +2,8 @@
 	import type { ConsoleMessage } from 'src/utils/types';
 	import IoIosCloseCircle from 'svelte-icons/io/IoIosCloseCircle.svelte';
 	import IoIosWarning from 'svelte-icons/io/IoIosWarning.svelte';
-	import MdAutorenew from 'svelte-icons/md/MdAutorenew.svelte';
+	import MdClearAll from 'svelte-icons/md/MdClearAll.svelte';
+	import Icon from '../common/Icon.svelte';
 	import FaTerminal from 'svelte-icons/fa/FaTerminal.svelte';
 	import { clearConsole } from '../../utils/console/console';
 
@@ -47,19 +48,18 @@
 <div class="flex flex-col h-full overflow-x-auto">
 	<div class="w-full text-bluegray-light flex flex-row justify-between px-5 py-2 items-center">
 		<div class="flex flex-row items-center">
-			<div class="h-4 mr-2">
+			<Icon>
 				<FaTerminal />
-			</div>
-			<p>Console</p>
+			</Icon>
+			<p class="pl-2">Console</p>
 		</div>
-		<div
-			class="h-4"
+		<Icon
 			on:click={() => {
 				clearConsole();
 			}}
 		>
-			<MdAutorenew />
-		</div>
+			<MdClearAll />
+		</Icon>
 	</div>
 	<div class="flex-grow overflow-y-auto bg-bluegray-dark text-sm">
 		{#if messages.length > 0}

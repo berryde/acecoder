@@ -5,6 +5,7 @@
 	import OutlineFileIcon from 'svelte-icons/fa/FaRegFile.svelte';
 	import OutlineFolderIcon from 'svelte-icons/fa/FaRegFolder.svelte';
 	import ExplorerInput from './ExplorerInput.svelte';
+	import FaDownload from 'svelte-icons/fa/FaDownload.svelte';
 
 	// Components
 	import File from './File.svelte';
@@ -16,6 +17,7 @@
 		compareFile,
 		createFile,
 		createFolder,
+		exportFilesystem,
 		filesystem,
 		getExistingFiles
 	} from '../../utils/filesystem/filesystem';
@@ -53,6 +55,10 @@
 		}
 		creating = false;
 	}
+
+	function handleExport() {
+		exportFilesystem($filesystem);
+	}
 </script>
 
 <SidebarItem title="explorer">
@@ -63,6 +69,9 @@
 			</Icon>
 			<Icon on:click={() => setCreatingFolder(true)} testId="add-folder">
 				<FolderIcon />
+			</Icon>
+			<Icon on:click={() => handleExport()} testId="export">
+				<FaDownload />
 			</Icon>
 		</div>
 		<div class="overflow-y-auto w-full flex-grow h-full">

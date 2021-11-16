@@ -75,7 +75,7 @@
 		if (isHorizontal) {
 			delta.x = Math.min(Math.max(delta.x, -mouseData.pane1Size), mouseData.pane2Size);
 			const w = ((mouseData.pane1Size + delta.x) / width) * 100;
-			pane1.style.width = w + '%';
+			pane1.style.width = w + separatorSize + '%';
 			pane2.style.width = 100 - (w + separatorSize) + '%';
 		} else {
 			delta.y = Math.min(Math.max(delta.y, -mouseData.pane1Size), mouseData.pane2Size);
@@ -137,6 +137,7 @@
 		if (window) {
 			window.addEventListener('resize', resize);
 		}
+		separatorSize = getSeparatorSize();
 	});
 
 	/**
@@ -162,7 +163,7 @@
 
 	let width: number;
 	let height: number;
-	$: separatorSize = getSeparatorSize();
+	let separatorSize: number;
 </script>
 
 <div
@@ -176,7 +177,7 @@
 	</div>
 	<div
 		bind:this={separator}
-		class="bg-black flex {isHorizontal
+		class="bg-black min-w-0 flex {isHorizontal
 			? 'flex-col'
 			: 'flex-row'} justify-center items-center separator-{isHorizontal
 			? 'horizontal'
@@ -185,9 +186,9 @@
 		on:mouseup={mouseUp}
 	>
 		<div
-			class="transition-colors  {isHorizontal ? 'w-1 mx-0.5 h-10' : 'h-1 my-0.5 w-10'}  {resizing
-				? 'bg-bluegray-light'
-				: 'thumb'} rounded"
+			class="transition-colors min-w-0 min-h-0 flex-shrink {isHorizontal
+				? 'w-1 mx-0.5 h-10'
+				: 'h-1 my-0.5 w-10'}  {resizing ? 'bg-bluegray-light' : 'thumb'} rounded"
 		/>
 	</div>
 	<div bind:this={pane2} class="pane2-{isHorizontal ? 'horizontal' : 'vertical'}">
