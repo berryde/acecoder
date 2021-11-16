@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { formatOnSave, reloadOnSave } from '../../utils/settings/settings';
 
-	import SidebarItem from '../common/SidebarItem.svelte';
+	import SidebarItem from '../sidebar/SidebarItem.svelte';
 
 	function toggleFormatOnSave() {
 		formatOnSave.update((fos) => !fos);

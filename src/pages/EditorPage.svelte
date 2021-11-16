@@ -21,6 +21,7 @@
 	import SplitPane from '../components/splitpane/SplitPane.svelte';
 	import Console from '../components/console/Console.svelte';
 	import Settings from '../components/settings/Settings.svelte';
+	import Sidebar from '../components/sidebar/Sidebar.svelte';
 
 	let files: Filesystem = {};
 
@@ -98,57 +99,16 @@
 	function toggleSelecting(e: CustomEvent<boolean>) {
 		selecting = e.detail;
 	}
-
-	let selectedIndex = 0;
-
-	function selectSidebar(index: number) {
-		if (selectedIndex == index) {
-			selectedIndex = undefined;
-		} else {
-			selectedIndex = index;
-		}
-	}
 </script>
 
 <div class="h-screen bg-bluegray-default flex flex-row">
-	<div class="h-screen">
-		<div
-			class=" text-bluegray-light p-4 {selectedIndex == 0
-				? 'border-l-2 border-aqua-default'
-				: 'ml-0.5'}"
-			on:click={() => selectSidebar(0)}
-		>
-			<div class="h-6">
-				<IoIosFiling />
-			</div>
-		</div>
-		<div
-			class=" text-bluegray-light p-4 {selectedIndex == 1
-				? 'border-l-2 border-aqua-default'
-				: 'ml-0.5'}"
-			on:click={() => selectSidebar(1)}
-		>
-			<div class="h-6">
-				<IoIosSettings />
-			</div>
-		</div>
-	</div>
-	<SplitPane isHorizontal={true}>
-		<left slot="pane1" class="h-full flex flex-col">
-			<SplitPane
-				isHorizontal={true}
-				minPane1Size={selectedIndex == undefined ? undefined : '10rem'}
-				pane1Size={selectedIndex == undefined ? 0 : 20}
-				pane2Size={selectedIndex == undefined ? 100 : 80}
-			>
+	<SplitPane isHorizontal={true} minPane1Size="15rem">
+		<left slot="pane1">
+			<Sidebar />
+		</left>
+		<right slot="pane2">
+			<SplitPane isHorizontal={true}>
 				<left slot="pane1">
-					{#if selectedIndex == 0}
-						<Explorer {files} />
-					{:else if selectedIndex == 1}
-						<Settings />
-					{/if}
-				</left>
-				<right slot="pane2">
 					<Tabs selected={$selectedTab} tabs={$tabs} unsaved={$unsavedTabs} />
 					{#each $tabs as tab}
 						<Editor
@@ -161,17 +121,21 @@
 							initialValue={loadEditorContent(tab)}
 						/>
 					{/each}
+				</left>
+				<right slot="pane2" let:resizing={resizingX}>
+					<SplitPane minPane2Size="2.5rem" isHorizontal={false} pane1Size={100} pane2Size={0}>
+						<top slot="pane1" let:resizing={resizingY}>
+							<Preview
+								{compiled}
+								resizing={resizingX || resizingY || selecting}
+								error={$latestError}
+							/>
+						</top>
+						<bottom slot="pane2">
+							<Console messages={$messages} />
+						</bottom>
+					</SplitPane>
 				</right>
-			</SplitPane>
-		</left>
-		<right slot="pane2" let:resizing={resizingX}>
-			<SplitPane minPane2Size="2.5rem" isHorizontal={false} pane1Size={100} pane2Size={0}>
-				<top slot="pane1" let:resizing={resizingY}>
-					<Preview {compiled} resizing={resizingX || resizingY || selecting} error={$latestError} />
-				</top>
-				<bottom slot="pane2">
-					<Console messages={$messages} />
-				</bottom>
 			</SplitPane>
 		</right>
 	</SplitPane>

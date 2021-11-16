@@ -20,7 +20,7 @@
 		getExistingFiles
 	} from '../../utils/filesystem/filesystem';
 	import { openTab } from '../../utils/tabs/tabs';
-	import SidebarItem from '../common/SidebarItem.svelte';
+	import SidebarItem from '../sidebar/SidebarItem.svelte';
 	import Icon from '../common/Icon.svelte';
 
 	// Props
@@ -56,7 +56,7 @@
 </script>
 
 <SidebarItem title="explorer">
-	<div class="flex flex-col">
+	<div class="flex flex-col h-full">
 		<div class="flex flex-row space-x-2 pl-3 pb-1">
 			<Icon on:click={() => setCreatingFile(true)} testId="add-file">
 				<FileIcon />
@@ -65,7 +65,7 @@
 				<FolderIcon />
 			</Icon>
 		</div>
-		<div class="overflow-y-auto w-full flex-grow">
+		<div class="overflow-y-auto w-full flex-grow h-full">
 			{#each Object.entries(files).sort(compareFile) as [path, object]}
 				{#if object.type === 'file'}
 					<File {path} />

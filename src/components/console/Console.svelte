@@ -44,7 +44,7 @@
 	}
 </script>
 
-<div class="flex flex-col h-full">
+<div class="flex flex-col h-full overflow-x-auto">
 	<div class="w-full text-bluegray-light flex flex-row justify-between px-5 py-2 items-center">
 		<div class="flex flex-row items-center">
 			<div class="h-4 mr-2">

@@ -15,11 +15,11 @@
 	/**
 	 * The minimum allowed size of the left pane as a CSS string.
 	 */
-	export let minPane1Size: string = '';
+	export let minPane1Size: string = '0';
 	/**
 	 * The minimum allowed size of the right pane as a CSS string.
 	 */
-	export let minPane2Size: string = '';
+	export let minPane2Size: string = '0';
 
 	export let isHorizontal: boolean;
 
@@ -74,14 +74,14 @@
 
 		if (isHorizontal) {
 			delta.x = Math.min(Math.max(delta.x, -mouseData.pane1Size), mouseData.pane2Size);
-			separator.style.left = mouseData.offset + delta.x + 'px';
-			pane1.style.width = mouseData.pane1Size + delta.x + 'px';
-			pane2.style.width = mouseData.pane2Size - delta.x + 'px';
+			const w = ((mouseData.pane1Size + delta.x) / width) * 100;
+			pane1.style.width = w + '%';
+			pane2.style.width = 100 - (w + separatorSize) + '%';
 		} else {
 			delta.y = Math.min(Math.max(delta.y, -mouseData.pane1Size), mouseData.pane2Size);
-			separator.style.top = mouseData.offset + delta.y + 'px';
-			pane1.style.height = mouseData.pane1Size + delta.y + 'px';
-			pane2.style.height = mouseData.pane2Size - delta.y + 'px';
+			const h = ((mouseData.pane1Size + delta.y) / height) * 100;
+			pane1.style.height = h + '%';
+			pane2.style.height = 100 - (h + separatorSize) + '%';
 		}
 	}
 
@@ -148,13 +148,28 @@
 		if (separator) separator.removeAttribute('style');
 	}
 
+	function getSeparatorSize() {
+		if (separator) {
+			return isHorizontal
+				? (separator.clientWidth / width) * 100
+				: (separator.clientHeight / height) * 100;
+		}
+		return 0;
+	}
+
 	$: pane1Size && resetSize();
 	$: pane2Size && resetSize();
+
+	let width: number;
+	let height: number;
+	$: separatorSize = getSeparatorSize();
 </script>
 
 <div
 	class="flex {isHorizontal ? 'flex-row' : 'flex-col'} flex-grow h-full"
 	style="--left-pane-size: {pane1Size}%; --right-pane-size: {pane2Size}%; --min-left-pane-size: {minPane1Size}; --min-right-pane-size: {minPane2Size};"
+	bind:clientWidth={width}
+	bind:clientHeight={height}
 >
 	<div bind:this={pane1} class="pane1-{isHorizontal ? 'horizontal' : 'vertical'}">
 		<slot name="pane1" {resizing} />
