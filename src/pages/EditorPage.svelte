@@ -133,26 +133,36 @@
 			</div>
 		</div>
 	</div>
-	{#if selectedIndex == 0}
-		<Explorer {files} />
-	{:else if selectedIndex == 1}
-		<Settings />
-	{/if}
-
 	<SplitPane isHorizontal={true}>
 		<left slot="pane1" class="h-full flex flex-col">
-			<Tabs selected={$selectedTab} tabs={$tabs} unsaved={$unsavedTabs} />
-			{#each $tabs as tab}
-				<Editor
-					selected={tab === $selectedTab}
-					language={getExtension(tab)}
-					filename={tab}
-					on:save={() => handleSave()}
-					on:docchanged={(e) => handleCodeChanged(e.detail)}
-					on:drag={(e) => toggleSelecting(e)}
-					initialValue={loadEditorContent(tab)}
-				/>
-			{/each}
+			<SplitPane
+				isHorizontal={true}
+				minPane1Size={selectedIndex == undefined ? undefined : '10rem'}
+				pane1Size={selectedIndex == undefined ? 0 : 20}
+				pane2Size={selectedIndex == undefined ? 100 : 80}
+			>
+				<left slot="pane1">
+					{#if selectedIndex == 0}
+						<Explorer {files} />
+					{:else if selectedIndex == 1}
+						<Settings />
+					{/if}
+				</left>
+				<right slot="pane2">
+					<Tabs selected={$selectedTab} tabs={$tabs} unsaved={$unsavedTabs} />
+					{#each $tabs as tab}
+						<Editor
+							selected={tab === $selectedTab}
+							language={getExtension(tab)}
+							filename={tab}
+							on:save={() => handleSave()}
+							on:docchanged={(e) => handleCodeChanged(e.detail)}
+							on:drag={(e) => toggleSelecting(e)}
+							initialValue={loadEditorContent(tab)}
+						/>
+					{/each}
+				</right>
+			</SplitPane>
 		</left>
 		<right slot="pane2" let:resizing={resizingX}>
 			<SplitPane minPane2Size="2.5rem" isHorizontal={false} pane1Size={100} pane2Size={0}>

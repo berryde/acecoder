@@ -68,7 +68,7 @@
 
 <div class={error ? 'bg-red-800' : 'bg-bluegray-default'} style="padding-left: {depth * 0.5}rem;">
 	<div
-		class="flex flex-row items-center text-bluegray-light pl-2 {error
+		class="flex flex-row items-center text-bluegray-light pl-3 {error
 			? ' ring-inset ring-red-800 ring-2'
 			: ''}"
 	>

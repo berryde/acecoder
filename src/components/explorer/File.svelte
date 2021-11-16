@@ -20,6 +20,7 @@
 	} from '../../utils/filesystem/filesystem';
 	import { closeTab, openTab, renameTab, selectedTab } from '../../utils/tabs/tabs';
 	import { latestError } from '../../utils/console/console';
+	import Icon from '../common/Icon.svelte';
 
 	// Props
 	/**
@@ -103,9 +104,9 @@
 			on:submit={(e) => handleRename(e.detail)}
 			on:cancelled={() => setRenaming(false)}
 		>
-			<div class="h-4">
+			<Icon>
 				<FileIcon />
-			</div>
+			</Icon>
 		</ExplorerInput>
 	{:else}
 		<Hoverable let:hovering>
@@ -119,21 +120,21 @@
 				on:dragstart={handleDragStart}
 				on:click={handleClick}
 			>
-				<div class="h-4">
+				<Icon>
 					<FileIcon />
-				</div>
+				</Icon>
+
 				<p class="truncate">{name}</p>
 				<div
-					class="flex flex-row text-bluegray-light justify-end items-center flex-grow transition-opacity pr-2 space-x-1 {hovering
-						? 'opacity-100'
-						: 'opacity-0'}"
+					class="flex flex-row text-bluegray-light justify-end items-center flex-grow pr-2 space-x-1 {!hovering &&
+						'hidden'}"
 				>
-					<div on:click={() => setRenaming(true)} class="h-3" data-testid="rename-file">
+					<Icon on:click={() => setRenaming(true)} testId="rename-file">
 						<Pen />
-					</div>
-					<div on:click={handleDelete} class="h-4" data-testid="delete-file">
+					</Icon>
+					<Icon on:click={handleDelete} testId="delete-file">
 						<Trash />
-					</div>
+					</Icon>
 				</div>
 			</div>
 		</Hoverable>

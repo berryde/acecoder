@@ -21,6 +21,7 @@
 	} from '../../utils/filesystem/filesystem';
 	import { openTab } from '../../utils/tabs/tabs';
 	import SidebarItem from '../common/SidebarItem.svelte';
+	import Icon from '../common/Icon.svelte';
 
 	// Props
 	export let files: Filesystem;
@@ -57,12 +58,12 @@
 <SidebarItem title="explorer">
 	<div class="flex flex-col">
 		<div class="flex flex-row space-x-2 pl-3 pb-1">
-			<div on:click={() => setCreatingFile(true)} data-testid="add-file" class="h-4">
+			<Icon on:click={() => setCreatingFile(true)} testId="add-file">
 				<FileIcon />
-			</div>
-			<div on:click={() => setCreatingFolder(true)} data-testid="add-folder" class="h-4">
+			</Icon>
+			<Icon on:click={() => setCreatingFolder(true)} testId="add-folder">
 				<FolderIcon />
-			</div>
+			</Icon>
 		</div>
 		<div class="overflow-y-auto w-full flex-grow">
 			{#each Object.entries(files).sort(compareFile) as [path, object]}
@@ -82,13 +83,13 @@
 					}}
 					reservedNames={getExistingFiles($filesystem)}
 				>
-					<div class="h-4">
+					<Icon>
 						{#if creatingFile}
 							<OutlineFileIcon />
 						{:else}
 							<OutlineFolderIcon />
 						{/if}
-					</div>
+					</Icon>
 				</ExplorerInput>
 			{/if}
 		</div>

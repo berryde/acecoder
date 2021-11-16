@@ -55,7 +55,10 @@ export default function babel(
 				};
 			} else {
 				const warning: RollupWarning = {
-					message: `Failed to resolve dependency ${importee} from ${importer}. Check that this dependency is present in your package.json file.`
+					message: `Failed to resolve dependency ${importee} from ${importer}. Check that this dependency is present in your package.json file.`,
+					pos: 0,
+					id: importer,
+					name: 'DependencyError'
 				};
 				this.warn(warning);
 				return {
