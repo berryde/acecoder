@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatOnSave, reloadOnSave } from '../../utils/settings/settings';
+	import { formatOnSave, darkMode } from '../../utils/settings/settings';
 
 	import SidebarItem from '../sidebar/SidebarItem.svelte';
 
@@ -7,8 +7,8 @@
 		formatOnSave.update((fos) => !fos);
 	}
 
-	function toggleReloadOnSave() {
-		reloadOnSave.update((ros) => !ros);
+	function toggleDarkMode() {
+		darkMode.update((dark) => !dark);
 	}
 </script>
 
@@ -17,9 +17,23 @@
 		<p class="uppercase text-xs">Editor</p>
 		<div class="flex flex-row justify-between items-center">
 			<p>Format on save</p>
-			<input type="checkbox" checked={$formatOnSave} on:click={toggleFormatOnSave} />
+			<input
+				data-testid="toggle-format"
+				type="checkbox"
+				checked={$formatOnSave}
+				on:click={toggleFormatOnSave}
+			/>
 		</div>
 		<p class="uppercase text-xs mt-4">Preview</p>
 		<p class="uppercase text-xs mt-4">Misc</p>
+		<div class="flex flex-row justify-between items-center">
+			<p>Use dark theme</p>
+			<input
+				data-testid="toggle-dark"
+				type="checkbox"
+				checked={$darkMode}
+				on:click={toggleDarkMode}
+			/>
+		</div>
 	</div>
 </SidebarItem>

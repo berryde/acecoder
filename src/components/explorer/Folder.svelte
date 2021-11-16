@@ -175,7 +175,7 @@
 			<Draggable data={path} variant="explorer">
 				<Droppable let:dropping on:dropped={(e) => dropped(e.detail)} variant="explorer">
 					<div
-						class="flex transition flex-row items-center space-x-2 text-bluegray-light h-8 {dropping &&
+						class="flex transition flex-row items-center space-x-2 dark:text-bluegray-300 h-8 {dropping &&
 							'bg-blue-500'}"
 						style="padding-left: {(depth + 1.5) * 0.5}rem;"
 					>
@@ -195,16 +195,24 @@
 							class="flex flex-row flex-grow items-center justify-end pr-2 space-x-1 {!hovering &&
 								'hidden'}"
 						>
-							<Icon on:click={() => setRenaming(true)} testId="rename-folder">
+							<Icon on:click={() => setRenaming(true)} testId="rename-folder" button={true}>
 								<Pen />
 							</Icon>
-							<Icon on:click={() => setCreating(true, true)} testId="create-child-file">
+							<Icon
+								on:click={() => setCreating(true, true)}
+								testId="create-child-file"
+								button={true}
+							>
 								<FileIcon />
 							</Icon>
-							<Icon on:click={() => setCreating(true, false)} testId="create-child-folder">
+							<Icon
+								on:click={() => setCreating(true, false)}
+								testId="create-child-folder"
+								button={true}
+							>
 								<Folder />
 							</Icon>
-							<Icon on:click={handleDelete} testId="delete-folder">
+							<Icon on:click={handleDelete} testId="delete-folder" button={true}>
 								<Trash />
 							</Icon>
 						</div>

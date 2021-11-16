@@ -177,7 +177,7 @@
 	</div>
 	<div
 		bind:this={separator}
-		class="bg-black min-w-0 flex {isHorizontal
+		class="bg-gray-300 dark:bg-bluegray-900 min-w-0 flex {isHorizontal
 			? 'flex-col'
 			: 'flex-row'} justify-center items-center separator-{isHorizontal
 			? 'horizontal'
@@ -188,7 +188,7 @@
 		<div
 			class="transition-colors min-w-0 min-h-0 flex-shrink {isHorizontal
 				? 'w-1 mx-0.5 h-10'
-				: 'h-1 my-0.5 w-10'}  {resizing ? 'bg-bluegray-light' : 'thumb'} rounded"
+				: 'h-1 my-0.5 w-10'}  {resizing ? 'dark:bg-bluegray-300' : 'thumb'} rounded"
 		/>
 	</div>
 	<div bind:this={pane2} class="pane2-{isHorizontal ? 'horizontal' : 'vertical'}">

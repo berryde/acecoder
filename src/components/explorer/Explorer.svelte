@@ -64,13 +64,13 @@
 <SidebarItem title="explorer">
 	<div class="flex flex-col h-full">
 		<div class="flex flex-row space-x-2 pl-3 pb-1">
-			<Icon on:click={() => setCreatingFile(true)} testId="add-file">
+			<Icon on:click={() => setCreatingFile(true)} testId="add-file" button={true}>
 				<FileIcon />
 			</Icon>
-			<Icon on:click={() => setCreatingFolder(true)} testId="add-folder">
+			<Icon on:click={() => setCreatingFolder(true)} testId="add-folder" button={true}>
 				<FolderIcon />
 			</Icon>
-			<Icon on:click={() => handleExport()} testId="export">
+			<Icon on:click={() => handleExport()} testId="export" button={true}>
 				<FaDownload />
 			</Icon>
 		</div>

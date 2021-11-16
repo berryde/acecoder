@@ -111,7 +111,7 @@ export const renameFile = (path: string, target: string): void => {
 		dir[newName] = clone;
 
 		// Delete the original
-		delete dir[oldName];
+		delete src[oldName];
 
 		return state;
 	});

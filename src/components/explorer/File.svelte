@@ -114,7 +114,7 @@
 				class="flex transition flex-row items-center space-x-2 {$latestError &&
 				$latestError.location == path
 					? 'text-red-400'
-					: 'text-bluegray-light'} h-8 {$selectedTab === path && 'bg-gray-800'}"
+					: 'dark:text-bluegray-300'} h-8 {$selectedTab === path && 'dark:bg-gray-800'}"
 				style="padding-left: {(depth + 1.5) * 0.5}rem;"
 				draggable="true"
 				on:dragstart={handleDragStart}
@@ -126,13 +126,13 @@
 
 				<p class="truncate">{name}</p>
 				<div
-					class="flex flex-row text-bluegray-light justify-end items-center flex-grow pr-2 space-x-1 {!hovering &&
+					class="flex flex-row dark:text-bluegray-300 justify-end items-center flex-grow pr-2 space-x-1 {!hovering &&
 						'hidden'}"
 				>
-					<Icon on:click={() => setRenaming(true)} testId="rename-file">
+					<Icon on:click={() => setRenaming(true)} testId="rename-file" button={true}>
 						<Pen />
 					</Icon>
-					<Icon on:click={handleDelete} testId="delete-file">
+					<Icon on:click={handleDelete} testId="delete-file" button={true}>
 						<Trash />
 					</Icon>
 				</div>

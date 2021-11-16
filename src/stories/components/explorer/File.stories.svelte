@@ -13,7 +13,7 @@
 />
 
 <Template let:args>
-	<div style="max-width: 20rem; background-color: #1a1d24;"><File {...args} /></div>
+	<div style="max-width: 20rem;"><File {...args} /></div>
 </Template>
 
 <Story

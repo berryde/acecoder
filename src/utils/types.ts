@@ -86,8 +86,8 @@ export type Filesystem = {
 	[key: string]: FSFile | FSFolder;
 };
 
-export type ConsoleMessage = {
-	type: string;
+export type PreviewMessage = {
+	type: 'system' | 'warn' | 'log' | 'error';
 	data: string;
 };
 

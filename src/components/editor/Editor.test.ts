@@ -8,7 +8,8 @@ describe('The Editor component', () => {
 			props: {
 				language: 'jsx',
 				selected: true,
-				initialValue: 'Testing'
+				initialValue: 'Testing',
+				filename: 'index.jsx'
 			}
 		});
 		expect(getByText('Testing')).toBeVisible();
@@ -18,7 +19,8 @@ describe('The Editor component', () => {
 			props: {
 				language: 'jsx',
 				selected: false,
-				initialValue: 'Testing'
+				initialValue: 'Testing',
+				filename: 'index.jsx'
 			}
 		});
 		expect(container.getElementsByClassName('editor')[0]).toHaveClass('hidden');
@@ -28,7 +30,8 @@ describe('The Editor component', () => {
 			props: {
 				language: 'jsx',
 				selected: true,
-				initialValue: 'Testing'
+				initialValue: 'Testing',
+				filename: 'index.jsx'
 			}
 		});
 		expect(getByText('Testing')).toBeInTheDocument();

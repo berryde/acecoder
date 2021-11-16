@@ -10,29 +10,31 @@
 	let selected = 0;
 
 	function select(index: number) {
-		if (selected == index) {
-			selected = undefined;
-		} else {
-			selected = index;
-		}
+		selected = index;
 	}
 </script>
 
-<div class="h-screen flex flex-row">
+<div class="h-screen flex flex-row bg-gray-100 dark:bg-bluegray-600">
 	<div class="flex flex-col">
 		<div
-			class="text-bluegray-light p-4 {selected == 0 ? 'border-l-2 border-aqua-default' : 'ml-0.5'}"
+			class="dark:text-bluegray-300 p-4 {selected == 0
+				? 'border-l-2 border-aqua-default'
+				: 'ml-0.5'}"
 			on:click={() => select(0)}
+			data-testid="explorer"
 		>
-			<Icon size="large">
+			<Icon size="large" button={true}>
 				<IoIosFiling />
 			</Icon>
 		</div>
 		<div
-			class="text-bluegray-light p-4 {selected == 1 ? 'border-l-2 border-aqua-default' : 'ml-0.5'}"
+			class="dark:text-bluegray-300 p-4 {selected == 1
+				? 'border-l-2 border-aqua-default'
+				: 'ml-0.5'}"
 			on:click={() => select(1)}
+			data-testid="settings"
 		>
-			<Icon size="large">
+			<Icon size="large" button={true}>
 				<IoIosSettings />
 			</Icon>
 		</div>

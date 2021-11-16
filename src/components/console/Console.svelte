@@ -1,13 +1,13 @@
 <script lang="ts">
-	import type { ConsoleMessage } from 'src/utils/types';
+	import type { PreviewMessage } from 'src/utils/types';
 	import IoIosCloseCircle from 'svelte-icons/io/IoIosCloseCircle.svelte';
 	import IoIosWarning from 'svelte-icons/io/IoIosWarning.svelte';
-	import MdClearAll from 'svelte-icons/md/MdClearAll.svelte';
 	import Icon from '../common/Icon.svelte';
 	import FaTerminal from 'svelte-icons/fa/FaTerminal.svelte';
 	import { clearConsole } from '../../utils/console/console';
+	import MdAutorenew from 'svelte-icons/md/MdAutorenew.svelte';
 
-	export let messages: ConsoleMessage[];
+	export let messages: PreviewMessage[];
 
 	function getMessageClass(type: string) {
 		switch (type) {
@@ -16,37 +16,31 @@
 			case 'error':
 				return 'bg-red-900 text-red-400 bg-opacity-50 border-red-800';
 			default:
-				return 'text-bluegray-light';
+				return 'dark:text-bluegray-300';
 		}
 	}
 
-	function groupMessages(messages: ConsoleMessage[]) {
-		const output: { message: ConsoleMessage; count: number }[] = [];
-		let count = 1;
-		for (let i = 1; i < messages.length; i++) {
-			if (messages[i].data == messages[i - 1].data) {
-				if (i == messages.length - 1) {
-					output.push({
-						message: messages[i],
-						count: count
-					});
-				} else {
-					count++;
-				}
+	function groupMessages(messages: PreviewMessage[]) {
+		const output: { message: PreviewMessage; count: number }[] = [];
+
+		for (let i = 0; i < messages.length; i++) {
+			if (i > 0 && messages[i].data == messages[i - 1].data) {
+				output[output.length - 1].count++;
 			} else {
 				output.push({
-					message: messages[i - 1],
-					count: count
+					message: messages[i],
+					count: 1
 				});
-				count = 0;
 			}
 		}
 		return output;
 	}
 </script>
 
-<div class="flex flex-col h-full overflow-x-auto">
-	<div class="w-full text-bluegray-light flex flex-row justify-between px-5 py-2 items-center">
+<div class="flex flex-col h-full overflow-x-auto ">
+	<div
+		class="w-full bg-gray-200 dark:bg-bluegray-700 dark:text-bluegray-300 flex flex-row justify-between px-5 py-2 items-center"
+	>
 		<div class="flex flex-row items-center">
 			<Icon>
 				<FaTerminal />
@@ -57,11 +51,12 @@
 			on:click={() => {
 				clearConsole();
 			}}
+			button={true}
 		>
-			<MdClearAll />
+			<MdAutorenew />
 		</Icon>
 	</div>
-	<div class="flex-grow overflow-y-auto bg-bluegray-dark text-sm">
+	<div class="flex-grow overflow-y-auto text-sm dark:bg-bluegray-800">
 		{#if messages.length > 0}
 			{#each groupMessages(messages) as groupedMessage, index}
 				<div

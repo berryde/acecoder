@@ -14,7 +14,7 @@
 />
 
 <Template let:args>
-	<div style="max-width: 20rem; background-color: #1a1d24;"><Folder {...args} /></div>
+	<div style="max-width: 20rem;"><Folder {...args} /></div>
 </Template>
 
 <Story

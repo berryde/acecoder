@@ -16,8 +16,9 @@
 	import type { Diagnostic } from '@codemirror/lint';
 	import { linter } from '@codemirror/lint';
 	import { latestError } from '../../utils/console/console';
-	import { formatOnSave } from '../../utils/settings/settings';
+	import { darkMode, formatOnSave } from '../../utils/settings/settings';
 	import { unsavedTabs } from '../../utils/tabs/tabs';
+	import { oneDark } from '@codemirror/theme-one-dark';
 
 	/**
 	 * The langauge to use for this editor.
@@ -139,6 +140,9 @@
 		if (isSupported(language)) {
 			output.push(getLanguageSupport(language));
 		}
+		if ($darkMode) {
+			output.push(oneDark);
+		}
 		return output;
 	}
 
@@ -150,7 +154,6 @@
 	}
 
 	function changeLanguage(language: string) {
-		console.log('Changing language for', filename, language);
 		updateEditor();
 	}
 
@@ -161,6 +164,13 @@
 		view = new EditorView({
 			state: state,
 			parent: element
+		});
+	}
+
+	function refreshState(value: string) {
+		return EditorState.create({
+			doc: value,
+			extensions: getExtensions()
 		});
 	}
 
@@ -181,17 +191,20 @@
 	/**
 	 * Update the editor state whenever any of the props change.
 	 */
-	$: state = EditorState.create({
-		doc: initialValue,
-		extensions: getExtensions()
-	});
+	$: state = refreshState(initialValue);
 
 	/**
 	 * Update the editor when the language changes
 	 */
 	$: changeLanguage(language);
 
-	$: console.log(filename);
+	darkMode.subscribe(() => {
+		if (view) {
+			console.log(view.state.doc.toString());
+			state = refreshState(view.state.doc.toString());
+		}
+		updateEditor();
+	});
 
 	onMount(updateEditor);
 </script>
@@ -208,5 +221,8 @@
 	}
 	:global(.cm-editor) {
 		@apply h-full overflow-auto;
+	}
+	:global(.cm-tooltip) {
+		font-family: monospace;
 	}
 </style>

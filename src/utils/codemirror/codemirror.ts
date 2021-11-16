@@ -24,7 +24,6 @@ import {
 	drawSelection,
 	highlightActiveLine
 } from '@codemirror/view';
-import { oneDark } from '@codemirror/theme-one-dark';
 import { indentWithTab } from '@codemirror/commands';
 import { EditorState } from '@codemirror/state';
 import type { Parser } from 'prettier';
@@ -106,7 +105,6 @@ export const isSupported = (language: string): boolean => {
  * The list of default extensions to use for the codemirror editor configuration.
  */
 export const defaultExtensions = [
-	oneDark,
 	lineNumbers(),
 	highlightActiveLineGutter(),
 	highlightSpecialChars(),

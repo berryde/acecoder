@@ -2,6 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	export let size: 'small' | 'medium' | 'large' = 'medium';
+	export let button = false;
 	export let testId: string = '';
 	const dispatch = createEventDispatcher();
 
@@ -22,6 +23,12 @@
 	}
 </script>
 
-<div class="{getDimensions()} flex-shrink-0 flex-grow-0" on:click={click} data-testid={testId}>
-	<slot />
-</div>
+{#if button}
+	<button on:click={click} class="{getDimensions()} flex-shrink-0 flex-grow-0" data-testid={testId}
+		><slot /></button
+	>
+{:else}
+	<div class="{getDimensions()} flex-shrink-0 flex-grow-0" data-testid={testId}>
+		<slot />
+	</div>
+{/if}
