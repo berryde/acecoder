@@ -91,7 +91,7 @@
 	}
 </script>
 
-<div class="flex-grow h-full w-full flex flex-col overflow-x-auto bg-gray-200 dark:bg-bluegray-700">
+<div class="flex-grow h-full w-full flex flex-col overflow-x-auto bg-gray-200 dark:bg-bluegray-600">
 	<div class=" dark:text-bluegray-300 flex flex-row justify-between w-full items-center p-2">
 		<div class="font-bold uppercase text-xs ">Preview</div>
 		<div class="flex flex-row space-x-2">
