@@ -125,7 +125,7 @@
 						static = e.data.compiled.public;
 
 						// Load the index.html file
-						if (static && 'public/index.html' in static) {
+						if ('public/index.html' in static) {
 							document.body.innerHTML = static['public/index.html'];
 						}
 

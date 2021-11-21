@@ -21,8 +21,7 @@
 			class="w-full dark:bg-dark-bglight focus:outline-none focus:ring-1 focus:ring-bluegray-300 px-3 py-1 h-1/3 resize-none"
 			spellcheck={true}
 		/>
-		<button
-			class="transition-all hover:bg-green-800 bg-green-600 px-3 mt-3 rounded py-1 text-white "
+		<button class="transition-all hover:bg-blue-800 bg-blue-500 px-3 mt-3 rounded py-1 text-white "
 			>Submit</button
 		>
 	</div>

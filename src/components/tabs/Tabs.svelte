@@ -37,8 +37,9 @@
 						<p>{tabs.filter((tab) => tab == path).length == 1 ? tail(path) : path}</p>
 
 						<div class="flex flex-row items-center justify-between w-4 dark:text-dark-text">
-							{#if !hovering && unsaved.includes(path)}<div
-									class="transition-all bg-bluegray-400 dark:bg-bluegray-300 rounded-full ml-1.5 h-1.5 w-1.5"
+							{#if !hovering && unsaved.includes(path)}
+								<div
+									class="transition-all bg-light-text dark:bg-dark-text rounded-full ml-1.5 h-1.5 w-1.5"
 									data-testid="unsaved-dot"
 								/>
 							{:else}

@@ -1,5 +1,13 @@
 <script>
 	import IDE from '../pages/IDE/IDE.svelte';
+
+	import PrivateRoute from '../components/auth/PrivateRoute.svelte';
 </script>
 
-<IDE />
+<svelte:head>
+	<title>Svelte Application</title>
+</svelte:head>
+
+<PrivateRoute>
+	<IDE />
+</PrivateRoute>

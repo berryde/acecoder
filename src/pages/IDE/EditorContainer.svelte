@@ -10,9 +10,7 @@
 	// Send the results to the preview.
 	function handleCodeChanged(code: string) {
 		editorContent[$selectedTab] = code;
-		unsavedTabs.update((unsavedTabs) =>
-			unsavedTabs.includes($selectedTab) ? unsavedTabs : [...unsavedTabs, $selectedTab]
-		);
+		unsavedTabs.update((tabs) => (tabs.includes($selectedTab) ? tabs : [...tabs, $selectedTab]));
 	}
 
 	function handleSave() {

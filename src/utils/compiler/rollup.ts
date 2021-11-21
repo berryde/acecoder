@@ -62,13 +62,14 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 			"The file 'public/index.html' could not be found. Make sure the file exists in order to render the application.",
 			'IndexFileNotFoundError'
 		);
-		return;
 	} else if (!('package.json' in filesystem)) {
 		const html = filesystem['public/index.html'].code;
 		self.postMessage({
 			js: '',
 			css: '',
-			html: html
+			public: {
+				'public/index.html': html
+			}
 		});
 	} else {
 		// Read the package JSON file.
@@ -124,6 +125,7 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 				css: styles,
 				public: publicResources
 			};
+			self.postMessage(output);
 		} catch (e) {
 			let outputError: WorkerError;
 			if (rollupWarning) {
@@ -157,7 +159,6 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 				outputError.pos,
 				outputError.location
 			);
-			return;
 		}
 	}
 });
