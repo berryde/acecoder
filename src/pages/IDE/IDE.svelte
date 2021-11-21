@@ -13,9 +13,15 @@
 	import { onMount } from 'svelte';
 
 	/**
-	 *
+	 * Whether the user is currently drawing a selection over the editor.
+	 * This allows us to ignore pointer events in the preview iframe.
 	 */
 	let selecting = false;
+
+	/**
+	 * Update the value of whether the user is currently drawing a selection over the editor.
+	 * @param e The triggering event.
+	 */
 	function toggleSelecting(e: CustomEvent<boolean>) {
 		selecting = e.detail;
 	}
@@ -25,13 +31,24 @@
 	 */
 	let selected = 0;
 
+	/**
+	 * Whether the sidebar is collapsed.
+	 */
 	let collapsed = false;
 
+	/**
+	 * Update the selected index and collapsed state of the sidebar.
+	 * @param updatedIndex The newly selected sidebar item index.
+	 */
 	function updateSidebar(updatedIndex: number | undefined) {
 		selected = updatedIndex;
 		collapsed = false;
 	}
 
+	/**
+	 * Called when the user presses a key while using the application
+	 * @param e The event that triggered this function.
+	 */
 	function keydown(e: KeyboardEvent) {
 		if (e.code == 'KeyB' && e.ctrlKey) {
 			e.preventDefault();
@@ -40,6 +57,7 @@
 	}
 
 	onMount(() => {
+		// Add a listener for key combinations on mount
 		window.addEventListener('keydown', keydown);
 	});
 </script>

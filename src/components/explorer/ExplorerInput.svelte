@@ -1,24 +1,36 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
 
-	// Props
+	/**
+	 * A list of names that this file cannot be renamed to.
+	 */
 	export let reservedNames: string[] = [];
+
+	/**
+	 * The depth of this file in the filesystem relative to the root.
+	 */
 	export let depth: number = 0;
+
+	/**
+	 * The initial value of this file, useful for loading existing projects.
+	 */
 	export let initialValue: string = undefined;
 
-	// Variables
 	/**
 	 * The value bound to the input field.
 	 */
 	let value: string;
+
 	/**
 	 * A reference to the HTML input field.
 	 */
 	let input: HTMLInputElement;
+
 	/**
 	 * Whether there is an error with the user's input.
 	 */
 	let error: boolean = false;
+
 	/**
 	 * The error message to show, if any.
 	 */
@@ -47,6 +59,14 @@
 		}
 	}
 
+	// Focus the input by default.
+	onMount(() => {
+		input.focus();
+		if (initialValue != undefined) {
+			value = initialValue;
+		}
+	});
+
 	/**
 	 * Called when value is changed. Determines whether the requested value is valid.
 	 */
@@ -56,14 +76,6 @@
 	} else {
 		error = false;
 	}
-
-	// Focus the input by default.
-	onMount(() => {
-		input.focus();
-		if (initialValue != undefined) {
-			value = initialValue;
-		}
-	});
 </script>
 
 <div class={error ? 'bg-red-800' : 'dark:bg-dark-bglight'} style="padding-left: {depth * 0.5}rem;">

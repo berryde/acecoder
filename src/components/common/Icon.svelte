@@ -1,15 +1,32 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
+	/**
+	 * The icon size to display.
+	 */
 	export let size: 'small' | 'medium' | 'large' = 'medium';
+
+	/**
+	 * Whether this icon is also a button.
+	 */
 	export let button = false;
+
+	/**
+	 * The test-id of this icon, so that it can be identified programatically in tests.
+	 */
 	export let testId: string = '';
 	const dispatch = createEventDispatcher();
 
+	/**
+	 * Called when the user clicks on this component.
+	 */
 	function click() {
 		dispatch('click');
 	}
 
+	/**
+	 * Retrieves tailwind classes for the desired size.
+	 */
 	function getDimensions() {
 		switch (size) {
 			case 'small':

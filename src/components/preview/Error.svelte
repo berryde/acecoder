@@ -2,8 +2,15 @@
 	import type { WorkerError } from 'src/utils/types';
 	import IoMdClose from 'svelte-icons/io/IoMdClose.svelte';
 	import Icon from '../common/Icon.svelte';
+
+	/**
+	 * The error to display.
+	 */
 	export let error: WorkerError;
 
+	/**
+	 * Dismiss this error.
+	 */
 	function close() {
 		error = undefined;
 	}

@@ -12,6 +12,11 @@
 	import Droppable from '../common/Droppable.svelte';
 	import { tail } from '../../utils/filesystem/filesystem';
 
+	/**
+	 * Called when a tab is dropped on this tab to rearrange the tabs.
+	 * @param target The target tab filename.
+	 * @param source The source tab filename.
+	 */
 	function handleDropped(target: string, source: string) {
 		if (target != source) {
 			// Rearrange the tabs such that this tab is to the right of the dropped tab.

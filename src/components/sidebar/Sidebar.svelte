@@ -1,19 +1,26 @@
 <script lang="ts">
-	import { filesystem } from '../../utils/filesystem/filesystem';
 	import { createEventDispatcher } from 'svelte';
 	import IoIosFiling from 'svelte-icons/io/IoIosFiling.svelte';
 	import IoIosSettings from 'svelte-icons/io/IoIosSettings.svelte';
 	import IoMdText from 'svelte-icons/io/IoMdText.svelte';
 	import Icon from '../common/Icon.svelte';
-	import Explorer from '../explorer/Explorer.svelte';
-	import Settings from '../settings/Settings.svelte';
-	import Feedback from '../feedback/Feedback.svelte';
 
 	const dispatch = createEventDispatcher();
 
+	/**
+	 * The selected sidebar item's index.
+	 */
 	export let selected: number;
+
+	/**
+	 * Whether the sidebar is collapsed.
+	 */
 	export let collapsed: boolean;
 
+	/**
+	 * Called when the user selects a sidebar item.
+	 * @param index the index of the selected item.
+	 */
 	function select(index: number) {
 		if (!collapsed && selected == index) {
 			dispatch('collapse');

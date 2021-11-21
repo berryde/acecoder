@@ -4,15 +4,23 @@
 	import { tabs, selectedTab, unsavedTabs, saveTab } from '../../utils/tabs/tabs';
 	import { filesystem, getExtension, getFile, updateFile } from '../../utils/filesystem/filesystem';
 
+	/**
+	 * A map of filename to unsaved changes for that file.
+	 */
 	let editorContent: { [key: string]: string } = {};
 
-	// When the editor source is changed, send it to the web worker.
-	// Send the results to the preview.
+	/**
+	 * Update the unsaved changes in memory.
+	 * @param code The new unsaved changes.
+	 */
 	function handleCodeChanged(code: string) {
 		editorContent[$selectedTab] = code;
 		unsavedTabs.update((tabs) => (tabs.includes($selectedTab) ? tabs : [...tabs, $selectedTab]));
 	}
 
+	/**
+	 * Save the current file when the user presses Ctrl+S
+	 */
 	function handleSave() {
 		if ($selectedTab != '') {
 			saveTab($selectedTab);
@@ -20,6 +28,10 @@
 		}
 	}
 
+	/**
+	 * Load the contents of the file for this tab.
+	 * @param tab The tab associated with this file and editor.
+	 */
 	function loadEditorContent(tab: string) {
 		const result = getFile($filesystem, tab);
 		if (result.type == 'file') {

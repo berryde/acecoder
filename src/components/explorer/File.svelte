@@ -1,14 +1,9 @@
 <script lang="ts">
-	// Icons
 	import Trash from 'svelte-icons/io/IoMdTrash.svelte';
 	import Hoverable from '../common/Hoverable.svelte';
 	import FileIcon from 'svelte-icons/fa/FaRegFile.svelte';
 	import Pen from 'svelte-icons/fa/FaPen.svelte';
-
-	// Components
 	import ExplorerInput from './ExplorerInput.svelte';
-
-	// Utils
 	import {
 		tail,
 		deleteFile,
@@ -22,7 +17,6 @@
 	import { latestError } from '../../utils/console/console';
 	import Icon from '../common/Icon.svelte';
 
-	// Props
 	/**
 	 * The full path to this file including the filename.
 	 */
@@ -33,9 +27,10 @@
 	 */
 	export let depth: number = 0;
 
-	// Variables
+	/**
+	 * Whether the user is renaming this file.
+	 */
 	let renaming = false;
-	$: name = tail(path);
 
 	/**
 	 * Update whether the renaming input field should be shown.
@@ -93,6 +88,8 @@
 	function handleClick() {
 		openTab(path);
 	}
+
+	$: name = tail(path);
 </script>
 
 <div>

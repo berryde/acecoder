@@ -33,41 +33,40 @@
 	import Draggable from '../common/Draggable.svelte';
 	import Icon from '../common/Icon.svelte';
 
-	// Props
 	/**
 	 * The path to this folder.
 	 */
 	export let path: string = '';
+
 	/**
 	 * The children of this folder (more folders and files).
 	 */
 	export let children: Filesystem;
+
 	/**
 	 * The depth of this folder in the filesystem.
 	 */
 	export let depth: number = 0;
 
-	// Variables
 	/**
 	 * Whether the renaming text area should be shown.
 	 */
 	let renaming = false;
+
 	/**
 	 * Whether the user is creating a new child object.
 	 */
 	let creating = false;
+
 	/**
 	 * Whether the user is creating a new child file.
 	 */
 	let creatingFile = false;
+
 	/**
 	 * Whether the children section is collapsed.
 	 */
 	let collapsed = false;
-	/**
-	 * The name of the folder.
-	 */
-	$: name = tail(path);
 
 	/**
 	 * Shows/hides the input to rename this folder.
@@ -155,6 +154,11 @@
 		}
 		creating = false;
 	}
+
+	/**
+	 * The name of the folder.
+	 */
+	$: name = tail(path);
 </script>
 
 <div>

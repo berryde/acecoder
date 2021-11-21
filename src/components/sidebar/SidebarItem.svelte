@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * The title of this sidebar item.
+	 */
 	export let title: string;
 </script>
 
