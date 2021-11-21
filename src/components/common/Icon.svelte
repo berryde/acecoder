@@ -24,8 +24,10 @@
 </script>
 
 {#if button}
-	<button on:click={click} class="{getDimensions()} flex-shrink-0 flex-grow-0" data-testid={testId}
-		><slot /></button
+	<button
+		on:click={click}
+		class="{getDimensions()} flex-shrink-0 flex-grow-0 dark:text-dark-text text-light-text"
+		data-testid={testId}><slot /></button
 	>
 {:else}
 	<div class="{getDimensions()} flex-shrink-0 flex-grow-0" data-testid={testId}>

@@ -8,10 +8,21 @@ describe('The sidebar component', () => {
 		expect(screen.getByTestId('settings')).toBeInTheDocument();
 		expect(screen.getByTestId('explorer')).toBeInTheDocument();
 	});
-	it('renders the settings when selected', async () => {
-		render(Sidebar);
+	it('fires the select event when an option is selected', async () => {
+		const { component } = render(Sidebar);
+		const handler = jest.fn();
+		component.$on('select', handler);
 		const settings = screen.getByTestId('settings');
 		fireEvent.click(settings);
-		expect(await screen.findByText('settings')).toBeInTheDocument();
+		expect(await handler).toBeCalledTimes(1);
+	});
+	it('fires the collapse event when a selected option is selected', async () => {
+		const { component } = render(Sidebar);
+		const handler = jest.fn();
+		component.$on('collapse', handler);
+		const settings = screen.getByTestId('settings');
+		fireEvent.click(settings);
+		fireEvent.click(settings);
+		expect(await handler).toBeCalledTimes(1);
 	});
 });

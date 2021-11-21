@@ -20,7 +20,7 @@
 	}
 </script>
 
-<div class="flex flex-row bg-gray-200 dark:bg-bluegray-800  overflow-x-auto">
+<div class="flex flex-row bg-gray-200 dark:bg-dark-bgdark  overflow-x-auto">
 	{#each tabs as path}
 		<Draggable data={path} variant="tabs">
 			<Droppable let:dropping on:dropped={(e) => handleDropped(path, e.detail)} variant="tabs">
@@ -28,15 +28,15 @@
 					<div
 						class="{$latestError && $latestError.location == path
 							? 'text-red-400'
-							: ' dark:text-bluegray-300'} transition-colors pl-4 pr-2 py-1 selected flex flex-row space-x-1 justify-between items-center {path ==
+							: ' dark:text-dark-text'} transition-colors pl-4 pr-2 py-1 selected flex flex-row space-x-1 justify-between items-center {path ==
 							selected &&
-							'bg-gray-100 dark:bg-bluegray-600'} hover:bg-gray-300 dark:hover:bg-gray-800 {dropping &&
+							'bg-gray-100 dark:bg-dark-bglight'} hover:bg-gray-300 dark:hover:bg-gray-800 {dropping &&
 							'bg-blue-500'}"
 						on:click={() => openTab(path)}
 					>
 						<p>{tabs.filter((tab) => tab == path).length == 1 ? tail(path) : path}</p>
 
-						<div class="flex flex-row items-center justify-between w-4 dark:text-bluegray-300">
+						<div class="flex flex-row items-center justify-between w-4 dark:text-dark-text">
 							{#if !hovering && unsaved.includes(path)}<div
 									class="transition-all bg-bluegray-400 dark:bg-bluegray-300 rounded-full ml-1.5 h-1.5 w-1.5"
 									data-testid="unsaved-dot"

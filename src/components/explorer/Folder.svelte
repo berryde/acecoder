@@ -175,7 +175,7 @@
 			<Draggable data={path} variant="explorer">
 				<Droppable let:dropping on:dropped={(e) => dropped(e.detail)} variant="explorer">
 					<div
-						class="flex transition flex-row items-center space-x-2 dark:text-bluegray-300 h-8 {dropping &&
+						class="flex transition flex-row items-center space-x-2 dark:text-dark-text h-8 {dropping &&
 							'bg-blue-500'}"
 						style="padding-left: {(depth + 1.5) * 0.5}rem;"
 					>

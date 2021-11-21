@@ -10,7 +10,6 @@
 	} from 'src/utils/types';
 	import { onMount } from 'svelte';
 	import previewTemplate from './template/template';
-	import popupTemplate from './template/popup';
 	import IoIosPlay from 'svelte-icons/io/IoIosPlay.svelte';
 	import IoIosExpand from 'svelte-icons/io/IoIosExpand.svelte';
 	import Icon from '../common/Icon.svelte';
@@ -86,13 +85,16 @@
 				'Preview',
 				`width = ${iframe.clientWidth}, height = ${iframe.clientHeight}, popup, location=no, menu=no, status=no, `
 			);
-			popup.document.write(popupTemplate);
+			popup.document.write(previewTemplate);
+			popup.postMessage({
+				type: 'popup'
+			});
 		}
 	}
 </script>
 
-<div class="flex-grow h-full w-full flex flex-col overflow-x-auto bg-gray-200 dark:bg-bluegray-600">
-	<div class=" dark:text-bluegray-300 flex flex-row justify-between w-full items-center p-2">
+<div class="flex-grow h-full w-full flex flex-col overflow-hidden bg-gray-200 dark:bg-dark-bglight">
+	<div class=" dark:text-dark-text flex flex-row justify-between w-full items-center p-2">
 		<div class="font-bold uppercase text-xs ">Preview</div>
 		<div class="flex flex-row space-x-2">
 			<Icon on:click={() => handlePopout()} button={true}>

@@ -30,13 +30,41 @@ function getDependencies(packageJSON: {
 	return result;
 }
 
+const throwGenericError = (
+	message: string,
+	name: string = 'Error',
+	pos: number = 0,
+	location: string = ''
+) => {
+	const error: WorkerError = {
+		location: location,
+		message: message,
+		name: name,
+		pos: pos
+	};
+	const output = {
+		js: '',
+		css: '',
+		public: {},
+		error: error
+	};
+	self.postMessage(output);
+};
+
 self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<void> => {
 	// Recreate the filesystem in memory.
 	const filesystem = generateLookup(event.data);
 	var rollupWarning: RollupWarning;
-	if (!('package.json' in filesystem)) {
-		const html = 'public/index.html' in filesystem ? filesystem['public/index.html'].code : '';
 
+	// If there is no package.json, attempt to serve a static page.
+	if (!('public/index.html' in filesystem)) {
+		throwGenericError(
+			"The file 'public/index.html' could not be found. Make sure the file exists in order to render the application.",
+			'IndexFileNotFoundError'
+		);
+		return;
+	} else if (!('package.json' in filesystem)) {
+		const html = filesystem['public/index.html'].code;
 		self.postMessage({
 			js: '',
 			css: '',
@@ -45,8 +73,24 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 	} else {
 		// Read the package JSON file.
 		const packageJSON = JSON.parse(filesystem['package.json'].code);
+
 		// Determine the entry point.
 		const entryPoint = packageJSON['main'];
+		if (!entryPoint) {
+			throwGenericError(
+				"No entry point was specified in the application's package.json file. Ensure there is an entry 'main' pointing to your entry point.",
+				'EntryPointMissingError',
+				0,
+				'package.json'
+			);
+		} else if (!(entryPoint in filesystem)) {
+			throwGenericError(
+				"The specified entry point '" + entryPoint + "' could not be found in the file system.",
+				'EntryPointNotFoundError',
+				0,
+				'package.json'
+			);
+		}
 
 		const dependencies = getDependencies(packageJSON);
 
@@ -107,13 +151,13 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 				};
 			}
 
-			output = {
-				js: '',
-				css: '',
-				public: {},
-				error: outputError
-			};
+			throwGenericError(
+				outputError.message,
+				outputError.name,
+				outputError.pos,
+				outputError.location
+			);
+			return;
 		}
-		self.postMessage(output);
 	}
 });

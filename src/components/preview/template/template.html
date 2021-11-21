@@ -35,6 +35,8 @@
 			// Create a public directory
 			let static = {};
 
+			let popup = false;
+
 			// Create the script tag
 			let script = createScript('');
 			document.head.appendChild(script);
@@ -50,10 +52,17 @@
 			});
 
 			function reply(type = 'log', data) {
-				parent.postMessage({
-					type: type,
-					data: data
-				});
+				if (popup) {
+					window.opener.postMessage({
+						type: type,
+						data: data
+					});
+				} else {
+					parent.postMessage({
+						type: type,
+						data: data
+					});
+				}
 			}
 
 			// Generate a new script tag to re-run the script
@@ -116,7 +125,7 @@
 						static = e.data.compiled.public;
 
 						// Load the index.html file
-						if ('public/index.html' in static) {
+						if (static && 'public/index.html' in static) {
 							document.body.innerHTML = static['public/index.html'];
 						}
 
@@ -129,6 +138,14 @@
 						style.innerHTML = e.data.compiled.css;
 						break;
 				}
+			}
+
+			if (window.opener && window.opener !== window) {
+				popup = true;
+				reply('system', 'loaded');
+				window.addEventListener('beforeunload', () => {
+					reply('system, quit');
+				});
 			}
 
 			// Listen for new commands

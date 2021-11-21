@@ -12,11 +12,11 @@
 	function getMessageClass(type: string) {
 		switch (type) {
 			case 'warn':
-				return 'bg-yellow-400 text-yellow-400 bg-opacity-50 border-yellow-300';
+				return 'bg-yellow-400 text-yellow-800 dark:text-yellow-400 bg-opacity-50 border-yellow-700 dark:border-yellow-300';
 			case 'error':
-				return 'bg-red-900 text-red-400 bg-opacity-50 border-red-800';
+				return 'bg-red-400 dark:bg-red-900 text-red-800 dark:text-red-400  bg-opacity-50 border-red-800';
 			default:
-				return 'dark:text-bluegray-300';
+				return 'dark:text-dark-text';
 		}
 	}
 
@@ -24,7 +24,11 @@
 		const output: { message: PreviewMessage; count: number }[] = [];
 
 		for (let i = 0; i < messages.length; i++) {
-			if (i > 0 && messages[i].data == messages[i - 1].data) {
+			if (
+				i > 0 &&
+				messages[i].data == messages[i - 1].data &&
+				messages[i].type == messages[i - 1].type
+			) {
 				output[output.length - 1].count++;
 			} else {
 				output.push({
@@ -37,9 +41,9 @@
 	}
 </script>
 
-<div class="flex flex-col h-full overflow-x-auto ">
+<div class="flex flex-col h-full overflow-x-hidden">
 	<div
-		class="w-full bg-gray-200 dark:bg-bluegray-600 dark:text-bluegray-300 flex flex-row justify-between px-5 py-2 items-center"
+		class="w-full bg-gray-200 dark:bg-dark-bglight dark:text-dark-text flex flex-row justify-between px-5 py-2 items-center"
 	>
 		<div class="flex flex-row items-center">
 			<Icon>
@@ -56,7 +60,7 @@
 			<MdAutorenew />
 		</Icon>
 	</div>
-	<div class="flex-grow overflow-y-auto text-sm dark:bg-bluegray-800">
+	<div class="flex-grow overflow-y-auto text-sm dark:bg-dark-bgdark">
 		{#if messages.length > 0}
 			{#each groupMessages(messages) as groupedMessage, index}
 				<div
@@ -87,3 +91,8 @@
 		{/if}
 	</div>
 </div>
+
+<style lang="postcss">
+	.warn {
+	}
+</style>

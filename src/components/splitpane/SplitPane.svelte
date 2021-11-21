@@ -2,20 +2,24 @@
 	/**
 	 * Svelte split pane component, inspired by https://github.com/Readiz/svelte-split-pane.
 	 */
-	import { onMount } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import Separator from './Separator.svelte';
 
 	/**
 	 * The size of the left pane as a percentage of the split pane's width.
 	 */
 	export let pane1Size: number = 50;
+
 	/**
 	 * The size of the right pane as a percentage of the split pane's width.
 	 */
 	export let pane2Size: number = 50;
+
 	/**
 	 * The minimum allowed size of the left pane as a CSS string.
 	 */
 	export let minPane1Size: string = '0';
+
 	/**
 	 * The minimum allowed size of the right pane as a CSS string.
 	 */
@@ -27,10 +31,12 @@
 	 * The left pane.
 	 */
 	let pane1: HTMLDivElement;
+
 	/**
 	 * The right pane.
 	 */
 	let pane2: HTMLDivElement;
+
 	/**
 	 * The separator.
 	 */
@@ -45,10 +51,13 @@
 		pane1Size: number;
 		pane2Size: number;
 	};
+
 	/**
 	 * Whether the user is currently dragging the separator.
 	 */
 	let resizing = false;
+
+	const dispatch = createEventDispatcher();
 
 	/**
 	 * Called when the user drags the separator.
@@ -74,14 +83,18 @@
 
 		if (isHorizontal) {
 			delta.x = Math.min(Math.max(delta.x, -mouseData.pane1Size), mouseData.pane2Size);
-			const w = ((mouseData.pane1Size + delta.x) / width) * 100;
-			pane1.style.width = w + separatorSize + '%';
-			pane2.style.width = 100 - (w + separatorSize) + '%';
+
+			const left = ((mouseData.pane1Size + delta.x) / width) * 100;
+			const right = 100 - left - separatorSize;
+			pane1.style.width = left + '%';
+			pane2.style.width = right + '%';
 		} else {
 			delta.y = Math.min(Math.max(delta.y, -mouseData.pane1Size), mouseData.pane2Size);
-			const h = ((mouseData.pane1Size + delta.y) / height) * 100;
-			pane1.style.height = h + '%';
-			pane2.style.height = 100 - (h + separatorSize) + '%';
+
+			const top = ((mouseData.pane1Size + delta.y) / height) * 100;
+			const bottom = 100 - top - separatorSize;
+			pane1.style.height = top + '%';
+			pane2.style.height = bottom + '%';
 		}
 	}
 
@@ -119,6 +132,7 @@
 			resizing = true;
 			window.addEventListener('mousemove', mouseMove);
 			window.addEventListener('mouseup', mouseUp);
+			dispatch('resize');
 		}
 	}
 
@@ -160,6 +174,7 @@
 
 	$: pane1Size && resetSize();
 	$: pane2Size && resetSize();
+	$: minPane1Size && resetSize();
 
 	let width: number;
 	let height: number;
@@ -175,21 +190,8 @@
 	<div bind:this={pane1} class="pane1-{isHorizontal ? 'horizontal' : 'vertical'}">
 		<slot name="pane1" {resizing} />
 	</div>
-	<div
-		bind:this={separator}
-		class="bg-gray-300 dark:bg-bluegray-900 min-w-0 flex {isHorizontal
-			? 'flex-col'
-			: 'flex-row'} justify-center items-center separator-{isHorizontal
-			? 'horizontal'
-			: 'vertical'}"
-		on:mousedown={mouseDown}
-		on:mouseup={mouseUp}
-	>
-		<div
-			class="transition-colors min-w-0 min-h-0 flex-shrink {isHorizontal
-				? 'w-1 mx-0.5 h-10'
-				: 'h-1 my-0.5 w-10'}  {resizing ? 'dark:bg-bluegray-300' : 'thumb'} rounded"
-		/>
+	<div bind:this={separator} on:mousedown={mouseDown} on:mouseup={mouseUp}>
+		<Separator {isHorizontal} {resizing} />
 	</div>
 	<div bind:this={pane2} class="pane2-{isHorizontal ? 'horizontal' : 'vertical'}">
 		<slot name="pane2" {resizing} />
@@ -222,8 +224,5 @@
 	}
 	.separator-vertical:hover {
 		cursor: y-resize;
-	}
-	.thumb {
-		background-color: #484a4f;
 	}
 </style>

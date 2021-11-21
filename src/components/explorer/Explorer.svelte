@@ -74,7 +74,7 @@
 				<FaDownload />
 			</Icon>
 		</div>
-		<div class="overflow-y-auto w-full flex-grow h-full">
+		<div class="overflow-auto w-full flex-grow h-full">
 			{#each Object.entries(files).sort(compareFile) as [path, object]}
 				{#if object.type === 'file'}
 					<File {path} />

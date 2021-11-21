@@ -51,4 +51,27 @@ describe('The console component', () => {
 		expect(getByText('This is some info')).toBeInTheDocument();
 		expect(getByText('3')).toBeInTheDocument();
 	});
+	it("doesn't group messages with same data but different type are being grouped in the console", () => {
+		const messages: PreviewMessage[] = [
+			{
+				data: 'This is some info',
+				type: 'log'
+			},
+			{
+				data: 'This is some info',
+				type: 'error'
+			},
+			{
+				data: 'This is some info',
+				type: 'error'
+			}
+		];
+		const { getAllByText, getByText } = render(Console, {
+			props: {
+				messages: messages
+			}
+		});
+		expect(getAllByText('This is some info')).toBeTruthy();
+		expect(getByText('2')).toBeInTheDocument();
+	});
 });

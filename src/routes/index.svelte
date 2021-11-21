@@ -1,5 +1,5 @@
 <script>
-	import EditorPage from '../pages/EditorPage.svelte';
+	import IDE from '../pages/IDE/IDE.svelte';
 </script>
 
-<EditorPage />
+<IDE />
