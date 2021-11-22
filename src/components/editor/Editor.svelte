@@ -200,7 +200,6 @@
 
 	darkMode.subscribe(() => {
 		if (view) {
-			console.log(view.state.doc.toString());
 			state = refreshState(view.state.doc.toString());
 		}
 		updateEditor();

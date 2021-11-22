@@ -114,3 +114,9 @@ export type AuthError = {
 	errorCode: string;
 	errorMessage: string;
 };
+
+export type SidebarTab = {
+	name: string;
+	icon: any;
+	component: any;
+};

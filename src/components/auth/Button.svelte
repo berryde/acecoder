@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import Icon from '../common/Icon.svelte';
+	import CircularProgressIndicator from './CircularProgressIndicator.svelte';
 	const dispatch = createEventDispatcher();
 
 	export let text = '';
 	export let icon: boolean = false;
-
+	export let loading: boolean = false;
 	export let classes = '';
 </script>
 
 <div
-	class="flex flex-row transition-colors {classes} py-2 font-bold rounded justify-center items-center hover:cursor-pointer"
+	class="flex flex-row transition-colors py-2 font-bold rounded justify-center items-center hover:cursor-pointer {classes}"
 	on:click={() => dispatch('click')}
 >
 	{#if icon}
@@ -20,5 +21,9 @@
 			</Icon>
 		</div>
 	{/if}
-	<p>{text}</p>
+	{#if loading}
+		<CircularProgressIndicator />
+	{:else}
+		<p>{text}</p>
+	{/if}
 </div>

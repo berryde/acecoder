@@ -86,6 +86,8 @@
 
 			const left = ((mouseData.pane1Size + delta.x) / width) * 100;
 			const right = 100 - left - separatorSize;
+			pane1Size = left;
+			pane2Size = right;
 			pane1.style.width = left + '%';
 			pane2.style.width = right + '%';
 		} else {
@@ -93,8 +95,10 @@
 
 			const top = ((mouseData.pane1Size + delta.y) / height) * 100;
 			const bottom = 100 - top - separatorSize;
-			pane1.style.height = top + '%';
-			pane2.style.height = bottom + '%';
+			pane1Size = top;
+			pane2Size = bottom;
+			pane1.style.height = pane1Size + '%';
+			pane2.style.height = pane2Size + '%';
 		}
 	}
 

@@ -4,39 +4,34 @@
 	import IoLogoGithub from 'svelte-icons/io/IoLogoGithub.svelte';
 	import IoMdPerson from 'svelte-icons/io/IoMdPerson.svelte';
 	import IoMdLock from 'svelte-icons/io/IoMdLock.svelte';
-	import { user, login, federatedLogin } from '../../utils/auth/auth';
+	import { auth } from '../../utils/auth/auth';
 	import { goto } from '$app/navigation';
 	import Input from '../../components/auth/Input.svelte';
 	import type { AuthError } from 'src/utils/types';
 
 	let loading = false;
+	let method: 'default' | 'google' | 'github';
 	let email: string;
 	let password: string;
 	let error: AuthError;
 
 	async function signIn() {
+		method = 'default';
 		error = undefined;
 		loading = true;
-		const result = await login(email, password);
+		const result = await auth.signIn(email, password);
 		loading = false;
 
-		if (typeof result == 'undefined' && $user) {
-			goto('/');
-		} else {
-			error = result;
-		}
+		if (result) error = result;
 	}
 
-	async function federatedSignIn(provider: 'github' | 'google') {
+	async function signInWith(provider: 'github' | 'google') {
+		method = provider;
 		error = undefined;
-
-		const result = await federatedLogin(provider);
-
-		if (typeof result == 'undefined' && $user) {
-			goto('/');
-		} else {
-			error = result;
-		}
+		loading = true;
+		const result = await auth.signInWith(provider);
+		loading = false;
+		if (result) error = result;
 	}
 </script>
 
@@ -52,16 +47,21 @@
 			<IoMdLock />
 		</Input>
 
+		<Button
+			text="Sign in"
+			on:click={() => signIn()}
+			classes="hover:bg-blue-800 bg-blue-600"
+			loading={loading && method == 'default'}
+		/>
+
 		{#if error}
 			<div class="bg-red-900 text-red-400 bg-opacity-50 p-3 mb-3 rounded">
-				<p class="text-bold">{error.errorCode}</p>
+				<p class="font-bold">{error.errorCode}</p>
 				<p>
 					{error.errorMessage}
 				</p>
 			</div>
 		{/if}
-
-		<Button text="Sign in" on:click={() => signIn()} classes="hover:bg-blue-800 bg-blue-600" />
 
 		<div class="flex flex-row justify-center items-center mx-24 my-12">
 			<hr class="border-dark-text flex-grow mr-3" />
@@ -72,16 +72,18 @@
 		<Button
 			text="Sign in with Google"
 			icon={true}
+			loading={loading && method == 'google'}
 			classes="hover:bg-opacity-50 bg-dark-bglight mb-3"
-			on:click={(e) => federatedSignIn('google')}
+			on:click={(e) => signInWith('google')}
 		>
 			<IoLogoGoogle />
 		</Button>
 		<Button
 			text="Sign in with GitHub"
 			icon={true}
+			loading={loading && method == 'github'}
 			classes="hover:bg-opacity-50 bg-dark-bglight"
-			on:click={(e) => federatedSignIn('github')}
+			on:click={(e) => signInWith('github')}
 		>
 			<IoLogoGithub />
 		</Button>

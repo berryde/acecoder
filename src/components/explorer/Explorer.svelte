@@ -12,7 +12,7 @@
 	import Folder from './Folder.svelte';
 
 	// Utils
-	import type { Filesystem } from '../../utils/types';
+
 	import {
 		compareFile,
 		createFile,
@@ -22,11 +22,7 @@
 		getExistingFiles
 	} from '../../utils/filesystem/filesystem';
 	import { openTab } from '../../utils/tabs/tabs';
-	import SidebarItem from '../sidebar/SidebarItem.svelte';
 	import Icon from '../common/Icon.svelte';
-
-	// Props
-	export let files: Filesystem;
 
 	// Variables
 	let creating = false;
@@ -61,46 +57,44 @@
 	}
 </script>
 
-<SidebarItem title="explorer">
-	<div class="flex flex-col h-full">
-		<div class="flex flex-row space-x-2 pl-3 pb-1">
-			<Icon on:click={() => setCreatingFile(true)} testId="add-file" button={true}>
-				<FileIcon />
-			</Icon>
-			<Icon on:click={() => setCreatingFolder(true)} testId="add-folder" button={true}>
-				<FolderIcon />
-			</Icon>
-			<Icon on:click={() => handleExport()} testId="export" button={true}>
-				<FaDownload />
-			</Icon>
-		</div>
-		<div class="overflow-auto w-full flex-grow h-full">
-			{#each Object.entries(files).sort(compareFile) as [path, object]}
-				{#if object.type === 'file'}
-					<File {path} />
-				{:else}
-					<Folder {path} children={object.children} />
-				{/if}
-			{/each}
-			{#if creating}
-				<ExplorerInput
-					on:submit={(e) => {
-						handleCreate(e.detail);
-					}}
-					on:cancelled={(e) => {
-						setCreating(false);
-					}}
-					reservedNames={getExistingFiles($filesystem)}
-				>
-					<Icon>
-						{#if creatingFile}
-							<OutlineFileIcon />
-						{:else}
-							<OutlineFolderIcon />
-						{/if}
-					</Icon>
-				</ExplorerInput>
-			{/if}
-		</div>
+<div class="flex flex-col h-full">
+	<div class="flex flex-row space-x-2 pl-3 pb-1">
+		<Icon on:click={() => setCreatingFile(true)} testId="add-file" button={true}>
+			<FileIcon />
+		</Icon>
+		<Icon on:click={() => setCreatingFolder(true)} testId="add-folder" button={true}>
+			<FolderIcon />
+		</Icon>
+		<Icon on:click={() => handleExport()} testId="export" button={true}>
+			<FaDownload />
+		</Icon>
 	</div>
-</SidebarItem>
+	<div class="overflow-auto w-full flex-grow h-full">
+		{#each Object.entries($filesystem).sort(compareFile) as [path, object]}
+			{#if object.type === 'file'}
+				<File {path} />
+			{:else}
+				<Folder {path} children={object.children} />
+			{/if}
+		{/each}
+		{#if creating}
+			<ExplorerInput
+				on:submit={(e) => {
+					handleCreate(e.detail);
+				}}
+				on:cancelled={(e) => {
+					setCreating(false);
+				}}
+				reservedNames={getExistingFiles($filesystem)}
+			>
+				<Icon>
+					{#if creatingFile}
+						<OutlineFileIcon />
+					{:else}
+						<OutlineFolderIcon />
+					{/if}
+				</Icon>
+			</ExplorerInput>
+		{/if}
+	</div>
+</div>

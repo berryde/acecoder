@@ -1,20 +1,12 @@
 <script>
-	import { user } from '../../utils/auth/auth';
-	import Forbidden from './Forbidden.svelte';
-	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-
-	onMount(() => {
-		user.subscribe((user) => {
-			if (user == undefined) {
-				goto('login');
-			}
-		});
-	});
+	import { auth } from '../../utils/auth/auth';
+	import Loading from './Loading.svelte';
 </script>
 
-{#if $user}
+{#if $auth}
 	<slot />
 {:else}
-	<Forbidden />
+	<div class="h-screen w-screen bg-dark-bgdark flex justify-center items-center">
+		<Loading />
+	</div>
 {/if}

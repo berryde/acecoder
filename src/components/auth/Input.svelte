@@ -9,8 +9,9 @@
 
 	let focused = false;
 
-	function input(e) {
-		value += e.data;
+	function oninput(e: Event) {
+		const element = e.target as HTMLInputElement;
+		value = element.value;
 	}
 </script>
 
@@ -33,6 +34,6 @@
 		{value}
 		on:focus={() => (focused = true)}
 		on:focusout={() => (focused = false)}
-		on:input={(e) => input(e)}
+		on:input={oninput}
 	/>
 </div>

@@ -34,6 +34,7 @@
 				latestError.set(e);
 			} else {
 				latestError.set(undefined);
+
 				compiled = event.data as WorkerResponse;
 			}
 		});
@@ -51,12 +52,15 @@
 	/**
 	 * Reload the preview whenever the filesystem is changed.
 	 */
+
 	filesystem.subscribe((fs) => {
 		refresh(fs);
 	});
 
 	function refresh(fs: Filesystem) {
-		worker && worker.postMessage(getAllFiles('', fs));
+		if (worker) {
+			worker.postMessage(getAllFiles('', fs));
+		}
 	}
 </script>
 

@@ -22,7 +22,6 @@
 
 	function groupMessages(messages: PreviewMessage[]) {
 		const output: { message: PreviewMessage; count: number }[] = [];
-
 		for (let i = 0; i < messages.length; i++) {
 			if (
 				i > 0 &&
