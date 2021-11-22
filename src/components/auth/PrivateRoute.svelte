@@ -5,9 +5,11 @@
 	import { onMount } from 'svelte';
 
 	onMount(() => {
-		$: if (!$user) {
-			goto('login');
-		}
+		user.subscribe((user) => {
+			if (user == undefined) {
+				goto('login');
+			}
+		});
 	});
 </script>
 

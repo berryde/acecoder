@@ -109,3 +109,8 @@ export type WorkerError = {
 	 */
 	location: string;
 };
+
+export type AuthError = {
+	errorCode: string;
+	errorMessage: string;
+};

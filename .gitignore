@@ -3,5 +3,6 @@ node_modules
 /build
 /.svelte-kit
 coverage
-static
+static/worker.js
+static/worker.js.map
 src/utils/auth/firebase.ts
