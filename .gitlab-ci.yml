@@ -1,0 +1,35 @@
+default:
+  image: node
+
+stages:
+  - build
+  - lint
+  - test
+  - deploy
+
+lint:
+  stage: lint
+  script:
+    - yarn install
+    - yarn run format
+    - yarn run lint
+
+test:
+  stage: test
+  script:
+    - yarn install
+    - yarn run test
+
+build:
+  stage: build
+  script:
+    - yarn install
+    - yarn run build
+
+deploy:
+  only:
+    - master
+  stage: deploy
+  script:
+    - yarn install
+    - npx vercel
