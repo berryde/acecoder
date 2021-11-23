@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { getDocs, getFirestore, collection, Timestamp } from 'firebase/firestore';
-	import { onMount } from 'svelte';
 	import { app } from '../../utils/auth/firebase';
 	import type { Feedback } from '../../utils/types';
+	import { onMount } from 'svelte';
 
 	let feedback: Feedback[] = [];
 

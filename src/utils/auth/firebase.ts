@@ -6,12 +6,12 @@ import { initializeApp } from 'firebase/app';
 
 // Add config from firebase.
 const firebaseConfig = {
-	apiKey: 'AIzaSyC7h00ztN3AKGS79h7vHFECuPKCTiKianw',
-	authDomain: 'folio-8b029.firebaseapp.com',
-	projectId: 'folio-8b029',
-	storageBucket: 'folio-8b029.appspot.com',
+	apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string,
+	authDomain: (import.meta.env.VITE_FIREBASE_PROJECT_ID as string) + '.firebaseapp.com',
+	projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string,
+	storageBucket: (import.meta.env.VITE_FIREBASE_PROJECT_ID as string) + '.appspot.com',
 	messagingSenderId: '724755977367',
-	appId: '1:724755977367:web:fb7a98653fc82a388b85d2',
+	appId: import.meta.env.VITE_FIREBASE_APP_ID as string,
 	measurementId: 'G-519JV5VKEV'
 };
 

@@ -17,8 +17,10 @@
 	function leave() {
 		hovering = false;
 	}
+
+	export let classes = '';
 </script>
 
-<div on:mouseenter={enter} on:mouseleave={leave}>
+<div on:mouseenter={enter} on:mouseleave={leave} class={classes}>
 	<slot {hovering} />
 </div>

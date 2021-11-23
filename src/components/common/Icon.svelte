@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import Hoverable from './Hoverable.svelte';
 
 	/**
 	 * The icon size to display.
@@ -10,6 +11,8 @@
 	 * Whether this icon is also a button.
 	 */
 	export let button = false;
+
+	export let label: string;
 
 	/**
 	 * The test-id of this icon, so that it can be identified programatically in tests.
@@ -40,14 +43,16 @@
 	}
 </script>
 
-{#if button}
-	<button
-		on:click={click}
-		class="{getDimensions()} flex-shrink-0 flex-grow-0 dark:text-dark-text text-light-text"
-		data-testid={testId}><slot /></button
-	>
-{:else}
-	<div class="{getDimensions()} flex-shrink-0 flex-grow-0" data-testid={testId}>
-		<slot />
-	</div>
-{/if}
+<div class="flex flex-col justify-center items-center">
+	{#if button}
+		<button
+			on:click={click}
+			class="{getDimensions()} flex-shrink-0 flex-grow-0 dark:text-dark-text text-light-text"
+			data-testid={testId}><slot /></button
+		>
+	{:else}
+		<div class="{getDimensions()} flex-shrink-0 flex-grow-0" data-testid={testId}>
+			<slot />
+		</div>
+	{/if}
+</div>

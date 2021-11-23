@@ -4,7 +4,7 @@
 	import IoMdLock from 'svelte-icons/io/IoMdLock.svelte';
 	import Input from '../../components/auth/Input.svelte';
 	import type { AuthError } from 'src/utils/types';
-	import AdminFeedback from '../../components/admin/AdminFeedback.svelte';
+	import AdminFeedback from '../../components/feedback/FeedbackViewer.svelte';
 
 	let loading = false;
 	let method: 'default' | 'google' | 'github';
