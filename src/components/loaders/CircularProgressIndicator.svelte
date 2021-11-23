@@ -1,8 +1,10 @@
-<div class="loader h-7 w-7" />
+<div class="loader h-7 w-7 dark:border-dark-text border-light-text" />
 
 <style>
 	.loader {
-		border: 5px solid #fff;
+		border-width: 2px;
+		border-style: solid;
+
 		border-bottom-color: transparent;
 		border-radius: 50%;
 		display: inline-block;

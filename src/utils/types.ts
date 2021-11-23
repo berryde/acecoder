@@ -122,3 +122,9 @@ export type SidebarTab = {
 	icon: typeof SvelteComponentDev;
 	component: typeof SvelteComponentDev;
 };
+
+export type Feedback = {
+	posted: string;
+	comment: string;
+	component: string;
+};
