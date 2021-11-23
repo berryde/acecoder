@@ -34,4 +34,4 @@ deploy:
   stage: deploy
   script:
     - yarn install
-    - npx vercel
+    - npx vercel --token $VERCEL_TOKEN
