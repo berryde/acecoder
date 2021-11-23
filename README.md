@@ -32,4 +32,9 @@ docker run -d --name gitlab-runner --restart always \
      gitlab/gitlab-runner:latest
 ```
 
-To interact with a running container, run `sudo docker exec -it gitlab-runner /bin/bash`.
+To interact with a running container, run `sudo docker exec -it gitlab-runner /bin/bash`. If the container is running but not responding, restart the service with the following:
+
+```bash
+service gitlab-runner stop
+service gitlab-runner start
+```
