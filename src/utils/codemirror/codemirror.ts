@@ -13,9 +13,9 @@ import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets';
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { commentKeymap } from '@codemirror/comment';
-import parserBabel from 'prettier/parser-babel';
-import parserHtml from 'prettier/parser-html';
-import parserCss from 'prettier/parser-postcss';
+import parserBabel from 'prettier/parser-babel.js';
+import parserHtml from 'prettier/parser-html.js';
+import parserCss from 'prettier/parser-postcss.js';
 import { defaultHighlightStyle } from '@codemirror/highlight';
 import { lintKeymap } from '@codemirror/lint';
 import {

@@ -1,14 +1,36 @@
-<script>
+<script lang="ts">
 	import Button from '../../components/auth/Button.svelte';
-	import { navigate } from 'svelte-routing';
 	import IoLogoGoogle from 'svelte-icons/io/IoLogoGoogle.svelte';
 	import IoLogoGithub from 'svelte-icons/io/IoLogoGithub.svelte';
-	import { user } from '../../utils/auth/auth';
-	import { goto } from '$app/navigation';
+	import IoMdPerson from 'svelte-icons/io/IoMdPerson.svelte';
+	import IoMdLock from 'svelte-icons/io/IoMdLock.svelte';
+	import { auth } from '../../utils/auth/auth';
+	import Input from '../../components/auth/Input.svelte';
+	import type { AuthError } from 'src/utils/types';
 
-	function signIn() {
-		$user = true;
-		goto('/');
+	let loading = false;
+	let method: 'default' | 'google' | 'github';
+	let email: string;
+	let password: string;
+	let error: AuthError;
+
+	async function signIn() {
+		method = 'default';
+		error = undefined;
+		loading = true;
+		const result = await auth.signIn(email, password);
+		loading = false;
+
+		if (result) error = result;
+	}
+
+	async function signInWith(provider: 'github' | 'google') {
+		method = provider;
+		error = undefined;
+		loading = true;
+		const result = await auth.signInWith(provider);
+		loading = false;
+		if (result) error = result;
 	}
 </script>
 
@@ -17,23 +39,55 @@
 >
 	<div class="w-96 flex flex-col">
 		<h1 class="text-3xl font-bold mb-10">Welcome back</h1>
-		<input placeholder="Username" class="p-2 rounded bg-dark-bglight mb-3" />
-		<input placeholder="Password" class="p-2 rounded bg-dark-bglight mb-3" />
-		<Button text="Sign in" on:click={() => signIn()} />
+		<Input placeholder="Email" type="email" icon={true} classes="mb-3" bind:value={email}>
+			<IoMdPerson />
+		</Input>
+		<Input placeholder="Password" type="password" icon={true} classes="mb-3" bind:value={password}>
+			<IoMdLock />
+		</Input>
+
+		<Button
+			text="Sign in"
+			on:click={() => signIn()}
+			classes="hover:bg-blue-800 bg-blue-600"
+			loading={loading && method == 'default'}
+		/>
+
+		{#if error}
+			<div class="bg-red-900 text-red-400 bg-opacity-50 p-3 mb-3 rounded">
+				<p class="font-bold">{error.errorCode}</p>
+				<p>
+					{error.errorMessage}
+				</p>
+			</div>
+		{/if}
 
 		<div class="flex flex-row justify-center items-center mx-24 my-12">
 			<hr class="border-dark-text flex-grow mr-3" />
 			<p class="">or</p>
 			<hr class="border-dark-text flex-grow ml-3" />
 		</div>
-		<div class="mb-3">
-			<Button text="Sign in with Google" icon={true} color="dark"><IoLogoGoogle /></Button>
-		</div>
-		<div>
-			<Button text="Sign in with GitHub" icon={true} color="dark"><IoLogoGithub /></Button>
-		</div>
+
+		<Button
+			text="Sign in with Google"
+			icon={true}
+			loading={loading && method == 'google'}
+			classes="hover:bg-opacity-50 bg-dark-bglight mb-3"
+			on:click={() => signInWith('google')}
+		>
+			<IoLogoGoogle />
+		</Button>
+		<Button
+			text="Sign in with GitHub"
+			icon={true}
+			loading={loading && method == 'github'}
+			classes="hover:bg-opacity-50 bg-dark-bglight"
+			on:click={() => signInWith('github')}
+		>
+			<IoLogoGithub />
+		</Button>
 		<span class="mt-3"
-			>Don't have an account? <a href="signup" class="text-blue-600">Sign up</a></span
+			>Don't have an account? <a href="register" class="text-blue-600">Sign up</a></span
 		>
 	</div>
 </div>

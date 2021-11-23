@@ -36,7 +36,7 @@
 	/**
 	 * The path to this folder.
 	 */
-	export let path: string = '';
+	export let path = '';
 
 	/**
 	 * The children of this folder (more folders and files).
@@ -46,7 +46,7 @@
 	/**
 	 * The depth of this folder in the filesystem.
 	 */
-	export let depth: number = 0;
+	export let depth = 0;
 
 	/**
 	 * Whether the renaming text area should be shown.

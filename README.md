@@ -20,3 +20,21 @@ This project uses a variety of development tools for improved productivity and b
 - Svelte
 
 > Created by deb1g19@soton.ac.uk
+
+## GitLab Runner
+
+A GitLab Runner instance is used on a docker container to run the CI/CD pipeline. Create the instance with the following command
+
+```bash
+docker run -d --name gitlab-runner --restart always \
+     -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+     -v /var/run/docker.sock:/var/run/docker.sock \
+     gitlab/gitlab-runner:latest
+```
+
+To interact with a running container, run `sudo docker exec -it gitlab-runner /bin/bash`. If the container is running but not responding, restart the service with the following:
+
+```bash
+service gitlab-runner stop
+service gitlab-runner start
+```

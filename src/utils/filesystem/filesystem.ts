@@ -290,7 +290,7 @@ const createZip = (zip: JSZip, state: Filesystem) => {
 	return zip;
 };
 
-export const exportFilesystem = (state: Filesystem) => {
+export const exportFilesystem = (state: Filesystem): void => {
 	const zip = createZip(new JSZip(), state);
 
 	zip.generateAsync({ type: 'blob' }).then(function (content) {

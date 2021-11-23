@@ -8,22 +8,22 @@
 	/**
 	 * The size of the left pane as a percentage of the split pane's width.
 	 */
-	export let pane1Size: number = 50;
+	export let pane1Size = 50;
 
 	/**
 	 * The size of the right pane as a percentage of the split pane's width.
 	 */
-	export let pane2Size: number = 50;
+	export let pane2Size = 50;
 
 	/**
 	 * The minimum allowed size of the left pane as a CSS string.
 	 */
-	export let minPane1Size: string = '0';
+	export let minPane1Size = '0';
 
 	/**
 	 * The minimum allowed size of the right pane as a CSS string.
 	 */
-	export let minPane2Size: string = '0';
+	export let minPane2Size = '0';
 
 	export let isHorizontal: boolean;
 
@@ -86,6 +86,8 @@
 
 			const left = ((mouseData.pane1Size + delta.x) / width) * 100;
 			const right = 100 - left - separatorSize;
+			pane1Size = left;
+			pane2Size = right;
 			pane1.style.width = left + '%';
 			pane2.style.width = right + '%';
 		} else {
@@ -93,8 +95,10 @@
 
 			const top = ((mouseData.pane1Size + delta.y) / height) * 100;
 			const bottom = 100 - top - separatorSize;
-			pane1.style.height = top + '%';
-			pane2.style.height = bottom + '%';
+			pane1Size = top;
+			pane2Size = bottom;
+			pane1.style.height = pane1Size + '%';
+			pane2.style.height = pane2Size + '%';
 		}
 	}
 
@@ -218,11 +222,5 @@
 		height: var(--right-pane-size);
 		min-height: var(--min-right-pane-size);
 		width: 100%;
-	}
-	.separator-horizontal:hover {
-		cursor: w-resize;
-	}
-	.separator-vertical:hover {
-		cursor: y-resize;
 	}
 </style>

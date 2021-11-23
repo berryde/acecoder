@@ -1,3 +1,5 @@
+import type { SvelteComponentDev } from 'svelte/internal';
+
 /**
  * A project file.
  */
@@ -101,11 +103,22 @@ export type WorkerError = {
 	 */
 	message: string;
 	/**
-	 * The charater position of the error.
+	 * The character position of the error.
 	 */
 	pos: number;
 	/**
-	 * The file where the error occured.
+	 * The file where the error occurred.
 	 */
 	location: string;
+};
+
+export type AuthError = {
+	errorCode: string;
+	errorMessage: string;
+};
+
+export type SidebarTab = {
+	name: string;
+	icon: typeof SvelteComponentDev;
+	component: typeof SvelteComponentDev;
 };

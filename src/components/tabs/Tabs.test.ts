@@ -6,7 +6,7 @@ import Tabs from './Tabs.svelte';
 describe('The Tabs component', () => {
 	it('displays the provided tabs', () => {
 		const tabs: string[] = ['index.tsx', 'package.json'];
-		const selected: string = 'index.tsx';
+		const selected = 'index.tsx';
 		const unsaved: string[] = ['index.tsx'];
 		render(Tabs, {
 			props: {
@@ -20,7 +20,7 @@ describe('The Tabs component', () => {
 	});
 	it('displays a dot for unsaved tabs', () => {
 		const tabs: string[] = ['index.tsx', 'package.json'];
-		const selected: string = 'index.tsx';
+		const selected = 'index.tsx';
 		const unsaved: string[] = ['index.tsx'];
 		render(Tabs, {
 			props: {
@@ -39,7 +39,7 @@ describe('The Tabs component', () => {
 			pos: 0
 		});
 		const tabs: string[] = ['index.tsx', 'package.json'];
-		const selected: string = 'index.tsx';
+		const selected = 'index.tsx';
 		const unsaved: string[] = ['index.tsx'];
 		render(Tabs, {
 			props: {

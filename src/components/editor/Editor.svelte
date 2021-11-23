@@ -63,7 +63,7 @@
 	 */
 	const formatEditor: Command = (view: EditorView): boolean => {
 		if (isSupported(language)) {
-			let result;
+			let result: string;
 			if (language == 'json') {
 				result = JSON.stringify(JSON.parse(view.state.doc.toString()), null, 2);
 			} else {
@@ -153,7 +153,7 @@
 		return view == undefined ? '' : view.state.doc.toString();
 	}
 
-	function changeLanguage(language: string) {
+	function changeLanguage() {
 		updateEditor();
 	}
 
@@ -174,14 +174,14 @@
 		});
 	}
 
-	function mouseUp(e: MouseEvent) {
+	function mouseUp() {
 		if (window) {
 			dispatch('drag', false);
 			window.removeEventListener('mouseup', mouseUp);
 		}
 	}
 
-	function mouseDown(e: MouseEvent) {
+	function mouseDown() {
 		if (window) {
 			dispatch('drag', true);
 			window.addEventListener('mouseup', mouseUp);
@@ -196,11 +196,10 @@
 	/**
 	 * Update the editor when the language changes
 	 */
-	$: changeLanguage(language);
+	$: language && changeLanguage();
 
 	darkMode.subscribe(() => {
 		if (view) {
-			console.log(view.state.doc.toString());
 			state = refreshState(view.state.doc.toString());
 		}
 		updateEditor();

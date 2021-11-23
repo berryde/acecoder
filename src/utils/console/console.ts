@@ -7,10 +7,10 @@ export const messages = writable<PreviewMessage[]>([]);
  */
 export const latestError = writable<WorkerError>();
 
-export const addMessage = (message: PreviewMessage) => {
+export const addMessage = (message: PreviewMessage): void => {
 	messages.update((messages) => [...messages, message]);
 };
 
-export const clearConsole = () => {
+export const clearConsole = (): void => {
 	messages.set([]);
 };

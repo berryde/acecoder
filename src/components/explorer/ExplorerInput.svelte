@@ -9,7 +9,7 @@
 	/**
 	 * The depth of this file in the filesystem relative to the root.
 	 */
-	export let depth: number = 0;
+	export let depth = 0;
 
 	/**
 	 * The initial value of this file, useful for loading existing projects.
@@ -29,7 +29,7 @@
 	/**
 	 * Whether there is an error with the user's input.
 	 */
-	let error: boolean = false;
+	let error = false;
 
 	/**
 	 * The error message to show, if any.

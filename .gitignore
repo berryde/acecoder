@@ -2,7 +2,9 @@
 node_modules
 /build
 /.svelte-kit
-/package
 coverage
 static/worker.js
 static/worker.js.map
+src/utils/auth/firebase.ts
+.vercel
+.vercel_build_output

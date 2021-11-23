@@ -3,35 +3,10 @@
 	import Explorer from '../../../components/explorer/Explorer.svelte';
 </script>
 
-<Meta
-	title="Explorer/Explorer"
-	component={Explorer}
-	argTypes={{
-		files: { control: 'object' }
-	}}
-/>
+<Meta title="Explorer/Explorer" component={Explorer} />
 
-<Template let:args>
-	<div style="max-width: 20rem;"><Explorer {...args} /></div>
+<Template>
+	<div style="max-width: 20rem;"><Explorer /></div>
 </Template>
 
-<Story
-	name="Default"
-	args={{
-		files: {
-			src: {
-				type: 'folder',
-				children: {
-					'index.tsx': {
-						type: 'file',
-						value: ''
-					}
-				}
-			},
-			'package.json': {
-				type: 'file',
-				value: ''
-			}
-		}
-	}}
-/>
+<Story name="Default" />

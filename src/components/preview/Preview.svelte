@@ -43,7 +43,7 @@
 	/**
 	 * The template to use in the iframe.
 	 */
-	let srcdoc: string = '';
+	let srcdoc = '';
 
 	const dispatch = createEventDispatcher();
 

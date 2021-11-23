@@ -14,7 +14,7 @@
 	/**
 	 * The test-id of this icon, so that it can be identified programatically in tests.
 	 */
-	export let testId: string = '';
+	export let testId = '';
 	const dispatch = createEventDispatcher();
 
 	/**

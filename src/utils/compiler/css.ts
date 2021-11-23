@@ -62,7 +62,7 @@ export default function css(files: { [key: string]: File }): Plugin {
 		 */
 		async generateBundle() {
 			const css = Object.entries(styles)
-				.map(([id, code]) => code)
+				.map((entry) => entry[1])
 				.join('\n');
 			this.emitFile({ type: 'asset', fileName: `styles.css`, source: css });
 		}
@@ -75,7 +75,7 @@ export default function css(files: { [key: string]: File }): Plugin {
  * @param content The CSS to minify
  * @returns Minified CSS
  */
-function minifyCSS(content) {
+function minifyCSS(content: string) {
 	content = content.replace(/\/\*(?:(?!\*\/)[\s\S])*\*\/|[\r\n\t]+/g, '');
 	content = content.replace(/ {2,}/g, ' ');
 	content = content.replace(/ ([{:}]) /g, '$1');

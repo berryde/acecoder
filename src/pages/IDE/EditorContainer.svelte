@@ -24,6 +24,7 @@
 	function handleSave() {
 		if ($selectedTab != '') {
 			saveTab($selectedTab);
+
 			updateFile($selectedTab, editorContent[$selectedTab]);
 		}
 	}

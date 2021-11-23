@@ -59,8 +59,6 @@ describe('The file component', () => {
 	});
 	it('cannot be renamed to the name of an existing file', async () => {
 		// Create a mock filesystem.
-		let files: Filesystem;
-		filesystem.subscribe((fs) => (files = fs));
 		createFile('test', '');
 		createFile('package.json', '');
 
