@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import type { WorkerError } from 'src/utils/types';
-import { not_equal } from 'svelte/internal';
 import Error from './Error.svelte';
 
 describe('The SidebarItem component', () => {

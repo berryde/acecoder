@@ -2,30 +2,16 @@ import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import type { Filesystem } from 'src/utils/types';
 import Explorer from './Explorer.svelte';
-import { filesystem } from '../../utils/filesystem/filesystem';
+import { filesystem, createFile, exists, getFile } from '../../utils/filesystem/filesystem';
 
 describe('The Explorer component', () => {
+	beforeEach(() => {
+		filesystem.set({});
+	});
 	it('renders the provided filesystem', () => {
-		const filesystem: Filesystem = {
-			src: {
-				type: 'folder',
-				children: {
-					'index.tsx': {
-						type: 'file',
-						value: ''
-					}
-				}
-			},
-			'package.json': {
-				type: 'file',
-				value: ''
-			}
-		};
-		const screen = render(Explorer, {
-			props: {
-				files: filesystem
-			}
-		});
+		createFile('package.json');
+		createFile('src/index.tsx');
+		const screen = render(Explorer);
 		expect(screen.getByText('index.tsx')).toBeInTheDocument();
 		expect(screen.getByText('src')).toBeInTheDocument();
 		expect(screen.getByText('package.json')).toBeInTheDocument();
@@ -34,11 +20,7 @@ describe('The Explorer component', () => {
 		// Create a mock filesystem.
 		let files: Filesystem;
 		filesystem.subscribe((fs) => (files = fs));
-		const { rerender } = render(Explorer, {
-			props: {
-				files: files
-			}
-		});
+		render(Explorer);
 
 		// Create the folder
 		const addFolder = screen.getByTestId('add-folder');
@@ -48,22 +30,15 @@ describe('The Explorer component', () => {
 		fireEvent.keyDown(input, { key: 'Enter', code: 'Enter', charCode: 13 });
 
 		// Rerender the component to reflect the change in state.
-		rerender({
-			props: { files: files }
-		});
+
 		expect(await screen.findByText('new folder')).toBeInTheDocument();
 		expect(files['new folder']).toBeTruthy();
 		expect(files['new folder'].type).toBe('folder');
 	});
 	it('can create a new file', async () => {
 		// Create a mock filesystem.
-		let files: Filesystem;
-		filesystem.subscribe((fs) => (files = fs));
-		const { rerender } = render(Explorer, {
-			props: {
-				files: files
-			}
-		});
+
+		render(Explorer);
 
 		// Create the folder
 		const addFile = screen.getByTestId('add-file');
@@ -73,11 +48,12 @@ describe('The Explorer component', () => {
 		fireEvent.keyDown(input, { key: 'Enter', code: 'Enter', charCode: 13 });
 
 		// Rerender the component to reflect the change in state.
-		rerender({
-			props: { files: files }
-		});
+
 		expect(await screen.findByText('new file')).toBeInTheDocument();
-		expect(files['new file']).toBeTruthy();
-		expect(files['new file'].type).toBe('file');
+		filesystem.update((fs) => {
+			expect(exists(fs, 'new file')).toBeTruthy();
+			expect(getFile(fs, 'new file')).toBeTruthy();
+			return fs;
+		});
 	});
 });

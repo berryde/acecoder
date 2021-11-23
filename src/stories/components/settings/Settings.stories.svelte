@@ -5,7 +5,7 @@
 
 <Meta title="Settings/Settings" component={Settings} />
 
-<Template let:args>
+<Template>
 	<div class="w-48">
 		<Settings />
 	</div>

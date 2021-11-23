@@ -5,7 +5,6 @@
 	import IoMdPerson from 'svelte-icons/io/IoMdPerson.svelte';
 	import IoMdLock from 'svelte-icons/io/IoMdLock.svelte';
 	import { auth } from '../../utils/auth/auth';
-	import { goto } from '$app/navigation';
 	import Input from '../../components/auth/Input.svelte';
 	import type { AuthError } from 'src/utils/types';
 
@@ -74,7 +73,7 @@
 			icon={true}
 			loading={loading && method == 'google'}
 			classes="hover:bg-opacity-50 bg-dark-bglight mb-3"
-			on:click={(e) => signInWith('google')}
+			on:click={() => signInWith('google')}
 		>
 			<IoLogoGoogle />
 		</Button>
@@ -83,7 +82,7 @@
 			icon={true}
 			loading={loading && method == 'github'}
 			classes="hover:bg-opacity-50 bg-dark-bglight"
-			on:click={(e) => signInWith('github')}
+			on:click={() => signInWith('github')}
 		>
 			<IoLogoGithub />
 		</Button>

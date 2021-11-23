@@ -116,7 +116,7 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 			const styles = bundle.output[1] ? bundle.output[1].source : '';
 			const publicResources = Object.fromEntries(
 				Object.entries(filesystem)
-					.filter(([path, value]) => path.startsWith('public'))
+					.filter(([path, _]) => path.startsWith('public'))
 					.map(([path, value]) => [path, value.code])
 			);
 

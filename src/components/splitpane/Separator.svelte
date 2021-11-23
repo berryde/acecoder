@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-
 	export let isHorizontal = true;
 	export let resizing: boolean = false;
 </script>
@@ -23,7 +21,12 @@
 	.separator-horizontal {
 		height: 100%;
 	}
-
+	.separator-horizontal:hover {
+		cursor: w-resize;
+	}
+	.separator-vertical:hover {
+		cursor: y-resize;
+	}
 	.separator-vertical {
 		width: 100%;
 	}

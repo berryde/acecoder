@@ -111,8 +111,6 @@ describe('The folder component', () => {
 	});
 	it('cannot be renamed to the name of an existing folder', async () => {
 		// Create a mock filesystem.
-		let files: Filesystem;
-		filesystem.subscribe((fs) => (files = fs));
 		createFolder('test');
 		createFolder('src');
 

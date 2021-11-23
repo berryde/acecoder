@@ -1,14 +1,12 @@
 <script>
 	import Button from '../auth/Button.svelte';
-
-	import SidebarItem from '../sidebar/SidebarItem.svelte';
 </script>
 
 <div class="px-3 h-full">
 	<p class="leading-5">Submit anonymous feedback about the application to help improve it.</p>
 	<p class="mt-3 uppercase text-xs mb-1">Component</p>
 	<select
-		class="w-full dark:bg-dark-bglight px-2 h-8 focus:outline-none focus:ring-1 focus:ring-bluegray-300"
+		class="w-full bg-light-bglight dark:bg-dark-bglight px-2 h-8 focus:outline-none focus:ring-1 focus:ring-bluegray-300"
 	>
 		<option>File explorer</option>
 		<option>Text editor</option>

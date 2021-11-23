@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import Icon from '../common/Icon.svelte';
-	import CircularProgressIndicator from './CircularProgressIndicator.svelte';
+	import CircularProgressIndicator from '../loaders/CircularProgressIndicator.svelte';
 	const dispatch = createEventDispatcher();
 
 	export let text = '';

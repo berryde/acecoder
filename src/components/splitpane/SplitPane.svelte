@@ -223,10 +223,4 @@
 		min-height: var(--min-right-pane-size);
 		width: 100%;
 	}
-	.separator-horizontal:hover {
-		cursor: w-resize;
-	}
-	.separator-vertical:hover {
-		cursor: y-resize;
-	}
 </style>

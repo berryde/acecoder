@@ -1,18 +1,12 @@
 <script lang="ts">
-	// Icons
 	import FolderIcon from 'svelte-icons/fa/FaFolder.svelte';
 	import FileIcon from 'svelte-icons/fa/FaFile.svelte';
 	import OutlineFileIcon from 'svelte-icons/fa/FaRegFile.svelte';
 	import OutlineFolderIcon from 'svelte-icons/fa/FaRegFolder.svelte';
 	import ExplorerInput from './ExplorerInput.svelte';
 	import FaDownload from 'svelte-icons/fa/FaDownload.svelte';
-
-	// Components
 	import File from './File.svelte';
 	import Folder from './Folder.svelte';
-
-	// Utils
-
 	import {
 		compareFile,
 		createFile,
@@ -24,7 +18,6 @@
 	import { openTab } from '../../utils/tabs/tabs';
 	import Icon from '../common/Icon.svelte';
 
-	// Variables
 	let creating = false;
 	let creatingFile = false;
 
@@ -82,7 +75,7 @@
 				on:submit={(e) => {
 					handleCreate(e.detail);
 				}}
-				on:cancelled={(e) => {
+				on:cancelled={() => {
 					setCreating(false);
 				}}
 				reservedNames={getExistingFiles($filesystem)}

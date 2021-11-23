@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { formatOnSave, darkMode } from '../../utils/settings/settings';
-	import SidebarItem from '../sidebar/SidebarItem.svelte';
 
 	/**
 	 * Update the setting for format on save.

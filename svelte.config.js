@@ -1,4 +1,5 @@
 import preprocess from 'svelte-preprocess';
+import vercel from '@sveltejs/adapter-vercel';
 import { resolve } from 'path';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -16,7 +17,8 @@ const config = {
 					$components: resolve('./src/components')
 				}
 			}
-		}
+		},
+		adapter: vercel()
 	}
 };
 

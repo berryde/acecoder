@@ -1,0 +1,23 @@
+default:
+  image: node
+
+lint-job:
+  stage: .pre
+  script:
+    - yarn run format
+    - yarn run lint
+
+sveltekit-build-job:
+  stage: build
+  script:
+    - yarn run build
+
+unit-test-job:
+  stage: test
+  script:
+    - yarn run test
+
+deploy-dev:
+  stage: deploy
+  script:
+    - npx vercel

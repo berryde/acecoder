@@ -1,0 +1,6 @@
+.svelte-kit
+.vercel
+.vercel_build_output
+coverage
+node_modules
+static

@@ -1,12 +1,12 @@
 <script>
 	import { auth } from '../../utils/auth/auth';
-	import Loading from './Loading.svelte';
+	import OrbitProgressIndicator from '../loaders/OrbitProgressIndicator.svelte';
 </script>
 
 {#if $auth}
 	<slot />
 {:else}
 	<div class="h-screen w-screen bg-dark-bgdark flex justify-center items-center">
-		<Loading />
+		<OrbitProgressIndicator />
 	</div>
 {/if}
