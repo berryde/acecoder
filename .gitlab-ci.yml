@@ -1,21 +1,28 @@
 default:
   image: node
 
-lint-job:
+stages: ['test', 'build', 'deploy']
+
+install_dependencies:
   stage: .pre
+  script:
+    - npm install
+
+lint:
+  stage: test
   script:
     - yarn run format
     - yarn run lint
 
-sveltekit-build-job:
-  stage: build
-  script:
-    - yarn run build
-
-unit-test-job:
+test:
   stage: test
   script:
     - yarn run test
+
+build:
+  stage: build
+  script:
+    - yarn run build
 
 deploy-dev:
   stage: deploy

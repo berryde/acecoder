@@ -31,3 +31,5 @@ docker run -d --name gitlab-runner --restart always \
      -v /var/run/docker.sock:/var/run/docker.sock \
      gitlab/gitlab-runner:latest
 ```
+
+To interact with a running container, run `sudo docker exec -it gitlab-runner /bin/bash`.

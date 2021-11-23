@@ -4,7 +4,7 @@
 	"license": "UNLICENSED",
 	"scripts": {
 		"dev": "yarn run build-template && rollup -c && svelte-kit dev",
-		"build": "yarn run install && yarn run build-template && rollup -c && svelte-kit build",
+		"build": "yarn run build-template && rollup -c && svelte-kit build",
 		"preview": "svelte-kit preview",
 		"check": "svelte-check --tsconfig ./tsconfig.json --threshold warning",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
