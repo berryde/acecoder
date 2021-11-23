@@ -30,12 +30,7 @@ function getDependencies(packageJSON: {
 	return result;
 }
 
-const throwGenericError = (
-	message: string,
-	name: string = 'Error',
-	pos: number = 0,
-	location: string = ''
-) => {
+const throwGenericError = (message: string, name = 'Error', pos = 0, location = '') => {
 	const error: WorkerError = {
 		location: location,
 		message: message,
@@ -54,7 +49,7 @@ const throwGenericError = (
 self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<void> => {
 	// Recreate the filesystem in memory.
 	const filesystem = generateLookup(event.data);
-	var rollupWarning: RollupWarning;
+	let rollupWarning: RollupWarning;
 
 	// If there is no package.json, attempt to serve a static page.
 	if (!('public/index.html' in filesystem)) {
@@ -116,7 +111,7 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 			const styles = bundle.output[1] ? bundle.output[1].source : '';
 			const publicResources = Object.fromEntries(
 				Object.entries(filesystem)
-					.filter(([path, _]) => path.startsWith('public'))
+					.filter((entry) => entry[0].startsWith('public'))
 					.map(([path, value]) => [path, value.code])
 			);
 

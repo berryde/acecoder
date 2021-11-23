@@ -62,7 +62,7 @@ export default function css(files: { [key: string]: File }): Plugin {
 		 */
 		async generateBundle() {
 			const css = Object.entries(styles)
-				.map(([_, code]) => code)
+				.map((entry) => entry[1])
 				.join('\n');
 			this.emitFile({ type: 'asset', fileName: `styles.css`, source: css });
 		}

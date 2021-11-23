@@ -25,7 +25,7 @@
 	/**
 	 * The depth of this file in the file tree.
 	 */
-	export let depth: number = 0;
+	export let depth = 0;
 
 	/**
 	 * Whether the user is renaming this file.

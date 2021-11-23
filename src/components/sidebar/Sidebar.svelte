@@ -38,7 +38,7 @@
 			<div
 				class="p-4 {!collapsed && selected == index
 					? 'border-l-2 dark:border-dark-text border-light-text'
-					: 'sidebar-item'}"
+					: 'ml-0.5 opacity-50 hover:opacity-100 transition-opacity'}"
 				on:click={() => select(index)}
 				data-testid={tab.name}
 			>
@@ -49,9 +49,3 @@
 		{/each}
 	</div>
 </div>
-
-<style lang="postcss">
-	.sidebar-item {
-		@apply ml-0.5 opacity-50 hover:opacity-100 transition-opacity;
-	}
-</style>

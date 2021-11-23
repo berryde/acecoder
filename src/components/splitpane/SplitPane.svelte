@@ -8,22 +8,22 @@
 	/**
 	 * The size of the left pane as a percentage of the split pane's width.
 	 */
-	export let pane1Size: number = 50;
+	export let pane1Size = 50;
 
 	/**
 	 * The size of the right pane as a percentage of the split pane's width.
 	 */
-	export let pane2Size: number = 50;
+	export let pane2Size = 50;
 
 	/**
 	 * The minimum allowed size of the left pane as a CSS string.
 	 */
-	export let minPane1Size: string = '0';
+	export let minPane1Size = '0';
 
 	/**
 	 * The minimum allowed size of the right pane as a CSS string.
 	 */
-	export let minPane2Size: string = '0';
+	export let minPane2Size = '0';
 
 	export let isHorizontal: boolean;
 

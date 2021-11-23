@@ -1,6 +1,6 @@
 <script lang="ts">
 	export let isHorizontal = true;
-	export let resizing: boolean = false;
+	export let resizing = false;
 </script>
 
 <div

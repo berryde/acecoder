@@ -4,7 +4,7 @@ import { transform } from '@babel/standalone';
 import type { RollupWarning } from 'rollup';
 const CDN_URL = 'https://cdn.skypack.dev';
 
-export const resolveRelativePath = (importee: string, importer: string) => {
+export const resolveRelativePath = (importee: string, importer: string): string => {
 	// If the importer is not in a directory then the import is not actually relative.
 	if (importer.includes('/')) {
 		// Remove the filename (anything after the last /) to resolve relative imports.

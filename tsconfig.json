@@ -10,7 +10,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"allowJs": true,
-		"checkJs": true,
+
 		"types": ["jest", "svelte"]
 	},
 	"include": ["src/**/*"],

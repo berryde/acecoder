@@ -5,8 +5,8 @@
 	const dispatch = createEventDispatcher();
 
 	export let text = '';
-	export let icon: boolean = false;
-	export let loading: boolean = false;
+	export let icon = false;
+	export let loading = false;
 	export let classes = '';
 </script>
 

@@ -16,6 +16,9 @@ const config = {
 				alias: {
 					$components: resolve('./src/components')
 				}
+			},
+			ssr: {
+				external: ['whatwg-url']
 			}
 		},
 		adapter: vercel()
