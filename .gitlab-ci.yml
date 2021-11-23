@@ -2,36 +2,27 @@ default:
   image: node
 
 stages:
-  - install
   - test
   - build
   - deploy
 
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - node_modules/
-    - .vercel_build_output/
-
-install_dependencies:
-  stage: install
-  script:
-    - yarn install
-
 lint:
   stage: test
   script:
+    - yarn install --progress=false
     - yarn run format
     - yarn run lint
 
 test:
   stage: test
   script:
+    - yarn install --progress=false
     - yarn run test
 
 build:
   stage: build
   script:
+    - yarn install --progress=false
     - yarn run build
 
 deploy-dev:
