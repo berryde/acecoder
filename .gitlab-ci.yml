@@ -1,50 +1,35 @@
 default:
   image: node
 
-cache:
-  paths:
-    - node_modules/
-    - .yarn
-
-before_script:
-  - apt-get update -qq && apt-get install
-
 stages:
   - build
+  - lint
   - test
   - deploy
 
-build:
-  stage: build
-  before_script:
-    - yarn config set cache-folder .yarn
-    - yarn install
-  script:
-    - yarn run build
-
 lint:
-  stage: test
-  before_script:
-    - yarn config set cache-folder .yarn
-    - yarn install --frozen-lockfile
+  stage: lint
   script:
+    - yarn install
     - yarn run format
     - yarn run lint
 
 test:
   stage: test
-  before_script:
-    - yarn config set cache-folder .yarn
-    - yarn install --frozen-lockfile
   script:
+    - yarn install
     - yarn run test
+
+build:
+  stage: build
+  script:
+    - yarn install
+    - yarn run build
 
 deploy:
   only:
     - master
   stage: deploy
-  before_script:
-    - yarn config set cache-folder .yarn
-    - yarn install --frozen-lockfile
   script:
+    - yarn install
     - npx vercel
