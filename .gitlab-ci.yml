@@ -1,12 +1,22 @@
 default:
   image: node
 
-stages: ['test', 'build', 'deploy']
+stages:
+  - install
+  - test
+  - build
+  - deploy
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - .vercel_build_output/
 
 install_dependencies:
-  stage: .pre
+  stage: install
   script:
-    - npm install
+    - yarn install
 
 lint:
   stage: test
@@ -25,6 +35,8 @@ build:
     - yarn run build
 
 deploy-dev:
+  only:
+    - master
   stage: deploy
   script:
     - npx vercel
