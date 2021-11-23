@@ -29,9 +29,13 @@ build:
     - yarn run build
 
 deploy:
+  stage: deploy
+  environment:
+    name: production
+    url: https://deb1g19.netlify.app
   only:
     - master
-  stage: deploy
   script:
     - yarn install
-    - npx vercel --token $VERCEL_TOKEN
+    - yarn run build
+    - npx netlify-cli deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod

@@ -1,5 +1,5 @@
 import preprocess from 'svelte-preprocess';
-import vercel from '@sveltejs/adapter-vercel';
+import netlify from '@sveltejs/adapter-netlify';
 import { resolve } from 'path';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -21,7 +21,7 @@ const config = {
 				external: ['whatwg-url']
 			}
 		},
-		adapter: vercel()
+		adapter: netlify()
 	}
 };
 
