@@ -21,6 +21,8 @@ test:
     - yarn run test
 
 build:
+  except:
+    - master
   stage: build
   script:
     - yarn install

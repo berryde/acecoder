@@ -8,11 +8,18 @@
 	export let icon = false;
 	export let loading = false;
 	export let classes = '';
+	export let disabled = false;
+
+	function onclick() {
+		if (!disabled) {
+			dispatch('click');
+		}
+	}
 </script>
 
 <div
 	class="flex flex-row transition-colors py-2 font-bold rounded justify-center items-center hover:cursor-pointer {classes}"
-	on:click={() => dispatch('click')}
+	on:click={() => onclick()}
 >
 	{#if icon}
 		<div class="mr-3">
