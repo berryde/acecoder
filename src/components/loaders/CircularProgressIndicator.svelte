@@ -4,7 +4,6 @@
 	.loader {
 		border-width: 2px;
 		border-style: solid;
-
 		border-bottom-color: transparent;
 		border-radius: 50%;
 		display: inline-block;

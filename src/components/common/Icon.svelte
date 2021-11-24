@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import Hoverable from './Hoverable.svelte';
 
 	/**
 	 * The icon size to display.
@@ -11,8 +10,6 @@
 	 * Whether this icon is also a button.
 	 */
 	export let button = false;
-
-	export let label: string;
 
 	/**
 	 * The test-id of this icon, so that it can be identified programatically in tests.
