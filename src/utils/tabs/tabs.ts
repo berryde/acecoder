@@ -3,7 +3,10 @@ import { writable } from 'svelte/store';
 // open editors
 export const tabs = writable<string[]>([]);
 export const selectedTab = writable<string>('');
+export const temporaryTab = writable<string>('');
 export const unsavedTabs = writable<string[]>([]);
+
+// If current tab is a temp tab, it should be replaced with the latest tab to be opened.
 
 /**
  * Create a new tab if it doesn't exist and select it.
@@ -11,10 +14,34 @@ export const unsavedTabs = writable<string[]>([]);
  */
 export const openTab = (path: string): void => {
 	tabs.update((tabs) => {
+		let temporary = '';
+		let selected = '';
+		temporaryTab.subscribe((tab) => (temporary = tab));
+		selectedTab.subscribe((tab) => (selected = tab));
+
 		if (tabs.includes(path)) {
+			if (temporary == path) {
+				console.log('Making permanent');
+				temporaryTab.set('');
+			}
 			return tabs;
+		} else {
+			let index: number;
+			if (temporary != '') {
+				// Replace the temporary tab with this one
+				index = tabs.indexOf(temporary);
+				console.log('Replacing', temporary, path);
+				temporaryTab.set(path);
+				tabs[index] = path;
+				return tabs;
+			} else {
+				// Insert the tab to the right of the selected tab
+				index = tabs.indexOf(selected);
+				temporaryTab.set(path);
+				tabs.splice(index + 1, 0, path);
+				return tabs;
+			}
 		}
-		return [...tabs, path];
 	});
 	// Select the newly created tab
 	selectedTab.set(path);
@@ -61,7 +88,35 @@ export const renameTab = (oldName: string, newName: string): void => {
  * @param name The name of the tab to close.
  */
 export const closeTab = (name: string): void => {
+	// Clear the temporary tab
+	temporaryTab.update((tab) => (tab == name ? '' : tab));
+
 	tabs.update((tabs) => {
+		// Update the selected tab
+		let index = tabs.indexOf(name);
+		if (tabs.length > 1) {
+			// If this is the last tab, select the second last tab
+			// If this is the first tab selecte the second tab
+			// Else Select the tab to the right of this one
+			if (index == tabs.length - 1) {
+				index = tabs.length - 2;
+			} else if (index == 0) {
+				index = 1;
+			} else {
+				index += 1;
+			}
+		}
+		selectedTab.set(tabs[index]);
+
+		// Discard unsaved changes
+
+		// Remove this tab
+		if (tabs.includes(name)) {
+			tabs.splice(tabs.indexOf(name), 1);
+		}
+		return tabs;
+	});
+	unsavedTabs.update((tabs) => {
 		if (tabs.includes(name)) {
 			tabs.splice(tabs.indexOf(name), 1);
 		}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Editor from '../../components/editor/Editor.svelte';
 	import Tabs from '../../components/tabs/Tabs.svelte';
-	import { tabs, selectedTab, unsavedTabs, saveTab } from '../../utils/tabs/tabs';
+	import { tabs, selectedTab, unsavedTabs, saveTab, openTab } from '../../utils/tabs/tabs';
 	import { filesystem, getExtension, getFile, updateFile } from '../../utils/filesystem/filesystem';
 
 	/**
@@ -15,6 +15,7 @@
 	 */
 	function handleCodeChanged(code: string) {
 		editorContent[$selectedTab] = code;
+		openTab($selectedTab);
 		unsavedTabs.update((tabs) => (tabs.includes($selectedTab) ? tabs : [...tabs, $selectedTab]));
 	}
 
