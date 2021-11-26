@@ -38,3 +38,12 @@ To interact with a running container, run `sudo docker exec -it gitlab-runner /b
 service gitlab-runner stop
 service gitlab-runner start
 ```
+
+## Admin SDK
+
+The admin SDK is used to securely configure the backend of the application. It should only be run in a secure development environment. Ensure the following environment variable is set: `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"`
+
+## Firebase emulators
+
+Start the firebase emulators with `yarn run emulator`.
+Ensure that the `export FIREBASE_AUTH_EMULATOR_HOST="localhost:9099"` environment variable is set so that the Admin SDK can communicate with the emulator.

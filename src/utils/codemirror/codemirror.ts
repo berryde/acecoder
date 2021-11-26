@@ -27,6 +27,7 @@ import {
 import { indentWithTab } from '@codemirror/commands';
 import { EditorState } from '@codemirror/state';
 import type { Parser } from 'prettier';
+import prettier from 'prettier';
 
 /**
  * Supported file extensions.
@@ -62,6 +63,17 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 		default:
 			return javascript();
 	}
+};
+
+export const format = (value: string, language: string): string => {
+	if (isSupported(language)) {
+		if (language == 'json') {
+			return JSON.stringify(JSON.parse(value), null, 2);
+		} else {
+			return prettier.format(value, getParser(language));
+		}
+	}
+	return value;
 };
 
 export const getParser = (

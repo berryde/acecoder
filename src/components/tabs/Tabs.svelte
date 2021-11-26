@@ -7,6 +7,7 @@
 
 	import IoMdClose from 'svelte-icons/io/IoMdClose.svelte';
 	import Hoverable from '../common/Hoverable.svelte';
+
 	import Draggable from '../common/Draggable.svelte';
 	import { latestError } from '../../utils/console/console';
 	import Droppable from '../common/Droppable.svelte';

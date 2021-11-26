@@ -1,12 +1,12 @@
 <script lang="ts">
-	import Button from '../../components/auth/Button.svelte';
+	import Button from 'src/components/common/Button.svelte';
 	import IoLogoGoogle from 'svelte-icons/io/IoLogoGoogle.svelte';
 	import IoLogoGithub from 'svelte-icons/io/IoLogoGithub.svelte';
-	import { auth } from '../../utils/auth/auth';
-	import Input from '../../components/auth/Input.svelte';
+	import { auth } from 'src/utils/auth/auth';
+	import Input from 'src/components/common/Input.svelte';
 	import IoMdPerson from 'svelte-icons/io/IoMdPerson.svelte';
 	import IoMdLock from 'svelte-icons/io/IoMdLock.svelte';
-	import type { AuthError } from '../../utils/types';
+	import type { AuthError } from 'src/utils/types';
 
 	let email = '';
 	let password = '';

@@ -12,7 +12,7 @@ import { browser } from '$app/env';
 import type { User, AuthProvider } from 'firebase/auth';
 
 import { writable } from 'svelte/store';
-import { app } from './firebase';
+import { app } from '../firebase';
 import type { AuthError } from '../types';
 import { goto } from '$app/navigation';
 
@@ -112,12 +112,18 @@ const initAuth = () => {
 		}
 	};
 
+	const isAdmin = async (user: User) => {
+		const token = await user.getIdTokenResult();
+		if ('admin' in token.claims) return token.claims['admin'] as unknown as boolean;
+	};
+
 	return {
 		register,
 		signInWith,
 		signIn,
 		signOut,
-		subscribe
+		subscribe,
+		isAdmin
 	};
 };
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { addMessage } from '../../utils/console/console';
+	import { addMessage } from 'src/utils/console/console';
 	import Error from './Error.svelte';
 	import type {
 		PreviewMessage,

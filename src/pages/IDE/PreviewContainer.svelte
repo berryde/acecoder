@@ -3,11 +3,19 @@
 
 	import Preview from '../../components/preview/Preview.svelte';
 	import SplitPane from '../../components/splitpane/SplitPane.svelte';
-	import { createFile, filesystem, getAllFiles } from '../../utils/filesystem/filesystem';
-	import type { Filesystem, WorkerError, WorkerResponse } from '../../utils/types';
+	import {
+		createFile,
+		filesystem,
+		getAllFiles,
+		getExtension
+	} from '../../utils/filesystem/filesystem';
+	import type { WorkerError, WorkerResponse } from '../../utils/types';
 	import { onMount } from 'svelte';
-	import { reactTemplate } from '../../utils/templates/templates';
+
+	import { doc, getDoc } from 'firebase/firestore';
 	import Console from '../../components/console/Console.svelte';
+	import { db } from '../../utils/firebase';
+	import { format } from '../../utils/codemirror/codemirror';
 
 	export let resizingX = false;
 	export let selecting = false;
@@ -17,7 +25,7 @@
 		js: '',
 		public: {}
 	};
-
+	let initialised = false;
 	let worker: Worker;
 
 	onMount(() => {
@@ -39,27 +47,42 @@
 			}
 		});
 
-		function loadTemplate(template: { [key: string]: string }) {
-			for (const [path, value] of Object.entries(template)) {
-				createFile(path, value);
+		loadTemplate();
+	});
+
+	async function loadTemplate() {
+		initialised = false;
+		const docRef = doc(db, 'templates', 'react');
+		const docSnap = await getDoc(docRef);
+
+		if (docSnap.exists()) {
+			const data = docSnap.data() as {
+				files: { [key: string]: string };
+			};
+			for (let [path, value] of Object.entries(data.files)) {
+				// Remove the devdependencies as these are only used for testing.
+				if (path == 'package.json') {
+					value = value.replace(/(,?)(\s)*("?)devDependencies("?):(\s*)\{([^}]*)\}/, '');
+				}
+				// Format the values as whitespace is not preserved by firebase.
+				createFile(path, format(value, getExtension(path)));
 			}
 		}
-
-		// Load the react template.
-		loadTemplate(reactTemplate);
-	});
+		initialised = true;
+		refresh();
+	}
 
 	/**
 	 * Reload the preview whenever the filesystem is changed.
 	 */
 
-	filesystem.subscribe((fs) => {
-		refresh(fs);
+	filesystem.subscribe(() => {
+		initialised && refresh();
 	});
 
-	function refresh(fs: Filesystem) {
+	function refresh() {
 		if (worker) {
-			worker.postMessage(getAllFiles('', fs));
+			worker.postMessage(getAllFiles('', $filesystem));
 		}
 	}
 </script>
@@ -77,7 +100,7 @@
 				{compiled}
 				resizing={resizingX || resizingY || selecting}
 				error={$latestError}
-				on:refresh={() => refresh($filesystem)}
+				on:refresh={() => refresh()}
 			/>
 		</top>
 		<bottom slot="pane2">

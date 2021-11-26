@@ -1,11 +1,11 @@
 <script lang="ts">
-	import Button from '../../components/auth/Button.svelte';
+	import Button from 'src/components/common/Button.svelte';
 	import IoLogoGoogle from 'svelte-icons/io/IoLogoGoogle.svelte';
 	import IoLogoGithub from 'svelte-icons/io/IoLogoGithub.svelte';
 	import IoMdPerson from 'svelte-icons/io/IoMdPerson.svelte';
 	import IoMdLock from 'svelte-icons/io/IoMdLock.svelte';
-	import { auth } from '../../utils/auth/auth';
-	import Input from '../../components/auth/Input.svelte';
+	import { auth } from 'src/utils/auth/auth';
+	import Input from 'src/components/common/Input.svelte';
 	import type { AuthError } from 'src/utils/types';
 
 	let loading = false;
@@ -15,13 +15,24 @@
 	let error: AuthError;
 
 	async function signIn() {
+		if (email == '' || !/\S+@\S+\.\S+/.test(email)) {
+			error = {
+				errorCode: 'Email invalid',
+				errorMessage: 'Please provide a valid email address.'
+			};
+		} else if (password == '') {
+			error = {
+				errorCode: 'Password invalid',
+				errorMessage: 'Please provide a valid password'
+			};
+		}
 		method = 'default';
 		error = undefined;
 		loading = true;
 		const result = await auth.signIn(email, password);
 		loading = false;
 
-		if (result) error = result;
+		if (result) error = getErrorMessage(result);
 	}
 
 	async function signInWith(provider: 'github' | 'google') {
@@ -30,7 +41,38 @@
 		loading = true;
 		const result = await auth.signInWith(provider);
 		loading = false;
-		if (result) error = result;
+		if (result) error = getErrorMessage(result);
+	}
+
+	function getErrorMessage(firebaseError: AuthError): AuthError {
+		switch (firebaseError.errorCode) {
+			case 'auth/wrong-password':
+				return {
+					errorCode: 'Incorrect password',
+					errorMessage: 'Please check your password and try again.'
+				};
+			case 'auth/invalid-email':
+				return {
+					errorCode: 'Invalid email',
+					errorMessage: 'Please provide a valid email address.'
+				};
+			case 'auth/invalid-password':
+				return {
+					errorCode: 'Invalid password',
+					errorMessage:
+						'Please provide a valid password. It must be a string with at least six characters.'
+				};
+			case 'auth/user-not-found':
+				return {
+					errorCode: 'Invalid email',
+					errorMessage: 'No user could be found with that email address.'
+				};
+			default:
+				return {
+					errorCode: 'Unknown error',
+					errorMessage: 'An unknown error occurred. Please try again later.'
+				};
+		}
 	}
 </script>
 
@@ -54,7 +96,7 @@
 		/>
 
 		{#if error}
-			<div class="bg-red-900 text-red-400 bg-opacity-50 p-3 mb-3 rounded">
+			<div class="bg-red-900 text-red-400 bg-opacity-50 p-3 mt-3 rounded">
 				<p class="font-bold">{error.errorCode}</p>
 				<p>
 					{error.errorMessage}

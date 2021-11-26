@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Button from '../auth/Button.svelte';
+	import Button from '../common/Button.svelte';
 	import { getFirestore, collection, addDoc, Timestamp } from 'firebase/firestore';
-	import { app } from '../../utils/auth/firebase';
+	import { app } from 'src/utils/firebase';
 
 	async function submitFeedback() {
 		if (valid) {

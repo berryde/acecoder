@@ -4,7 +4,7 @@
 	import IoIosWarning from 'svelte-icons/io/IoIosWarning.svelte';
 	import Icon from '../common/Icon.svelte';
 	import FaTerminal from 'svelte-icons/fa/FaTerminal.svelte';
-	import { clearConsole } from '../../utils/console/console';
+	import { clearConsole } from 'src/utils/console/console';
 	import MdAutorenew from 'svelte-icons/md/MdAutorenew.svelte';
 
 	export let messages: PreviewMessage[];

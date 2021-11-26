@@ -7,10 +7,9 @@
 	import {
 		defaultExtensions,
 		getLanguageSupport,
-		getParser,
+		format as _format,
 		isSupported
 	} from '../../utils/codemirror/codemirror';
-	import prettier from 'prettier';
 	import type { ViewUpdate } from '@codemirror/view';
 	import type { KeyBinding, Command } from '@codemirror/view';
 	import type { Diagnostic } from '@codemirror/lint';
@@ -62,19 +61,14 @@
 	 * @returns Whether the format was successful
 	 */
 	const formatEditor: Command = (view: EditorView): boolean => {
-		if (isSupported(language)) {
-			let result: string;
-			if (language == 'json') {
-				result = JSON.stringify(JSON.parse(view.state.doc.toString()), null, 2);
-			} else {
-				result = prettier.format(view.state.doc.toString(), getParser(language));
+		view.dispatch({
+			changes: {
+				from: 0,
+				to: view.state.doc.length,
+				insert: _format(view.state.doc.toString(), language)
 			}
-			view.dispatch({
-				changes: { from: 0, to: view.state.doc.length, insert: result }
-			});
-			return true;
-		}
-		return false;
+		});
+		return true;
 	};
 
 	const saveContent: Command = (view: EditorView): boolean => {
