@@ -1,6 +1,6 @@
 <script>
 	import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
-	import Explorer from '../../../components/explorer/Explorer.svelte';
+	import Explorer from 'src/components/explorer/Explorer.svelte';
 </script>
 
 <Meta title="Explorer/Explorer" component={Explorer} />
