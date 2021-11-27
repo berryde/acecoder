@@ -17,6 +17,9 @@
 	import Admin from 'src/components/admin/Admin.svelte';
 	import IoIosBuild from 'svelte-icons/io/IoIosBuild.svelte';
 	import { auth } from 'src/utils/auth/auth';
+	import MdBook from 'svelte-icons/md/MdBook.svelte';
+	import Exercise from 'src/components/exercise/Exercise.svelte';
+	import { exercise } from 'src/utils/exercise/exercise';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -62,6 +65,11 @@
 			name: 'profile',
 			icon: ProfileImage,
 			component: Profile
+		},
+		{
+			name: $exercise ? $exercise.name : 'Exercise',
+			icon: MdBook,
+			component: Exercise
 		},
 		{
 			name: 'explorer',

@@ -1,3 +1,4 @@
+import type { DocumentReference } from 'firebase/firestore';
 import type { SvelteComponentDev } from 'svelte/internal';
 
 /**
@@ -127,4 +128,26 @@ export type Feedback = {
 	posted: string;
 	comment: string;
 	component: string;
+};
+
+export type Exercise = {
+	tests: { [key: string]: string };
+	template: DocumentReference;
+	requirements: string[];
+	name: string;
+	description: string;
+};
+
+export type Template = {
+	files: { [key: string]: string };
+};
+
+export type TestResult = {
+	passed: number;
+	total: number;
+	results: {
+		message: string;
+		passed: boolean;
+		name: string;
+	}[];
 };

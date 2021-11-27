@@ -46,7 +46,7 @@
 	/>
 	<Button
 		text="Submit"
-		classes="bg-light-bglight text-light-text hover:bg-opacity-50 dark:bg-dark-bglight dark:hover:bg-opacity-50 dark:text-dark-text h-7 mt-2 "
+		classes="bg-light-bglight text-light-text hover:bg-opacity-50 dark:bg-dark-bglight dark:hover:bg-opacity-50 dark:text-dark-text h-7 mt-2"
 		{loading}
 		on:click={() => submitFeedback()}
 	/>

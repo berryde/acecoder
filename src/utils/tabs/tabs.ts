@@ -21,7 +21,6 @@ export const openTab = (path: string): void => {
 
 		if (tabs.includes(path)) {
 			if (temporary == path) {
-				console.log('Making permanent');
 				temporaryTab.set('');
 			}
 			return tabs;
@@ -30,7 +29,6 @@ export const openTab = (path: string): void => {
 			if (temporary != '') {
 				// Replace the temporary tab with this one
 				index = tabs.indexOf(temporary);
-				console.log('Replacing', temporary, path);
 				temporaryTab.set(path);
 				tabs[index] = path;
 				return tabs;
@@ -96,8 +94,8 @@ export const closeTab = (name: string): void => {
 		let index = tabs.indexOf(name);
 		if (tabs.length > 1) {
 			// If this is the last tab, select the second last tab
-			// If this is the first tab selecte the second tab
-			// Else Select the tab to the right of this one
+			// If this is the first tab select the second tab
+			// Else, select the tab to the right of this one
 			if (index == tabs.length - 1) {
 				index = tabs.length - 2;
 			} else if (index == 0) {

@@ -3,19 +3,13 @@
 
 	import Preview from '../../components/preview/Preview.svelte';
 	import SplitPane from '../../components/splitpane/SplitPane.svelte';
-	import {
-		createFile,
-		filesystem,
-		getAllFiles,
-		getExtension
-	} from '../../utils/filesystem/filesystem';
+	import { filesystem, getAllFiles } from '../../utils/filesystem/filesystem';
 	import type { WorkerError, WorkerResponse } from '../../utils/types';
 	import { onMount } from 'svelte';
 
-	import { doc, getDoc } from 'firebase/firestore';
 	import Console from '../../components/console/Console.svelte';
-	import { db } from '../../utils/firebase';
-	import { format } from '../../utils/codemirror/codemirror';
+
+	import { exercise, loadExercise } from 'src/utils/exercise/exercise';
 
 	export let resizingX = false;
 	export let selecting = false;
@@ -47,30 +41,11 @@
 			}
 		});
 
-		loadTemplate();
+		loadExercise('9A5WFx5Ki8Rlni9FmkJf');
+		exercise.subscribe((ex) => {
+			if (ex) initialised = true;
+		});
 	});
-
-	async function loadTemplate() {
-		initialised = false;
-		const docRef = doc(db, 'templates', 'react');
-		const docSnap = await getDoc(docRef);
-
-		if (docSnap.exists()) {
-			const data = docSnap.data() as {
-				files: { [key: string]: string };
-			};
-			for (let [path, value] of Object.entries(data.files)) {
-				// Remove the devdependencies as these are only used for testing.
-				if (path == 'package.json') {
-					value = value.replace(/(,?)(\s)*("?)devDependencies("?):(\s*)\{([^}]*)\}/, '');
-				}
-				// Format the values as whitespace is not preserved by firebase.
-				createFile(path, format(value, getExtension(path)));
-			}
-		}
-		initialised = true;
-		refresh();
-	}
 
 	/**
 	 * Reload the preview whenever the filesystem is changed.

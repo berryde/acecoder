@@ -9,3 +9,4 @@ static/worker.js.map
 *.log
 .firebase-config/service-account.json
 .firebase
+/src/components/preview/template/template.js

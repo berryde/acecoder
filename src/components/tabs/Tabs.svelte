@@ -4,6 +4,7 @@
 	export let tabs: string[];
 	export let selected: string;
 	export let unsaved: string[];
+	export let temporary: string;
 
 	import IoMdClose from 'svelte-icons/io/IoMdClose.svelte';
 	import Hoverable from '../common/Hoverable.svelte';
@@ -37,7 +38,7 @@
 							: ' dark:text-dark-text'} transition-colors pl-4 pr-2 py-1 selected flex flex-row space-x-1 justify-between items-center {path ==
 							selected &&
 							'bg-gray-100 dark:bg-dark-bglight'} hover:bg-gray-300 dark:hover:bg-gray-800 {dropping &&
-							'bg-blue-500'}"
+							'bg-blue-500'} {path == temporary && 'italic'}"
 						on:click={() => openTab(path)}
 					>
 						<p>{tabs.filter((tab) => tab == path).length == 1 ? tail(path) : path}</p>

@@ -1,7 +1,14 @@
 <script lang="ts">
 	import Editor from '../../components/editor/Editor.svelte';
 	import Tabs from '../../components/tabs/Tabs.svelte';
-	import { tabs, selectedTab, unsavedTabs, saveTab, openTab } from '../../utils/tabs/tabs';
+	import {
+		tabs,
+		selectedTab,
+		unsavedTabs,
+		saveTab,
+		openTab,
+		temporaryTab
+	} from '../../utils/tabs/tabs';
 	import { filesystem, getExtension, getFile, updateFile } from '../../utils/filesystem/filesystem';
 
 	/**
@@ -43,7 +50,7 @@
 </script>
 
 <div class="flex flex-col dark:bg-dark-bglight bg-gray-100 h-screen w-full">
-	<Tabs selected={$selectedTab} tabs={$tabs} unsaved={$unsavedTabs} />
+	<Tabs selected={$selectedTab} tabs={$tabs} unsaved={$unsavedTabs} temporary={$temporaryTab} />
 	{#each $tabs as tab}
 		<Editor
 			selected={tab === $selectedTab}
