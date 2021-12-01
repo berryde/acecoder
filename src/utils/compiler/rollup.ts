@@ -2,7 +2,7 @@ import type { File, WorkerError, WorkerResponse } from '../types';
 import * as rollup from 'rollup/dist/es/rollup.browser.js';
 import type { RollupWarning } from 'rollup';
 import babel from './babel';
-import css from './css';
+import cssCompiler from './css';
 
 /**
  * Recreates the in memory filesystem with the given files
@@ -95,7 +95,7 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 		try {
 			const result = await rollup.rollup({
 				input: entryPoint,
-				plugins: [css(filesystem), babel(filesystem, dependencies)],
+				plugins: [cssCompiler(filesystem), babel(filesystem, dependencies)],
 				inlineDynamicImports: true,
 				onwarn(warning: RollupWarning) {
 					// The warning will be a stack trace from babel. Passing it into a new error loses information so it is stored in a variable.
@@ -108,7 +108,17 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 
 			const scripts = bundle.output[0] ? bundle.output[0].code : '';
 
-			const styles = bundle.output[1] ? bundle.output[1].source : '';
+			let styles = '';
+			const css = bundle.output.find((e) => e.name == 'css');
+			if (css) {
+				styles += css.source + '\n';
+			}
+
+			const sass = bundle.output.find((e) => e.name == 'sass');
+			if (sass) {
+				styles += sass.source + '\n';
+			}
+
 			const publicResources = Object.fromEntries(
 				Object.entries(filesystem)
 					.filter((entry) => entry[0].startsWith('public'))

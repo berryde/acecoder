@@ -43,21 +43,20 @@
 </script>
 
 <div class="px-3">
-	<p class="pt-3 pb-1 uppercase text-xs">Feedback</p>
+	<p class="pt-3 pb-1 uppercase text-xs dark:text-dark-text text-light-text">Feedback</p>
 	{#if loading}
 		<div class="flex justify-center items-center w-full">
 			<CircularProgressIndicator />
 		</div>
 	{:else}
 		{#each feedback as submission}
-			<div class="bg-dark-bglight p-3 mb-3 rounded">
+			<div class="bg-light-bglight dark:bg-dark-bglight p-3 mb-3 rounded">
 				<div class="flex flex-row">
 					<p class="font-bold">{submission.component}</p>
 				</div>
 				<p class="text-sm ">
 					{submission.comment}
 				</p>
-				<p class="text-right opacity-50 text-xs pt-1">Posted at {submission.posted}</p>
 			</div>
 		{/each}
 	{/if}

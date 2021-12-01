@@ -10,6 +10,11 @@
 		temporaryTab
 	} from '../../utils/tabs/tabs';
 	import { filesystem, getExtension, getFile, updateFile } from '../../utils/filesystem/filesystem';
+	import { compiled } from 'src/utils/compiler/state';
+	import { isStandalone, save } from 'src/utils/exercise/exercise';
+	import { doc, setDoc } from 'firebase/firestore';
+	import { db } from 'src/utils/firebase';
+	import { auth } from 'src/utils/auth/auth';
 
 	/**
 	 * A map of filename to unsaved changes for that file.
@@ -34,6 +39,16 @@
 			saveTab($selectedTab);
 			updateFile($selectedTab, editorContent[$selectedTab]);
 		}
+
+		compiled.subscribe((compiled) => {
+			// Update the compiled value in firebase
+			if ($isStandalone && compiled && compiled != { css: '', js: '', public: {} }) {
+				console.log("It's standalone");
+				setDoc(doc(db, 'preview', $auth.uid), compiled);
+			}
+		});
+
+		save();
 	}
 
 	/**
@@ -49,17 +64,15 @@
 	}
 </script>
 
-<div class="flex flex-col dark:bg-dark-bglight bg-gray-100 h-screen w-full">
-	<Tabs selected={$selectedTab} tabs={$tabs} unsaved={$unsavedTabs} temporary={$temporaryTab} />
-	{#each $tabs as tab}
-		<Editor
-			selected={tab === $selectedTab}
-			language={getExtension(tab)}
-			filename={tab}
-			on:save={() => handleSave()}
-			on:docchanged={(e) => handleCodeChanged(e.detail)}
-			on:drag
-			initialValue={loadEditorContent(tab)}
-		/>
-	{/each}
-</div>
+<Tabs selected={$selectedTab} tabs={$tabs} unsaved={$unsavedTabs} temporary={$temporaryTab} />
+{#each $tabs as tab}
+	<Editor
+		selected={tab === $selectedTab}
+		language={getExtension(tab)}
+		filename={tab}
+		on:save={() => handleSave()}
+		on:docchanged={(e) => handleCodeChanged(e.detail)}
+		on:drag
+		initialValue={loadEditorContent(tab)}
+	/>
+{/each}

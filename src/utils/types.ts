@@ -1,4 +1,4 @@
-import type { DocumentReference } from 'firebase/firestore';
+import type { DocumentReference, Timestamp } from 'firebase/firestore';
 import type { SvelteComponentDev } from 'svelte/internal';
 
 /**
@@ -150,4 +150,5 @@ export type TestResult = {
 		passed: boolean;
 		name: string;
 	}[];
+	timestamp: Timestamp;
 };

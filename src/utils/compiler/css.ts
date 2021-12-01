@@ -64,7 +64,7 @@ export default function css(files: { [key: string]: File }): Plugin {
 			const css = Object.entries(styles)
 				.map((entry) => entry[1])
 				.join('\n');
-			this.emitFile({ type: 'asset', fileName: `styles.css`, source: css });
+			this.emitFile({ type: 'asset', fileName: `styles.css`, source: css, name: 'css' });
 		}
 	};
 }

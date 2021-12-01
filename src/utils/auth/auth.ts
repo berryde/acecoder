@@ -34,8 +34,10 @@ const initAuth = () => {
 			auth,
 			(user) => {
 				set(user);
-				if (user) {
-					goto('/');
+				if (user && window) {
+					if (window.location.href.endsWith('login') || window.location.href.endsWith('register')) {
+						goto('/');
+					}
 				} else {
 					goto('login');
 				}
@@ -113,6 +115,7 @@ const initAuth = () => {
 	};
 
 	const isAdmin = async (user: User) => {
+		if (!user) return false;
 		const token = await user.getIdTokenResult();
 		if ('admin' in token.claims) return token.claims['admin'] as unknown as boolean;
 	};

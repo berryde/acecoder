@@ -22,7 +22,8 @@ import {
 	keymap,
 	highlightSpecialChars,
 	drawSelection,
-	highlightActiveLine
+	highlightActiveLine,
+	EditorView
 } from '@codemirror/view';
 import { indentWithTab } from '@codemirror/commands';
 import { EditorState } from '@codemirror/state';
@@ -124,6 +125,7 @@ export const defaultExtensions = [
 	foldGutter(),
 	drawSelection(),
 	EditorState.allowMultipleSelections.of(true),
+	EditorView.lineWrapping,
 	indentOnInput(),
 	defaultHighlightStyle.fallback,
 	bracketMatching(),

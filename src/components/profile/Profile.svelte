@@ -1,4 +1,6 @@
 <script>
+	import { goto } from '$app/navigation';
+
 	import { auth } from '../../utils/auth/auth';
 
 	import Button from '../common/Button.svelte';
@@ -18,6 +20,13 @@
 		To contact the developers, please <a class="text-blue-600" href="/reset">send us an email</a> and
 		we will try our best to get back to you.
 	</p>
+	<Button
+		text="Homepage"
+		classes="bg-light-bglight dark:bg-dark-bglight dark:hover:bg-opacity-50 text-light-text dark:text-dark-text h-7 mt-3"
+		on:click={() => {
+			goto('/');
+		}}
+	/>
 	<Button
 		text="Sign out"
 		classes="bg-light-bglight dark:bg-dark-bglight dark:hover:bg-opacity-50 text-light-text dark:text-dark-text h-7 mt-3"

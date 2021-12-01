@@ -3,23 +3,14 @@
 	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
 	import EditorContainer from './EditorContainer.svelte';
 	import PreviewContainer from './PreviewContainer.svelte';
-	import Explorer from 'src/components/explorer/Explorer.svelte';
-	import Feedback from 'src/components/feedback/Feedback.svelte';
-	import Settings from 'src/components/settings/Settings.svelte';
+
 	import { onMount } from 'svelte';
 	import type { SidebarTab } from 'src/utils/types';
-	import IoIosFiling from 'svelte-icons/io/IoIosFiling.svelte';
-	import IoIosSettings from 'svelte-icons/io/IoIosSettings.svelte';
-	import IoMdText from 'svelte-icons/io/IoMdText.svelte';
-	import Profile from 'src/components/profile/Profile.svelte';
-	import ProfileImage from 'src/components/profile/ProfileImage.svelte';
+
 	import SidebarItem from 'src/components/sidebar/SidebarItem.svelte';
 	import Admin from 'src/components/admin/Admin.svelte';
 	import IoIosBuild from 'svelte-icons/io/IoIosBuild.svelte';
 	import { auth } from 'src/utils/auth/auth';
-	import MdBook from 'svelte-icons/md/MdBook.svelte';
-	import Exercise from 'src/components/exercise/Exercise.svelte';
-	import { exercise } from 'src/utils/exercise/exercise';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -60,33 +51,7 @@
 	/**
 	 * The tabs to display in the sidebar.
 	 */
-	let sidebarTabs: SidebarTab[] = [
-		{
-			name: 'profile',
-			icon: ProfileImage,
-			component: Profile
-		},
-		{
-			name: $exercise ? $exercise.name : 'Exercise',
-			icon: MdBook,
-			component: Exercise
-		},
-		{
-			name: 'explorer',
-			icon: IoIosFiling,
-			component: Explorer
-		},
-		{
-			name: 'feedback',
-			icon: IoMdText,
-			component: Feedback
-		},
-		{
-			name: 'settings',
-			icon: IoIosSettings,
-			component: Settings
-		}
-	];
+	export let sidebarTabs: SidebarTab[];
 
 	/**
 	 * Update the selected index and collapsed state of the sidebar.

@@ -1,6 +1,5 @@
 <script>
-	import IDE from '../pages/IDE/IDE.svelte';
-
+	import Homepage from 'src/pages/homepage/Homepage.svelte';
 	import PrivateRoute from '../components/auth/PrivateRoute.svelte';
 </script>
 
@@ -9,5 +8,5 @@
 </svelte:head>
 
 <PrivateRoute>
-	<IDE />
+	<Homepage />
 </PrivateRoute>

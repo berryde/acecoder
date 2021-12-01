@@ -202,20 +202,16 @@
 	onMount(updateEditor);
 </script>
 
-<div
-	bind:this={element}
-	class="editor {!selected && 'hidden'} overflow-y-auto flex-grow"
-	on:mousedown={mouseDown}
-/>
+<div bind:this={element} class={!selected && 'hidden'} on:mousedown={mouseDown} />
 
 <style lang="postcss">
-	.editor {
-		flex-grow: 1;
-	}
 	:global(.cm-editor) {
-		@apply h-full overflow-auto;
+		@apply h-full;
 	}
 	:global(.cm-tooltip) {
 		font-family: monospace;
+	}
+	:global(.cm-content) {
+		min-width: 0 !important;
 	}
 </style>

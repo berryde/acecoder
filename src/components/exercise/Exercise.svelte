@@ -1,21 +1,26 @@
 <script lang="ts">
 	import {
-		exercise,
-		getResults,
+		submit as submitExercise,
 		result,
-		submit as submitExercise
+		listen,
+		pending,
+		exercise,
+		exerciseID
 	} from 'src/utils/exercise/exercise';
 	import { filesystem } from 'src/utils/filesystem/filesystem';
 	import Error from './Error.svelte';
 	import Button from '../common/Button.svelte';
 	import CircularProgressIndicator from '../loaders/CircularProgressIndicator.svelte';
-
-	let loading = false;
+	import { auth } from 'src/utils/auth/auth';
+	import { onMount } from 'svelte';
 
 	async function submit() {
-		loading = true;
-		await submitExercise($filesystem);
-		await getResults();
+		// If we are not already waiting for a submission
+		if (!$pending) {
+			const uid = $auth.uid;
+			const eid = $exerciseID;
+			await submitExercise($filesystem, uid, eid);
+		}
 	}
 
 	function getResult(requirement: string) {
@@ -26,7 +31,13 @@
 		return result ? 'bg-green-500' : 'bg-red-500';
 	}
 
-	$: $result && (loading = false);
+	onMount(() => {
+		exerciseID.subscribe((exerciseID) => {
+			if (exerciseID && $auth.uid) {
+				listen(exerciseID, $auth.uid);
+			}
+		});
+	});
 </script>
 
 {#if $exercise}
@@ -50,7 +61,7 @@
 		<Button
 			text="Submit"
 			classes="bg-light-bglight text-light-text hover:bg-opacity-50 dark:bg-dark-bglight dark:hover:bg-opacity-50 dark:text-dark-text h-7 mt-2"
-			{loading}
+			loading={$pending}
 			on:click={() => submit()}
 		/>
 	</div>

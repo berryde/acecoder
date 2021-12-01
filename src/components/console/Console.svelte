@@ -69,13 +69,13 @@
 					<div
 						class="text-xs {getMessageClass(
 							groupedMessage.message.type
-						)} rounded-full h-4 w-4 text-center  {groupedMessage.count > 1
+						)} rounded-full flex-shrink-0 h-4 w-4 text-center  {groupedMessage.count > 1
 							? 'visible'
 							: 'invisible'}"
 					>
 						{groupedMessage.count}
 					</div>
-					<div class="h-3 mx-1 w-5">
+					<div class="h-3 mr-1 w-5 flex-shrink-0">
 						{#if groupedMessage.message.type == 'error'}
 							<IoIosCloseCircle />
 						{:else if groupedMessage.message.type == 'warn'}
