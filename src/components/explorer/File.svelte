@@ -16,6 +16,7 @@
 	import { closeTab, openTab, renameTab, selectedTab } from '../../utils/tabs/tabs';
 	import { latestError } from '../../utils/console/console';
 	import Icon from '../common/Icon.svelte';
+	import Draggable from '../common/Draggable.svelte';
 
 	/**
 	 * The full path to this file including the filename.
@@ -107,33 +108,35 @@
 		</ExplorerInput>
 	{:else}
 		<Hoverable let:hovering>
-			<div
-				class="flex transition flex-row items-center space-x-2 {$latestError &&
-				$latestError.location == path
-					? 'text-red-400'
-					: 'dark:text-dark-text'} h-8 {$selectedTab === path && 'dark:bg-gray-800'}"
-				style="padding-left: {(depth + 1.5) * 0.5}rem;"
-				draggable="true"
-				on:dragstart={handleDragStart}
-				on:click={handleClick}
-			>
-				<Icon>
-					<FileIcon />
-				</Icon>
-
-				<p class="truncate">{name}</p>
+			<Draggable data={path} variant="explorer">
 				<div
-					class="flex flex-row dark:text-dark-text justify-end items-center flex-grow pr-2 space-x-1 {!hovering &&
-						'hidden'}"
+					class="flex transition flex-row items-center space-x-2 {$latestError &&
+					$latestError.location == path
+						? 'text-red-400'
+						: 'dark:text-dark-text'} h-8 {$selectedTab === path && 'dark:bg-gray-800'}"
+					style="padding-left: {(depth + 1.5) * 0.5}rem;"
+					draggable="true"
+					on:dragstart={handleDragStart}
+					on:click={handleClick}
 				>
-					<Icon on:click={() => setRenaming(true)} testId="rename-file" button={true}>
-						<Pen />
+					<Icon>
+						<FileIcon />
 					</Icon>
-					<Icon on:click={handleDelete} testId="delete-file" button={true}>
-						<Trash />
-					</Icon>
+
+					<p class="truncate">{name}</p>
+					<div
+						class="flex flex-row dark:text-dark-text justify-end items-center flex-grow pr-2 space-x-1 {!hovering &&
+							'hidden'}"
+					>
+						<Icon on:click={() => setRenaming(true)} testId="rename-file" button={true}>
+							<Pen />
+						</Icon>
+						<Icon on:click={handleDelete} testId="delete-file" button={true}>
+							<Trash />
+						</Icon>
+					</div>
 				</div>
-			</div>
+			</Draggable>
 		</Hoverable>
 	{/if}
 </div>

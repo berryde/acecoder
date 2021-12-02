@@ -8,6 +8,13 @@ if (admin.apps.length == 0) {
 	});
 }
 
+/**
+ * Updates the claim state for this user. Useful for adding admin privileges.
+ *
+ * @param uid The user to set the claim for.
+ * @param claim The new claim state.
+ * @returns Whether or not the operation was successful.
+ */
 export const setClaim = async (uid: string, claim: Record<string, boolean>): Promise<boolean> => {
 	try {
 		await admin.auth().setCustomUserClaims(uid, claim);

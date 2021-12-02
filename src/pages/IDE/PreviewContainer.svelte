@@ -10,7 +10,7 @@
 	import Console from '../../components/console/Console.svelte';
 
 	import { template } from 'src/utils/exercise/exercise';
-	import { compiled } from 'src/utils/compiler/state';
+	import { compiled } from 'src/utils/compiler/compiler';
 
 	export let resizingX = false;
 	export let selecting = false;

@@ -28,8 +28,6 @@
 				class="flex-grow py-7 bg-dark-bglight rounded uppercase font-bold text-sm flex items-center justify-center hover:bg-blue-700 transition-all"
 				on:click={() => {
 					isStandalone.set(false);
-					// goto('exercise/9A5WFx5Ki8Rlni9FmkJf');
-
 					goto('exercise/vteMX6qHVEy6uku8sS3Z');
 				}}
 			>

@@ -5,7 +5,8 @@
 		listen,
 		pending,
 		exercise,
-		exerciseID
+		exerciseID,
+		aborted
 	} from 'src/utils/exercise/exercise';
 	import { filesystem } from 'src/utils/filesystem/filesystem';
 	import Error from './Error.svelte';
@@ -64,6 +65,11 @@
 			loading={$pending}
 			on:click={() => submit()}
 		/>
+		{#if $aborted}
+			<div class="text-sm mt-3 p-2 bg-red-900 bg-opacity-50 rounded text-red-500">
+				<p>Submission timed out.</p>
+			</div>
+		{/if}
 	</div>
 {:else}
 	<div class="w-full flex justify-center">

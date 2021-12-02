@@ -52,6 +52,13 @@ const initAuth = () => {
 		set(null);
 	}
 
+	/**
+	 * Register a new user to the application.
+	 *
+	 * @param email The new user's email
+	 * @param password The new user's password
+	 * @returns An auth error if registering failed
+	 */
 	const register = async (email: string, password: string): Promise<AuthError | void> => {
 		const auth = getAuth(app);
 		try {

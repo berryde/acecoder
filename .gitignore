@@ -10,3 +10,4 @@ static/worker.js.map
 .firebase-config/service-account.json
 .firebase
 /src/components/preview/template/template.js
+.vscode/settings.json

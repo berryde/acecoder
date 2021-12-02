@@ -10,7 +10,7 @@
 		temporaryTab
 	} from '../../utils/tabs/tabs';
 	import { filesystem, getExtension, getFile, updateFile } from '../../utils/filesystem/filesystem';
-	import { compiled } from 'src/utils/compiler/state';
+	import { compiled } from 'src/utils/compiler/compiler';
 	import { isStandalone, save } from 'src/utils/exercise/exercise';
 	import { doc, setDoc } from 'firebase/firestore';
 	import { db } from 'src/utils/firebase';
@@ -56,6 +56,7 @@
 	 * @param tab The tab associated with this file and editor.
 	 */
 	function loadEditorContent(tab: string) {
+		console.log('Loading tab', tab);
 		const result = getFile($filesystem, tab);
 		if (result.type == 'file') {
 			return result.value;

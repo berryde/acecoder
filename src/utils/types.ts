@@ -37,18 +37,19 @@ export type WorkerResponse = {
 	error?: WorkerError;
 };
 
+/**
+ * The message sent to an iframe prompting a re-render.
+ */
 export type ReloadMessage = {
 	compiled: WorkerResponse;
 	type: 'reload';
 };
 
+/**
+ * The message sent to an iframe telling it to intercept clicks to handle navigation.
+ */
 export type UrlMessage = {
 	type: 'url';
-};
-
-export type TestMessage = {
-	compiled: WorkerResponse;
-	type: 'test';
 };
 
 /**
@@ -89,8 +90,17 @@ export type Filesystem = {
 	[key: string]: FSFile | FSFolder;
 };
 
+/**
+ * A message passed between the preview iframe and the preview pane.
+ */
 export type PreviewMessage = {
+	/**
+	 * The level of message. System messages are used for application communication, such as for popups. Everything else goes to the console.
+	 */
 	type: 'system' | 'warn' | 'log' | 'error';
+	/**
+	 * The message content.
+	 */
 	data: string;
 };
 
@@ -113,42 +123,120 @@ export type WorkerError = {
 	location: string;
 };
 
+/**
+ * An error to display when authentication fails.
+ */
 export type AuthError = {
+	/**
+	 * The title of the error.
+	 */
 	errorCode: string;
+	/**
+	 * A detailed description of the error.
+	 */
 	errorMessage: string;
 };
 
+/**
+ * A single sidebar tab.
+ */
 export type SidebarTab = {
+	/**
+	 * The name of this tab.
+	 */
 	name: string;
+	/**
+	 * The sidebar icon to show for this tab.
+	 */
 	icon: typeof SvelteComponentDev;
+	/**
+	 * The component to render when the tab is opened.
+	 */
 	component: typeof SvelteComponentDev;
 };
 
+/**
+ * A feedback submission for evaluation.
+ */
 export type Feedback = {
+	/**
+	 * When this feedback was posted.
+	 */
 	posted: string;
+	/**
+	 * The feedback comment.
+	 */
 	comment: string;
+	/**
+	 * The component this feedback is about.
+	 */
 	component: string;
 };
 
+/**
+ * An exercise that the user can complete.
+ */
 export type Exercise = {
+	/**
+	 * The tests that should be run for this exercise
+	 */
 	tests: { [key: string]: string };
+	/**
+	 * A reference to the location of the template that should be loaded when the exercise is opened for the first time.
+	 */
 	template: DocumentReference;
+	/**
+	 * The requirements for this exercise, exactly matching the tests that should be run.
+	 */
 	requirements: string[];
+	/**
+	 * The name of the exercise.
+	 */
 	name: string;
+	/**
+	 * A brief description of the tasks required by the exercise.
+	 */
 	description: string;
 };
 
+/**
+ * Files to load into the application, representing a filesystem state.
+ */
 export type Template = {
 	files: { [key: string]: string };
 };
 
+/**
+ * Response from the submission server.
+ */
 export type TestResult = {
+	/**
+	 * The number of tests that passed.
+	 */
 	passed: number;
+	/**
+	 * The total number of tests.
+	 */
 	total: number;
+	/**
+	 * The test results
+	 */
 	results: {
+		/**
+		 * The error message, if any, for this test.
+		 */
 		message: string;
+		/**
+		 * Whether this test passed.
+		 */
 		passed: boolean;
+		/**
+		 * The name of this test.
+		 */
 		name: string;
 	}[];
+	/**
+	 * The timestamp of the result.
+	 */
 	timestamp: Timestamp;
 };

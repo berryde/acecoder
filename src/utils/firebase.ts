@@ -2,6 +2,9 @@ import { initializeApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 
+/**
+ * The firebase client access credentials. This is publicly exposed as it only provides client access.
+ */
 const firebaseConfig = {
 	apiKey: 'AIzaSyC7h00ztN3AKGS79h7vHFECuPKCTiKianw',
 	authDomain: 'folio-8b029.firebaseapp.com',
@@ -12,8 +15,19 @@ const firebaseConfig = {
 	measurementId: 'G-519JV5VKEV'
 };
 
+/**
+ * The firebase app.
+ */
 const app = initializeApp(firebaseConfig);
+
+/**
+ * The Firebase firestore instance.
+ */
 const db = getFirestore(app);
+
+/**
+ * The Firebase authentication instance.
+ */
 const auth = getAuth(app);
 
 // if (import.meta.env.DEV) {

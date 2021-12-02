@@ -73,6 +73,13 @@ export const deleteFile = (path: string): void => {
 	});
 };
 
+/**
+ * A custom comparator for filesystem objects.
+ *
+ * @param a The first file to compare
+ * @param b The second file to compare
+ * @returns Whether a should be ordered before b
+ */
 export const compareFile = (
 	a: [string, FSFile | FSFolder],
 	b: [string, FSFile | FSFolder]

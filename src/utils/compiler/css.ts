@@ -1,6 +1,6 @@
 import type { Plugin } from 'rollup';
 import type { File } from '../types';
-import { resolveRelativePath } from './babel';
+import { resolveRelativePath } from './compiler';
 
 /**
  * A browser port of rollup-plugin-import-css.
@@ -17,13 +17,25 @@ export default function css(files: { [key: string]: File }): Plugin {
 		 * @returns
 		 */
 		async resolveId(importee, importer) {
-			if (/.*\.css/.test(importee)) {
-				if (importee.startsWith('./')) {
-					return resolveRelativePath(importee, importer);
-				}
+			// Check if the import refers to another source file, else it's a node module.
+			if (importee in files) {
 				return importee;
 			}
-			return null;
+
+			// Check if it's a relative import
+			else if (/(\.\/|(\.\.\/)+)[^/]*/g.test(importee)) {
+				// If it has a file extension
+				try {
+					return resolveRelativePath(importee, importer, files);
+				} catch (err) {
+					this.warn({
+						message: `Failed to resolve file ${importee} from ${importer}. Check that this file exists.`,
+						pos: 0,
+						id: importer,
+						name: 'FileNotFoundError'
+					});
+				}
+			}
 		},
 		/**
 		 * Load a CSS file from our in-memory file system.
@@ -32,11 +44,10 @@ export default function css(files: { [key: string]: File }): Plugin {
 		 */
 		async load(id) {
 			if (/.*\.css/.test(id)) {
-				if (id in files) {
-					return files[id].code;
-				}
+				return files[id].code;
+			} else {
+				console.log(id + " doesn't match the regex");
 			}
-			return null;
 		},
 		/**
 		 * Custom transform to handle CSS files.
