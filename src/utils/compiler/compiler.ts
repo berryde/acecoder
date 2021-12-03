@@ -49,7 +49,6 @@ export const resolveRelativePath = (
 	importer: string,
 	files: { [key: string]: File }
 ): string => {
-	console.log('Resolving relative path', importee, importer);
 	let resolved: string;
 	// If the importer is in the top level directory then the import is not actually relative.
 	if (!importer.includes('/')) {
@@ -64,7 +63,6 @@ export const resolveRelativePath = (
 		const filename = importee.split('/')[importee.split('/').length - 1];
 
 		const split = importer.split('/');
-		console.log(parents, filename, split);
 
 		if (parents.length > split.length - 1) {
 			throw 'Could not resolve relative import ' + importee + ' from ' + importer;

@@ -15,7 +15,7 @@
 	import Icon from '../common/Icon.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import IoIosShareAlt from 'svelte-icons/io/IoIosShareAlt.svelte';
-	import { isStandalone } from 'src/utils/exercise/exercise';
+	import { standalone } from 'src/utils/exercise/exercise';
 	import { auth } from 'src/utils/auth/auth';
 
 	/**
@@ -154,13 +154,13 @@
 	<div class=" dark:text-dark-text flex flex-row justify-between w-full items-center p-2">
 		<div class="font-bold uppercase text-xs ">Preview</div>
 		<div class="flex flex-row space-x-2">
-			{#if $isStandalone}
+			{#if $standalone}
 				<Icon on:click={() => handleShare()} button={true}>
 					<IoIosShareAlt />
 				</Icon>
 				{#if sharing}
 					<div
-						class="dark:bg-dark-bglight border-light-bglight text-white w-56 absolute block z-50 right-2 top-10 rounded p-2 text-sm space-y-2 shadow-md"
+						class="dark:bg-dark-bglight border-light-bglight w-96 text-white absolute block z-50 right-2 top-10 rounded p-3 text-sm space-y-2 shadow-md"
 					>
 						<p class="dark:text-dark-text text-light-text uppercase text-xs font-bold">SHARE</p>
 						<p>
@@ -168,7 +168,7 @@
 							view the site, so be careful when sharing it.
 						</p>
 						<div
-							class="overflow-x-auto p-1 transition-all {copied
+							class="overflow-x-auto p-1 text-xs text-center transition-all {copied
 								? 'text-green-400 bg-green-900'
 								: 'text-blue-400 bg-dark-bgdark'}"
 							on:click={() => handleCopy()}

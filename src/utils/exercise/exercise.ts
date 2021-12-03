@@ -7,6 +7,7 @@ import { get as httpGet } from '../network/network';
 import type { Exercise, Filesystem, Template, TestResult } from '../types';
 import type { DocumentData } from 'firebase/firestore';
 import { auth } from '../auth/auth';
+import { openTab } from '../tabs/tabs';
 
 export const exercise = writable<Exercise>();
 export const exerciseID = writable<string>();
@@ -14,7 +15,8 @@ export const result = writable<TestResult>();
 export const template = writable<Template>();
 export const pending = writable<boolean>(false);
 export const aborted = writable<boolean>(false);
-export const isStandalone = writable<boolean>();
+export const standalone = writable<boolean>();
+export const initialising = writable<boolean>(true);
 
 /**
  * A timer callback for determining when to stop listening for submission results.
@@ -26,12 +28,16 @@ let timeout: NodeJS.Timeout;
  *
  * @param id The exercise ID
  */
-export const loadExercise = async (id: string): Promise<void> => {
+export const loadExercise = async (): Promise<void> => {
+	// Wipe the filesystem
+	template.set(undefined);
+	filesystem.set({});
+
 	const uid = get(auth).uid;
 
-	const ex = (await getDoc('exercises', id)) as Exercise;
+	const ex = (await getDoc('exercises', get(exerciseID))) as Exercise;
 	// Check if the user has made a previous submission
-	const submissionID = id + uid;
+	const submissionID = get(exerciseID) + uid;
 	const submission = (await getDoc('submissions', submissionID)) as Template;
 
 	if (submission) {
@@ -42,7 +48,6 @@ export const loadExercise = async (id: string): Promise<void> => {
 	}
 
 	exercise.set(ex);
-	exerciseID.set(id);
 };
 
 /**
@@ -51,7 +56,8 @@ export const loadExercise = async (id: string): Promise<void> => {
  *
  * @param uid The current user's uid
  */
-export const loadStandalone = async (uid: string): Promise<void> => {
+export const loadStandalone = async (): Promise<void> => {
+	const uid = get(auth).uid;
 	const standalone = (await getDoc('standalone', uid)) as Template;
 	if (standalone) {
 		initTemplate(standalone);
@@ -76,16 +82,25 @@ export const loadTemplate = async (id: string): Promise<void> => {
  * @param _template The template to initialise
  */
 const initTemplate = (_template: Template) => {
+	let entry: string;
 	// eslint-disable-next-line prefer-const
 	for (let [path, value] of Object.entries(_template.files)) {
 		// Remove the devdependencies as these are only used for testing.
-		if (path == 'package.json') {
-			value = value.replace(/(,?)(\s)*("?)devDependencies("?):(\s*)\{([^}]*)\}/, '');
+		try {
+			if (path == 'package.json') {
+				value = value.replace(/(,?)(\s)*("?)devDependencies("?):(\s*)\{([^}]*)\}/, '');
+				const pkg = JSON.parse(value);
+				entry = pkg['main'];
+			}
+		} finally {
+			// Format the values as whitespace is not preserved by firebase.
+			createFile(path, format(value, getExtension(path)));
 		}
-		// Format the values as whitespace is not preserved by firebase.
-		createFile(path, format(value, getExtension(path)));
 	}
 	template.set(_template);
+	// Open the entry point specified in package.json
+	if (entry) openTab(entry);
+	initialising.set(false);
 };
 
 /**
@@ -136,7 +151,11 @@ export const submit = async (
 		aborted.set(true);
 	}, 120000);
 
-	await httpGet('http://localhost:9080/submissions/' + ID);
+	if (import.meta.env.DEV) {
+		await httpGet('http://localhost:9080/submissions/' + ID);
+	} else {
+		await httpGet('https://submission-server-rly7tdzvgq-ew.a.run.app/submissions/' + ID);
+	}
 };
 
 /**
@@ -156,17 +175,17 @@ export const save = async (): Promise<void> => {
  * Subscribe to the expected location of the submission results, updating the state when retrieved.
  * @param userID The UID of the current user.
  */
-export const listen = async (exerciseID: string, userID: string): Promise<void> => {
-	if (exerciseID && userID) {
-		onSnapshot(doc(db, 'results', exerciseID + userID), (doc) => {
-			if (doc.data()) {
-				if (!result || pending) {
-					const data = doc.data() as TestResult;
-					result.set(data);
-					pending.set(false);
-					clearTimeout(timeout);
-				}
+export const listen = async (): Promise<void> => {
+	const uid = get(auth).uid;
+
+	onSnapshot(doc(db, 'results', get(exerciseID) + uid), (doc) => {
+		if (doc.data()) {
+			if (!result || pending) {
+				const data = doc.data() as TestResult;
+				result.set(data);
+				pending.set(false);
+				clearTimeout(timeout);
 			}
-		});
-	}
+		}
+	});
 };

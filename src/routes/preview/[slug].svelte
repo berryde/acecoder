@@ -48,7 +48,6 @@
 			// Send the compiled code to the iframe once it has loaded.
 			iframe.onload = () => {
 				// Add the URL click interceptor
-				console.log('loaded');
 				const message: UrlMessage = {
 					type: 'url'
 				};

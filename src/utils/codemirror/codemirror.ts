@@ -1,8 +1,8 @@
-import { javascript } from '@codemirror/lang-javascript';
+import { javascript, jsxLanguage, tsxLanguage } from '@codemirror/lang-javascript';
 import { css } from '@codemirror/lang-css';
 import { html } from '@codemirror/lang-html';
 import { json } from '@codemirror/lang-json';
-import type { LanguageSupport } from '@codemirror/language';
+import { LanguageSupport } from '@codemirror/language';
 import { history, historyKeymap } from '@codemirror/history';
 import { foldGutter, foldKeymap } from '@codemirror/fold';
 import { indentOnInput } from '@codemirror/language';
@@ -45,14 +45,9 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 		case 'html':
 			return html();
 		case 'tsx':
-			return javascript({
-				typescript: true,
-				jsx: true
-			});
+			return new LanguageSupport(tsxLanguage, tsxLanguage.data.of({}));
 		case 'jsx':
-			return javascript({
-				jsx: true
-			});
+			return new LanguageSupport(jsxLanguage, jsxLanguage.data.of({}));
 		case 'ts':
 			return javascript({
 				typescript: true

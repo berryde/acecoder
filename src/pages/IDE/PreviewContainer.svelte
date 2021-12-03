@@ -9,8 +9,11 @@
 
 	import Console from '../../components/console/Console.svelte';
 
-	import { template } from 'src/utils/exercise/exercise';
+	import { standalone, save, template } from 'src/utils/exercise/exercise';
 	import { compiled } from 'src/utils/compiler/compiler';
+	import { doc, setDoc } from 'firebase/firestore';
+	import { db } from 'src/utils/firebase';
+	import { auth } from 'src/utils/auth/auth';
 
 	export let resizingX = false;
 	export let selecting = false;
@@ -41,15 +44,27 @@
 				initialised = true;
 			}
 		});
+
+		filesystem.subscribe(() => {
+			if (initialised) {
+				save();
+				refresh();
+			}
+		});
+
+		if ($standalone) {
+			compiled.subscribe((compiled) => {
+				// Update the compiled value in firebase
+				if ($standalone && compiled && compiled != { css: '', js: '', public: {} }) {
+					setDoc(doc(db, 'preview', $auth.uid), compiled);
+				}
+			});
+		}
 	});
 
 	/**
 	 * Reload the preview whenever the filesystem is changed.
 	 */
-
-	filesystem.subscribe(() => {
-		initialised && refresh();
-	});
 
 	function refresh() {
 		if (worker) {
@@ -57,6 +72,7 @@
 		}
 	}
 
+	// Perform the initial reload
 	$: initialised && refresh();
 </script>
 

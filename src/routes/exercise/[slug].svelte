@@ -11,9 +11,10 @@
 	import ProfileImage from 'src/components/profile/ProfileImage.svelte';
 	import MdBook from 'svelte-icons/md/MdBook.svelte';
 	import Exercise from 'src/components/exercise/Exercise.svelte';
-	import { exercise, loadExercise, template } from 'src/utils/exercise/exercise';
+	import { exercise, exerciseID, standalone } from 'src/utils/exercise/exercise';
 	import { onMount } from 'svelte';
 	import { auth } from 'src/utils/auth/auth';
+	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
 
 	const tabs = [
 		{
@@ -43,10 +44,14 @@
 		}
 	];
 
+	/**
+	 * Load the exercise once the user is authenticated, given that it hasn't already been loaded.
+	 */
 	onMount(() => {
+		standalone.set(false);
 		auth.subscribe((auth) => {
-			if (auth && !$template) {
-				loadExercise($page.params.slug);
+			if (auth) {
+				exerciseID.set($page.params.slug);
 			}
 		});
 	});
@@ -56,4 +61,10 @@
 	<title>Exercise</title>
 </svelte:head>
 
-<IDE sidebarTabs={tabs} />
+{#if !$auth}
+	<div class="h-screen w-screen bg-dark-bgdark flex justify-center items-center">
+		<OrbitProgressIndicator />
+	</div>
+{:else}
+	<IDE sidebarTabs={tabs} />
+{/if}

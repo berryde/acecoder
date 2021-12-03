@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { auth } from '../../utils/auth/auth';
 	import MdAccountCircle from 'svelte-icons/md/MdAccountCircle.svelte';
+	import { onMount } from 'svelte';
 	let iconUrl: string;
-	auth.subscribe((user) => {
-		if (user) iconUrl = user.photoURL;
-	});
 
 	function handleImageError() {
 		iconUrl = undefined;
 	}
+
+	onMount(() => {
+		iconUrl = $auth.photoURL;
+	});
 </script>
 
 <div class="rounded-full border-2 dark:border-dark-text border-light-text">

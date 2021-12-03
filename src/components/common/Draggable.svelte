@@ -7,6 +7,7 @@
 	 * The drag system this component belongs to. Only dropzones with a matching variant will be valid.
 	 */
 	export let variant: string;
+
 	function start(e: DragEvent) {
 		e.dataTransfer.setData('text', data);
 		e.dataTransfer.setData('variant', variant);

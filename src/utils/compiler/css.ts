@@ -45,8 +45,6 @@ export default function css(files: { [key: string]: File }): Plugin {
 		async load(id) {
 			if (/.*\.css/.test(id)) {
 				return files[id].code;
-			} else {
-				console.log(id + " doesn't match the regex");
 			}
 		},
 		/**

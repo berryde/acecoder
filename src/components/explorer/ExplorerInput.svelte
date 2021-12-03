@@ -78,7 +78,10 @@
 	}
 </script>
 
-<div class={error ? 'bg-red-800' : 'dark:bg-dark-bglight'} style="padding-left: {depth * 0.5}rem;">
+<div
+	class={error ? 'bg-red-800' : 'dark:bg-dark-bglight bg-light-bglight'}
+	style="padding-left: {depth * 0.5}rem;"
+>
 	<div
 		class="flex flex-row items-center dark:text-dark-text pl-3 {error
 			? ' ring-inset ring-red-800 ring-2'

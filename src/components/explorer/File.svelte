@@ -93,50 +93,48 @@
 	$: name = tail(path);
 </script>
 
-<div>
-	{#if renaming}
-		<ExplorerInput
-			reservedNames={getExistingFiles(navigateToFile($filesystem, path))}
-			{depth}
-			initialValue={name}
-			on:submit={(e) => handleRename(e.detail)}
-			on:cancelled={() => setRenaming(false)}
-		>
-			<Icon>
-				<FileIcon />
-			</Icon>
-		</ExplorerInput>
-	{:else}
+{#if renaming}
+	<ExplorerInput
+		reservedNames={getExistingFiles(navigateToFile($filesystem, path))}
+		{depth}
+		initialValue={name}
+		on:submit={(e) => handleRename(e.detail)}
+		on:cancelled={() => setRenaming(false)}
+	>
+		<Icon>
+			<FileIcon />
+		</Icon>
+	</ExplorerInput>
+{:else}
+	<Draggable data={path} variant="explorer">
 		<Hoverable let:hovering>
-			<Draggable data={path} variant="explorer">
-				<div
-					class="flex transition flex-row items-center space-x-2 {$latestError &&
-					$latestError.location == path
-						? 'text-red-400'
-						: 'dark:text-dark-text'} h-8 {$selectedTab === path && 'dark:bg-gray-800'}"
-					style="padding-left: {(depth + 1.5) * 0.5}rem;"
-					draggable="true"
-					on:dragstart={handleDragStart}
-					on:click={handleClick}
-				>
-					<Icon>
-						<FileIcon />
-					</Icon>
+			<div
+				class="flex transition flex-row items-center space-x-2 {$latestError &&
+				$latestError.location == path
+					? 'text-red-400'
+					: 'dark:text-dark-text'} h-8 {$selectedTab === path && 'dark:bg-gray-800 bg-gray-100 '}"
+				style="padding-left: {(depth + 1.5) * 0.5}rem;"
+				draggable="true"
+				on:dragstart={handleDragStart}
+				on:click={handleClick}
+			>
+				<Icon>
+					<FileIcon />
+				</Icon>
 
-					<p class="truncate">{name}</p>
-					<div
-						class="flex flex-row dark:text-dark-text justify-end items-center flex-grow pr-2 space-x-1 {!hovering &&
-							'hidden'}"
-					>
-						<Icon on:click={() => setRenaming(true)} testId="rename-file" button={true}>
-							<Pen />
-						</Icon>
-						<Icon on:click={handleDelete} testId="delete-file" button={true}>
-							<Trash />
-						</Icon>
-					</div>
+				<p class="truncate">{name}</p>
+				<div
+					class="flex flex-row dark:text-dark-text justify-end items-center flex-grow pr-2 space-x-1 {!hovering &&
+						'hidden'}"
+				>
+					<Icon on:click={() => setRenaming(true)} testId="rename-file" button={true}>
+						<Pen />
+					</Icon>
+					<Icon on:click={handleDelete} testId="delete-file" button={true}>
+						<Trash />
+					</Icon>
 				</div>
-			</Draggable>
+			</div>
 		</Hoverable>
-	{/if}
-</div>
+	</Draggable>
+{/if}

@@ -28,7 +28,7 @@
 		exists
 	} from '../../utils/filesystem/filesystem';
 	import type { Filesystem } from '../../utils/types';
-	import { renameTabs, closeTabs, openTab } from '../../utils/tabs/tabs';
+	import { renameTabs, closeTabs, openTab, renameTab } from '../../utils/tabs/tabs';
 	import Droppable from '../common/Droppable.svelte';
 	import Draggable from '../common/Draggable.svelte';
 	import Icon from '../common/Icon.svelte';
@@ -99,6 +99,7 @@
 		) {
 			const oldName = tail(data);
 			renameFile(data, path + '/' + oldName);
+			renameTab(data, path + '/' + oldName);
 		}
 	}
 
@@ -175,12 +176,12 @@
 			</Icon>
 		</ExplorerInput>
 	{:else}
-		<Hoverable let:hovering>
+		<Droppable let:dropping on:dropped={(e) => dropped(e.detail)} variant="explorer">
 			<Draggable data={path} variant="explorer">
-				<Droppable let:dropping on:dropped={(e) => dropped(e.detail)} variant="explorer">
+				<Hoverable let:hovering>
 					<div
 						class="flex transition flex-row items-center space-x-2 dark:text-dark-text h-8 {dropping &&
-							'bg-blue-500'}"
+							'bg-blue-500 bg-opacity-50'}"
 						style="padding-left: {(depth + 1.5) * 0.5}rem;"
 					>
 						<div on:click={toggleCollapse}>
@@ -221,21 +222,23 @@
 							</Icon>
 						</div>
 					</div>
-				</Droppable>
+				</Hoverable>
 			</Draggable>
-		</Hoverable>
+		</Droppable>
+
+		{#if !collapsed}
+			<div>
+				{#each Object.entries(children).sort(compareFile) as [name, object]}
+					{#if object.type === 'file'}
+						<File path={path + '/' + name} depth={depth + 1} />
+					{:else}
+						<svelte:self children={object.children} path={path + '/' + name} depth={depth + 1} />
+					{/if}
+				{/each}
+			</div>
+		{/if}
 	{/if}
-	{#if !collapsed}
-		<div>
-			{#each Object.entries(children).sort(compareFile) as [name, object]}
-				{#if object.type === 'file'}
-					<File path={path + '/' + name} depth={depth + 1} />
-				{:else}
-					<svelte:self children={object.children} path={path + '/' + name} depth={depth + 1} />
-				{/if}
-			{/each}
-		</div>
-	{/if}
+
 	{#if creating}
 		<ExplorerInput
 			on:submit={(e) => handleCreate(e.detail)}

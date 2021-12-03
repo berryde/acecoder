@@ -11,6 +11,7 @@
 	import Admin from 'src/components/admin/Admin.svelte';
 	import IoIosBuild from 'svelte-icons/io/IoIosBuild.svelte';
 	import { auth } from 'src/utils/auth/auth';
+	import { loadExercise, loadStandalone, standalone } from 'src/utils/exercise/exercise';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -107,6 +108,12 @@
 
 	// Add a listener for key combinations
 	onMount(async () => {
+		if ($standalone) {
+			loadStandalone();
+		} else {
+			loadExercise();
+		}
+
 		window.addEventListener('keydown', keydown);
 		if (import.meta.env.DEV && (await auth.isAdmin($auth))) {
 			sidebarTabs.push({

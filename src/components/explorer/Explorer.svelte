@@ -11,12 +11,19 @@
 		compareFile,
 		createFile,
 		createFolder,
+		exists,
 		exportFilesystem,
 		filesystem,
-		getExistingFiles
+		getExistingFiles,
+		getParentDir,
+		renameFile,
+		tail
 	} from '../../utils/filesystem/filesystem';
-	import { openTab } from '../../utils/tabs/tabs';
+	import { openTab, renameTab } from '../../utils/tabs/tabs';
 	import Icon from '../common/Icon.svelte';
+	import Droppable from '../common/Droppable.svelte';
+	import { initialising } from 'src/utils/exercise/exercise';
+	import CircularProgressIndicator from '../loaders/CircularProgressIndicator.svelte';
 
 	let creating = false;
 	let creatingFile = false;
@@ -45,6 +52,25 @@
 		creating = false;
 	}
 
+	/**
+	 * Called when a draggable object is hovered over this folder.
+	 * @param data The drag event data.
+	 */
+	function dropped(data: string) {
+		// A file can't be moved into itself or into the parent directory as it's already in it.
+		const path = '';
+		if (
+			exists($filesystem, data) &&
+			path !== data &&
+			getParentDir(data) !== path &&
+			getParentDir(path) !== data
+		) {
+			const oldName = tail(data);
+			renameFile(data, oldName);
+			renameTab(data, oldName);
+		}
+	}
+
 	function handleExport() {
 		exportFilesystem($filesystem);
 	}
@@ -62,32 +88,46 @@
 			<FaDownload />
 		</Icon>
 	</div>
-	<div class="overflow-auto w-full flex-grow h-full">
-		{#each Object.entries($filesystem).sort(compareFile) as [path, object]}
-			{#if object.type === 'file'}
-				<File {path} />
-			{:else}
-				<Folder {path} children={object.children} />
+	{#if $initialising}
+		<div class="h-full flex items-center justify-center">
+			<CircularProgressIndicator />
+		</div>
+	{:else}
+		<div class="w-full">
+			{#each Object.entries($filesystem).sort(compareFile) as [path, object]}
+				{#if object.type === 'file'}
+					<File {path} />
+				{:else}
+					<Folder {path} children={object.children} />
+				{/if}
+			{/each}
+			{#if creating}
+				<ExplorerInput
+					on:submit={(e) => {
+						handleCreate(e.detail);
+					}}
+					on:cancelled={() => {
+						setCreating(false);
+					}}
+					reservedNames={getExistingFiles($filesystem)}
+				>
+					<Icon>
+						{#if creatingFile}
+							<OutlineFileIcon />
+						{:else}
+							<OutlineFolderIcon />
+						{/if}
+					</Icon>
+				</ExplorerInput>
 			{/if}
-		{/each}
-		{#if creating}
-			<ExplorerInput
-				on:submit={(e) => {
-					handleCreate(e.detail);
-				}}
-				on:cancelled={() => {
-					setCreating(false);
-				}}
-				reservedNames={getExistingFiles($filesystem)}
-			>
-				<Icon>
-					{#if creatingFile}
-						<OutlineFileIcon />
-					{:else}
-						<OutlineFolderIcon />
-					{/if}
-				</Icon>
-			</ExplorerInput>
-		{/if}
-	</div>
+		</div>
+		<Droppable
+			let:dropping
+			on:dropped={(e) => dropped(e.detail)}
+			variant="explorer"
+			classes="w-full h-full"
+		>
+			<div class="{dropping && 'bg-blue-500 bg-opacity-50'} w-full h-full transition-all" />
+		</Droppable>
+	{/if}
 </div>

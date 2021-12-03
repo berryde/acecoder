@@ -33,11 +33,7 @@
 	}
 
 	onMount(() => {
-		exerciseID.subscribe((exerciseID) => {
-			if (exerciseID && $auth.uid) {
-				listen(exerciseID, $auth.uid);
-			}
-		});
+		listen();
 	});
 </script>
 

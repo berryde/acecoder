@@ -9,12 +9,8 @@
 		openTab,
 		temporaryTab
 	} from '../../utils/tabs/tabs';
-	import { filesystem, getExtension, getFile, updateFile } from '../../utils/filesystem/filesystem';
-	import { compiled } from 'src/utils/compiler/compiler';
-	import { isStandalone, save } from 'src/utils/exercise/exercise';
-	import { doc, setDoc } from 'firebase/firestore';
-	import { db } from 'src/utils/firebase';
-	import { auth } from 'src/utils/auth/auth';
+	import { filesystem, getFile, updateFile } from '../../utils/filesystem/filesystem';
+	import type { FSFile } from 'src/utils/types';
 
 	/**
 	 * A map of filename to unsaved changes for that file.
@@ -28,7 +24,20 @@
 	function handleCodeChanged(code: string) {
 		editorContent[$selectedTab] = code;
 		openTab($selectedTab);
-		unsavedTabs.update((tabs) => (tabs.includes($selectedTab) ? tabs : [...tabs, $selectedTab]));
+
+		// If the unsaved changed match the actual value, mark the file as 'saved'
+		if (code == (getFile($filesystem, $selectedTab) as FSFile).value) {
+			unsavedTabs.update((tabs) => {
+				if (tabs.includes($selectedTab)) {
+					tabs.splice(tabs.indexOf($selectedTab), 1);
+				}
+				return tabs;
+			});
+		}
+		// Mark the file as 'unsaved'
+		else {
+			unsavedTabs.update((tabs) => (tabs.includes($selectedTab) ? tabs : [...tabs, $selectedTab]));
+		}
 	}
 
 	/**
@@ -39,41 +48,10 @@
 			saveTab($selectedTab);
 			updateFile($selectedTab, editorContent[$selectedTab]);
 		}
-
-		compiled.subscribe((compiled) => {
-			// Update the compiled value in firebase
-			if ($isStandalone && compiled && compiled != { css: '', js: '', public: {} }) {
-				console.log("It's standalone");
-				setDoc(doc(db, 'preview', $auth.uid), compiled);
-			}
-		});
-
-		save();
-	}
-
-	/**
-	 * Load the contents of the file for this tab.
-	 * @param tab The tab associated with this file and editor.
-	 */
-	function loadEditorContent(tab: string) {
-		console.log('Loading tab', tab);
-		const result = getFile($filesystem, tab);
-		if (result.type == 'file') {
-			return result.value;
-		}
-		return '';
 	}
 </script>
 
 <Tabs selected={$selectedTab} tabs={$tabs} unsaved={$unsavedTabs} temporary={$temporaryTab} />
-{#each $tabs as tab}
-	<Editor
-		selected={tab === $selectedTab}
-		language={getExtension(tab)}
-		filename={tab}
-		on:save={() => handleSave()}
-		on:docchanged={(e) => handleCodeChanged(e.detail)}
-		on:drag
-		initialValue={loadEditorContent(tab)}
-	/>
-{/each}
+{#if $selectedTab}
+	<Editor on:save={() => handleSave()} on:docchanged={(e) => handleCodeChanged(e.detail)} />
+{/if}

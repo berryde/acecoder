@@ -2,7 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { onMount } from 'svelte';
 	import { EditorView, keymap } from '@codemirror/view';
-	import { EditorState } from '@codemirror/state';
+	import { Compartment, EditorState } from '@codemirror/state';
 	import type { Extension } from '@codemirror/state';
 	import {
 		defaultExtensions,
@@ -16,38 +16,15 @@
 	import { linter } from '@codemirror/lint';
 	import { latestError } from '../../utils/console/console';
 	import { darkMode, formatOnSave } from '../../utils/settings/settings';
-	import { unsavedTabs } from '../../utils/tabs/tabs';
+	import { selectedTab, unsavedTabs } from '../../utils/tabs/tabs';
 	import { oneDark } from '@codemirror/theme-one-dark';
-
-	/**
-	 * The langauge to use for this editor.
-	 */
-	export let language: string;
-
-	/**
-	 * The filename of the file being edited by this editor.
-	 */
-	export let filename: string;
-
-	/**
-	 * Whether this editor is currently used.
-	 */
-	export let selected: boolean;
-
-	/**
-	 * The initial text value of the editor.
-	 */
-	export let initialValue = '';
+	import { filesystem, getExtension, getFile } from 'src/utils/filesystem/filesystem';
+	import type { FSFile } from 'src/utils/types';
 
 	/**
 	 * Event dispatcher to send custom events.
 	 */
 	const dispatch = createEventDispatcher();
-
-	/**
-	 * The UI component of the editor.
-	 */
-	let view: EditorView;
 
 	/**
 	 * The parent element for the editor.
@@ -61,18 +38,19 @@
 	 * @returns Whether the format was successful
 	 */
 	const formatEditor: Command = (view: EditorView): boolean => {
-		view.dispatch({
+		view.state.update({
 			changes: {
 				from: 0,
 				to: view.state.doc.length,
-				insert: _format(view.state.doc.toString(), language)
+				insert: _format(view.state.doc.toString(), getExtension($selectedTab))
 			}
 		});
+
 		return true;
 	};
 
 	const saveContent: Command = (view: EditorView): boolean => {
-		if ($unsavedTabs.includes(filename)) {
+		if ($unsavedTabs.includes($selectedTab)) {
 			if ($formatOnSave) {
 				formatEditor(view);
 			}
@@ -84,7 +62,7 @@
 	const getError = (view: EditorView): readonly Diagnostic[] => {
 		const error = $latestError;
 		let output: readonly Diagnostic[] = [];
-		if (error && error.location == filename) {
+		if (error && error.location == $selectedTab) {
 			output = [
 				{
 					from: Math.max(0, error.pos - 5),
@@ -115,57 +93,10 @@
 	};
 
 	/**
-	 * The basic editor config before language specific features.
-	 */
-	const baseConfig = [
-		defaultExtensions,
-		EditorView.updateListener.of((viewUpdate: ViewUpdate) => {
-			// Emit an event to allow parent components to listen to the editor's value.
-			if (viewUpdate.docChanged) {
-				dispatch('docchanged', getValue());
-			}
-		}),
-		keymap.of([format, save]),
-		linter((view) => getError(view))
-	];
-
-	function getExtensions(): Extension {
-		const output = [...baseConfig];
-		if (isSupported(language)) {
-			output.push(getLanguageSupport(language));
-		}
-		if ($darkMode) {
-			output.push(oneDark);
-		}
-		return output;
-	}
-
-	/**
 	 * Get the text value of the editor.
 	 */
 	function getValue() {
 		return view == undefined ? '' : view.state.doc.toString();
-	}
-
-	function changeLanguage() {
-		updateEditor();
-	}
-
-	function updateEditor() {
-		if (view) {
-			view.destroy();
-		}
-		view = new EditorView({
-			state: state,
-			parent: element
-		});
-	}
-
-	function refreshState(value: string) {
-		return EditorState.create({
-			doc: value,
-			extensions: getExtensions()
-		});
 	}
 
 	function mouseUp() {
@@ -182,27 +113,59 @@
 		}
 	}
 
-	/**
-	 * Update the editor state whenever any of the props change.
-	 */
-	$: state = refreshState(initialValue);
+	function getTheme(): Extension {
+		return $darkMode ? oneDark : EditorView.theme({});
+	}
 
-	/**
-	 * Update the editor when the language changes
-	 */
-	$: language && changeLanguage();
+	function getLanguage(): Extension {
+		const language = getExtension($selectedTab);
+		return isSupported(language) ? getLanguageSupport(language) : [];
+	}
 
-	darkMode.subscribe(() => {
-		if (view) {
-			state = refreshState(view.state.doc.toString());
-		}
-		updateEditor();
+	let languageSupport = new Compartment();
+	let theme = new Compartment();
+	let view: EditorView;
+
+	onMount(() => {
+		view = new EditorView({
+			state: EditorState.create({
+				doc: '',
+				extensions: [
+					defaultExtensions,
+					EditorView.updateListener.of((viewUpdate: ViewUpdate) => {
+						// Emit an event to allow parent components to listen to the editor's value.
+						if (viewUpdate.docChanged) dispatch('docchanged', getValue());
+					}),
+					keymap.of([format, save]),
+					linter((view) => getError(view)),
+					// Create a dummy extension when no language support is available.
+					languageSupport.of(getLanguage()),
+					theme.of(getTheme())
+				]
+			}),
+			parent: element
+		});
+
+		selectedTab.subscribe((tab) => {
+			if (tab) {
+				// Update the contents and language support
+				const value = (getFile($filesystem, tab) as FSFile).value;
+				view.dispatch({
+					changes: [{ from: 0, to: view.state.doc.length, insert: value }],
+					effects: [languageSupport.reconfigure(getLanguage())]
+				});
+			}
+		});
+
+		darkMode.subscribe(() => {
+			view.dispatch({
+				effects: [theme.reconfigure(getTheme())]
+			});
+		});
 	});
-
-	onMount(updateEditor);
 </script>
 
-<div bind:this={element} class={!selected && 'hidden'} on:mousedown={mouseDown} />
+<div bind:this={element} class="text-sm" on:mousedown={mouseDown} />
 
 <style lang="postcss">
 	:global(.cm-editor) {

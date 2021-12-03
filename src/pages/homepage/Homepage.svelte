@@ -1,6 +1,5 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { isStandalone } from 'src/utils/exercise/exercise';
 	import { auth } from 'src/utils/auth/auth';
 </script>
 
@@ -18,7 +17,6 @@
 			<div
 				class="flex-grow py-5 bg-dark-bglight rounded uppercase font-bold text-sm flex items-center justify-center hover:bg-blue-700 transition-all"
 				on:click={() => {
-					isStandalone.set(true);
 					goto('editor');
 				}}
 			>
@@ -27,7 +25,6 @@
 			<div
 				class="flex-grow py-7 bg-dark-bglight rounded uppercase font-bold text-sm flex items-center justify-center hover:bg-blue-700 transition-all"
 				on:click={() => {
-					isStandalone.set(false);
 					goto('exercise/vteMX6qHVEy6uku8sS3Z');
 				}}
 			>
