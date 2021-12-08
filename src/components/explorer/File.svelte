@@ -126,10 +126,15 @@
 					class="flex flex-row dark:text-dark-text justify-end items-center flex-grow pr-2 space-x-1 {!hovering &&
 						'hidden'}"
 				>
-					<Icon on:click={() => setRenaming(true)} testId="rename-file" button={true}>
+					<Icon
+						on:click={() => setRenaming(true)}
+						testId="rename-file"
+						button={true}
+						label="Rename"
+					>
 						<Pen />
 					</Icon>
-					<Icon on:click={handleDelete} testId="delete-file" button={true}>
+					<Icon on:click={handleDelete} testId="delete-file" button={true} label="Delete">
 						<Trash />
 					</Icon>
 				</div>

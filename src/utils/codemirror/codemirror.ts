@@ -29,11 +29,18 @@ import { indentWithTab } from '@codemirror/commands';
 import { EditorState } from '@codemirror/state';
 import type { Parser } from 'prettier';
 import prettier from 'prettier';
+import { get, writable } from 'svelte/store';
+import { formatOnSave } from '../settings/settings';
+import { getExtension, updateFile } from '../filesystem/filesystem';
+import { selectedTab } from 'src/utils/tabs/tabs';
+import { saveTab } from '../tabs/tabs';
 
 /**
  * Supported file extensions.
  */
 export const supportedExtensions = ['jsx', 'css', 'js', 'ts', 'html', 'tsx', 'json'];
+
+export const contents = writable<string>('');
 
 /**
  * Get the codemirror language support for the current language.
@@ -141,3 +148,13 @@ export const defaultExtensions = [
 		indentWithTab
 	])
 ];
+
+export const save = (): void => {
+	let doc = get(contents);
+	const tab: string = get(selectedTab);
+	if (get(formatOnSave)) {
+		doc = format(doc, getExtension(tab));
+	}
+	saveTab(tab);
+	updateFile(tab, doc);
+};

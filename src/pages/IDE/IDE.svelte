@@ -12,6 +12,8 @@
 	import IoIosBuild from 'svelte-icons/io/IoIosBuild.svelte';
 	import { auth } from 'src/utils/auth/auth';
 	import { loadExercise, loadStandalone, standalone } from 'src/utils/exercise/exercise';
+	import { selectedTab } from 'src/utils/tabs/tabs';
+	import { save } from 'src/utils/codemirror/codemirror';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -73,14 +75,28 @@
 		selecting = e.detail;
 	}
 
+	function handleSave() {
+		if ($selectedTab != '') {
+			save();
+		}
+	}
+
 	/**
 	 * Called when the user presses a key while using the application
 	 * @param e The event that triggered this function.
 	 */
 	function keydown(e: KeyboardEvent) {
-		if (e.code == 'KeyB' && e.ctrlKey) {
-			e.preventDefault();
-			collapsed ? openSidebar() : collapseSidebar();
+		if (e.ctrlKey) {
+			switch (e.code) {
+				case 'KeyB':
+					e.preventDefault();
+					collapsed ? openSidebar() : collapseSidebar();
+					break;
+				case 'KeyS':
+					e.preventDefault();
+					handleSave();
+					break;
+			}
 		}
 	}
 
@@ -114,7 +130,9 @@
 			loadExercise();
 		}
 
+		// Add a listener for application-wide keyboard shortcuts
 		window.addEventListener('keydown', keydown);
+
 		if (import.meta.env.DEV && (await auth.isAdmin($auth))) {
 			sidebarTabs.push({
 				name: 'admin',

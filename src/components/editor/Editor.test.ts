@@ -4,10 +4,6 @@ import { createFile } from 'src/utils/filesystem/filesystem';
 import { selectedTab } from 'src/utils/tabs/tabs';
 import Editor from './Editor.svelte';
 
-jest.mock('$app/navigation.js', () => ({
-	goto: jest.fn()
-}));
-
 describe('The Editor component', () => {
 	it('renders', () => {
 		const { container } = render(Editor);

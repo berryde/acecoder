@@ -14,7 +14,7 @@
 		"emulator": "firebase emulators:start --import=./.firebase --export-on-exit",
 		"build-storybook": "build-storybook",
 		"build-template": "node scripts/generateTemplate.js",
-		"test": "yarn run build-template && jest src",
+		"test": "yarn run build && jest src",
 		"test:watch": "yarn run test -- --watch"
 	},
 	"devDependencies": {

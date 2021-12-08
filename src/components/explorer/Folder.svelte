@@ -199,13 +199,19 @@
 							class="flex flex-row flex-grow items-center justify-end pr-2 space-x-1 {!hovering &&
 								'hidden'}"
 						>
-							<Icon on:click={() => setRenaming(true)} testId="rename-folder" button={true}>
+							<Icon
+								on:click={() => setRenaming(true)}
+								testId="rename-folder"
+								button={true}
+								label="Rename"
+							>
 								<Pen />
 							</Icon>
 							<Icon
 								on:click={() => setCreating(true, true)}
 								testId="create-child-file"
 								button={true}
+								label="New file"
 							>
 								<FileIcon />
 							</Icon>
@@ -213,10 +219,11 @@
 								on:click={() => setCreating(true, false)}
 								testId="create-child-folder"
 								button={true}
+								label="New folder"
 							>
 								<Folder />
 							</Icon>
-							<Icon on:click={handleDelete} testId="delete-folder" button={true}>
+							<Icon on:click={handleDelete} testId="delete-folder" button={true} label="Delete">
 								<Trash />
 							</Icon>
 						</div>

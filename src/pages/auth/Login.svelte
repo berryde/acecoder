@@ -4,7 +4,7 @@
 	import IoLogoGithub from 'svelte-icons/io/IoLogoGithub.svelte';
 	import IoMdPerson from 'svelte-icons/io/IoMdPerson.svelte';
 	import IoMdLock from 'svelte-icons/io/IoMdLock.svelte';
-	import { auth } from 'src/utils/auth/auth';
+	import { auth, getErrorMessage } from 'src/utils/auth/auth';
 	import Input from 'src/components/common/Input.svelte';
 	import type { AuthError } from 'src/utils/types';
 
@@ -43,37 +43,6 @@
 		loading = false;
 		if (result) error = getErrorMessage(result);
 	}
-
-	function getErrorMessage(firebaseError: AuthError): AuthError {
-		switch (firebaseError.errorCode) {
-			case 'auth/wrong-password':
-				return {
-					errorCode: 'Incorrect password',
-					errorMessage: 'Please check your password and try again.'
-				};
-			case 'auth/invalid-email':
-				return {
-					errorCode: 'Invalid email',
-					errorMessage: 'Please provide a valid email address.'
-				};
-			case 'auth/invalid-password':
-				return {
-					errorCode: 'Invalid password',
-					errorMessage:
-						'Please provide a valid password. It must be a string with at least six characters.'
-				};
-			case 'auth/user-not-found':
-				return {
-					errorCode: 'Invalid email',
-					errorMessage: 'No user could be found with that email address.'
-				};
-			default:
-				return {
-					errorCode: 'Unknown error',
-					errorMessage: 'An unknown error occurred. Please try again later.'
-				};
-		}
-	}
 </script>
 
 <div
@@ -87,6 +56,10 @@
 		<Input placeholder="Password" type="password" icon={true} classes="mb-3" bind:value={password}>
 			<IoMdLock />
 		</Input>
+
+		<a class="text-right pb-3 text-blue-600 textlink whitespace-nowrap" href="/account-recovery">
+			Forgot your password?
+		</a>
 
 		<Button
 			text="Sign in"

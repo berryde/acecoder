@@ -6,7 +6,8 @@ import {
 	signOut as _signOut,
 	onAuthStateChanged,
 	GoogleAuthProvider,
-	getAuth
+	getAuth,
+	sendPasswordResetEmail
 } from 'firebase/auth';
 import { browser } from '$app/env';
 import type { User, AuthProvider } from 'firebase/auth';
@@ -128,14 +129,58 @@ const initAuth = () => {
 		if ('admin' in token.claims) return token.claims['admin'] as unknown as boolean;
 	};
 
+	const resetPassword = async (email: string): Promise<AuthError | void> => {
+		const auth = getAuth(app);
+		try {
+			await sendPasswordResetEmail(auth, email);
+		} catch (error) {
+			return {
+				errorCode: error.code,
+				errorMessage: error.message
+			};
+		}
+	};
+
 	return {
 		register,
 		signInWith,
 		signIn,
 		signOut,
 		subscribe,
+		resetPassword,
 		isAdmin
 	};
+};
+
+export const getErrorMessage = (firebaseError: AuthError): AuthError => {
+	switch (firebaseError.errorCode) {
+		case 'auth/wrong-password':
+			return {
+				errorCode: 'Incorrect password',
+				errorMessage: 'Please check your password and try again.'
+			};
+		case 'auth/invalid-email':
+			return {
+				errorCode: 'Invalid email',
+				errorMessage: 'Please provide a valid email address.'
+			};
+		case 'auth/invalid-password':
+			return {
+				errorCode: 'Invalid password',
+				errorMessage:
+					'Please provide a valid password. It must be a string with at least six characters.'
+			};
+		case 'auth/user-not-found':
+			return {
+				errorCode: 'Invalid email',
+				errorMessage: 'No user could be found with that email address.'
+			};
+		default:
+			return {
+				errorCode: 'Unknown error',
+				errorMessage: 'An unknown error occurred. Please try again later.'
+			};
+	}
 };
 
 export const auth = initAuth();

@@ -15,8 +15,8 @@
 	import type { Diagnostic } from '@codemirror/lint';
 	import { linter } from '@codemirror/lint';
 	import { latestError } from '../../utils/console/console';
-	import { darkMode, formatOnSave } from '../../utils/settings/settings';
-	import { selectedTab, unsavedTabs } from '../../utils/tabs/tabs';
+	import { darkMode } from '../../utils/settings/settings';
+	import { selectedTab } from '../../utils/tabs/tabs';
 	import { oneDark } from '@codemirror/theme-one-dark';
 	import { getExtension, getFile } from 'src/utils/filesystem/filesystem';
 	import type { FSFile } from 'src/utils/types';
@@ -49,16 +49,6 @@
 		return true;
 	};
 
-	const saveContent: Command = (view: EditorView): boolean => {
-		if ($unsavedTabs.includes($selectedTab)) {
-			if ($formatOnSave) {
-				formatEditor(view);
-			}
-			dispatch('save');
-		}
-		return true;
-	};
-
 	const getError = (view: EditorView): readonly Diagnostic[] => {
 		const error = $latestError;
 		let output: readonly Diagnostic[] = [];
@@ -82,14 +72,6 @@
 	const format: KeyBinding = {
 		key: 'Ctrl-Alt-l',
 		run: formatEditor
-	};
-
-	/**
-	 * A key binding to save the file.
-	 */
-	const save: KeyBinding = {
-		key: 'Ctrl-s',
-		run: saveContent
 	};
 
 	/**
@@ -136,7 +118,7 @@
 						// Emit an event to allow parent components to listen to the editor's value.
 						if (viewUpdate.docChanged) dispatch('docchanged', getValue());
 					}),
-					keymap.of([format, save]),
+					keymap.of([format]),
 					linter((view) => getError(view)),
 					// Create a dummy extension when no language support is available.
 					languageSupport.of(getLanguage()),

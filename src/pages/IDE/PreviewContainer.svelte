@@ -76,7 +76,7 @@
 	$: initialised && refresh();
 </script>
 
-<div class="h-screen w-full">
+<div class="h-screen w-full overflow-hidden">
 	<SplitPane
 		minPane1Size="2rem"
 		minPane2Size="2.5rem"

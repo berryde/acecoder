@@ -78,13 +78,18 @@
 
 <div class="flex flex-col h-full">
 	<div class="flex flex-row space-x-2 pl-3 pb-1">
-		<Icon on:click={() => setCreatingFile(true)} testId="add-file" button={true}>
+		<Icon on:click={() => setCreatingFile(true)} testId="add-file" button={true} label="New file">
 			<FileIcon />
 		</Icon>
-		<Icon on:click={() => setCreatingFolder(true)} testId="add-folder" button={true}>
+		<Icon
+			on:click={() => setCreatingFolder(true)}
+			testId="add-folder"
+			button={true}
+			label="New folder"
+		>
 			<FolderIcon />
 		</Icon>
-		<Icon on:click={() => handleExport()} testId="export" button={true}>
+		<Icon on:click={() => handleExport()} testId="export" button={true} label="Download">
 			<FaDownload />
 		</Icon>
 	</div>

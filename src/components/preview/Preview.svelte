@@ -151,11 +151,11 @@
 </script>
 
 <div class="flex-grow h-full w-full flex flex-col overflow-hidden bg-gray-200 dark:bg-dark-bglight">
-	<div class=" dark:text-dark-text flex flex-row justify-between w-full items-center p-2">
+	<div class=" dark:text-dark-text flex flex-row justify-between w-full items-center py-2 px-5">
 		<div class="font-bold uppercase text-xs ">Preview</div>
 		<div class="flex flex-row space-x-2">
 			{#if $standalone}
-				<Icon on:click={() => handleShare()} button={true}>
+				<Icon on:click={() => handleShare()} button={true} label="Share">
 					<IoIosShareAlt />
 				</Icon>
 				{#if sharing}
@@ -167,6 +167,7 @@
 							You can use this link to access your site from any device. Anyone with the link can
 							view the site, so be careful when sharing it.
 						</p>
+						<p class="text-xs">Click on the link to copy it to the clipboard.</p>
 						<div
 							class="overflow-x-auto p-1 text-xs text-center transition-all {copied
 								? 'text-green-400 bg-green-900'
@@ -175,14 +176,13 @@
 						>
 							<p>{window.location.host}/preview/{$auth.uid}</p>
 						</div>
-						<p class="text-xs">Click on the link to copy it to the clipboard.</p>
 					</div>
 				{/if}
 			{/if}
-			<Icon on:click={() => handlePopup()} button={true}>
+			<Icon on:click={() => handlePopup()} button={true} label="Popout">
 				<IoIosExpand />
 			</Icon>
-			<Icon on:click={() => handleRefresh()} button={true}>
+			<Icon on:click={() => handleRefresh()} button={true} label="Refresh">
 				<IoIosPlay />
 			</Icon>
 		</div>

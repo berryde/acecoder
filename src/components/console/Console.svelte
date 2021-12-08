@@ -55,6 +55,8 @@
 				clearConsole();
 			}}
 			button={true}
+			label="Clear"
+			labelPosition="above"
 		>
 			<MdAutorenew />
 		</Icon>
