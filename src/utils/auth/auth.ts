@@ -34,6 +34,7 @@ const initAuth = () => {
 			auth,
 			(user) => {
 				set(user);
+
 				if (user && window) {
 					if (window.location.href.endsWith('login') || window.location.href.endsWith('register')) {
 						goto('/');

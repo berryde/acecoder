@@ -9,7 +9,7 @@
 		openTab,
 		temporaryTab
 	} from '../../utils/tabs/tabs';
-	import { filesystem, getFile, updateFile } from '../../utils/filesystem/filesystem';
+	import { getFile, updateFile } from '../../utils/filesystem/filesystem';
 	import type { FSFile } from 'src/utils/types';
 
 	/**
@@ -26,7 +26,7 @@
 		openTab($selectedTab);
 
 		// If the unsaved changed match the actual value, mark the file as 'saved'
-		if (code == (getFile($filesystem, $selectedTab) as FSFile).value) {
+		if (code == (getFile($selectedTab) as FSFile).value) {
 			unsavedTabs.update((tabs) => {
 				if (tabs.includes($selectedTab)) {
 					tabs.splice(tabs.indexOf($selectedTab), 1);

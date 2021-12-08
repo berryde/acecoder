@@ -18,7 +18,7 @@
 	import { darkMode, formatOnSave } from '../../utils/settings/settings';
 	import { selectedTab, unsavedTabs } from '../../utils/tabs/tabs';
 	import { oneDark } from '@codemirror/theme-one-dark';
-	import { filesystem, getExtension, getFile } from 'src/utils/filesystem/filesystem';
+	import { getExtension, getFile } from 'src/utils/filesystem/filesystem';
 	import type { FSFile } from 'src/utils/types';
 
 	/**
@@ -149,7 +149,7 @@
 		selectedTab.subscribe((tab) => {
 			if (tab) {
 				// Update the contents and language support
-				const value = (getFile($filesystem, tab) as FSFile).value;
+				const value = (getFile(tab) as FSFile).value;
 				view.dispatch({
 					changes: [{ from: 0, to: view.state.doc.length, insert: value }],
 					effects: [languageSupport.reconfigure(getLanguage())]

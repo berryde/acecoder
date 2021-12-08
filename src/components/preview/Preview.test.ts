@@ -3,6 +3,10 @@ import { render } from '@testing-library/svelte';
 import type { WorkerResponse } from 'src/utils/types';
 import Preview from './Preview.svelte';
 
+jest.mock('$app/navigation.js', () => ({
+	goto: jest.fn()
+}));
+
 describe('The Preview component', () => {
 	it('renders', async () => {
 		const compiled: WorkerResponse = {

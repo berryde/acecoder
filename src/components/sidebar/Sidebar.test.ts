@@ -3,23 +3,23 @@ import { render, screen, fireEvent } from '@testing-library/svelte';
 import type { SidebarTab } from 'src/utils/types';
 import Sidebar from './Sidebar.svelte';
 import IoIosFiling from 'svelte-icons/io/IoIosFiling.svelte';
-import Explorer from '../explorer/Explorer.svelte';
+import Settings from '../settings/Settings.svelte';
 
 const sidebarTabs: SidebarTab[] = [
 	{
 		name: 'explorer',
 		icon: IoIosFiling,
-		component: Explorer
+		component: Settings
 	},
 	{
 		name: 'feedback',
 		icon: IoIosFiling,
-		component: Explorer
+		component: Settings
 	},
 	{
 		name: 'settings',
 		icon: IoIosFiling,
-		component: Explorer
+		component: Settings
 	}
 ];
 

@@ -20,7 +20,6 @@
 		deleteFile,
 		getParentDir,
 		getExistingFiles,
-		filesystem,
 		navigateToFile,
 		createFile,
 		createFolder,
@@ -92,7 +91,7 @@
 	function dropped(data: string) {
 		// A file can't be moved into itself or into the parent directory as it's already in it.
 		if (
-			exists($filesystem, data) &&
+			exists(data) &&
 			path !== data &&
 			getParentDir(data) !== path &&
 			getParentDir(path) !== data
@@ -165,7 +164,7 @@
 <div>
 	{#if renaming}
 		<ExplorerInput
-			reservedNames={getExistingFiles(navigateToFile($filesystem, path))}
+			reservedNames={getExistingFiles(navigateToFile(path))}
 			{depth}
 			initialValue={name}
 			on:submit={(e) => handleRename(e.detail)}

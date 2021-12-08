@@ -19,6 +19,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.15.8",
+		"@babel/preset-typescript": "^7.16.0",
 		"@codemirror/closebrackets": "^0.19.0",
 		"@codemirror/commands": "^0.19.5",
 		"@codemirror/comment": "^0.19.0",
@@ -57,6 +58,7 @@
 		"autoprefixer": "^10.3.7",
 		"babel-jest": "^27.3.1",
 		"babel-loader": "^8.2.3",
+		"babel-plugin-transform-vite-meta-env": "^1.0.3",
 		"cssnano": "^5.0.8",
 		"encoding": "^0.1.13",
 		"eslint": "^7.32.0",
@@ -90,33 +92,5 @@
 		"@babel/standalone": "^7.15.8",
 		"file-saver": "^2.0.5",
 		"jszip": "^3.7.1"
-	},
-	"jest": {
-		"transform": {
-			"^.+\\.js$": "babel-jest",
-			"^.+\\.svelte$": [
-				"svelte-jester",
-				{
-					"preprocess": true
-				}
-			],
-			"^.+\\.ts$": "ts-jest"
-		},
-		"moduleFileExtensions": [
-			"js",
-			"ts",
-			"tsx",
-			"svelte"
-		],
-		"moduleNameMapper": {
-			"^src/(.*)$": "<rootDir>/src/$1"
-		},
-		"setupFilesAfterEnv": [
-			"@testing-library/jest-dom/extend-expect"
-		],
-		"testEnvironment": "jsdom",
-		"transformIgnorePatterns": [
-			"node_modules/(?!(svelte-icons)/)"
-		]
 	}
 }

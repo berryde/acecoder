@@ -60,7 +60,7 @@
 		// A file can't be moved into itself or into the parent directory as it's already in it.
 		const path = '';
 		if (
-			exists($filesystem, data) &&
+			exists(data) &&
 			path !== data &&
 			getParentDir(data) !== path &&
 			getParentDir(path) !== data
@@ -72,7 +72,7 @@
 	}
 
 	function handleExport() {
-		exportFilesystem($filesystem);
+		exportFilesystem();
 	}
 </script>
 

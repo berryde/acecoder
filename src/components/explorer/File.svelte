@@ -7,7 +7,6 @@
 	import {
 		tail,
 		deleteFile,
-		filesystem,
 		getParentDir,
 		getExistingFiles,
 		navigateToFile,
@@ -95,7 +94,7 @@
 
 {#if renaming}
 	<ExplorerInput
-		reservedNames={getExistingFiles(navigateToFile($filesystem, path))}
+		reservedNames={getExistingFiles(navigateToFile(path))}
 		{depth}
 		initialValue={name}
 		on:submit={(e) => handleRename(e.detail)}
