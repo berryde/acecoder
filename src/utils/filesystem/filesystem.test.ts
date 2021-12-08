@@ -1,4 +1,4 @@
-import { tail, navigateToFile, getExistingFiles } from './filesystem';
+import { tail, navigateToFile, getExistingFiles, filesystem } from './filesystem';
 import type { Filesystem } from '../types';
 
 describe('The Filesystem utility', () => {
@@ -20,7 +20,8 @@ describe('The Filesystem utility', () => {
 				value: ''
 			}
 		};
-		expect(navigateToFile(files, 'test')).toBe(files);
+		filesystem.set(files);
+		expect(navigateToFile('test')).toBe(files);
 	});
 	it('retreives the top level filenames of a given directory', () => {
 		const files: Filesystem = {

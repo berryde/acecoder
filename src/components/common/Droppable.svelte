@@ -1,7 +1,14 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
+
+	/**
+	 * The drop event variant that this is. Only drop events matching this variant will be handled.
+	 */
 	export let variant: string;
+
+	export let classes: string = undefined;
+
 	let count = 0;
 
 	function enter() {
@@ -30,6 +37,7 @@
 	on:dragover={over}
 	on:drop={drop}
 	data-testid="dropzone"
+	class={classes}
 >
 	<slot dropping={count > 0} />
 </div>

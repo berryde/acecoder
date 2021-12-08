@@ -1,20 +1,19 @@
 <script lang="ts">
-	import SplitPane from '../../components/splitpane/SplitPane.svelte';
-	import { darkMode } from '../../utils/settings/settings';
-	import Sidebar from '../../components/sidebar/Sidebar.svelte';
+	import SplitPane from 'src/components/splitpane/SplitPane.svelte';
+	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
 	import EditorContainer from './EditorContainer.svelte';
 	import PreviewContainer from './PreviewContainer.svelte';
-	import Explorer from '../../components/explorer/Explorer.svelte';
-	import Feedback from '../../components/feedback/Feedback.svelte';
-	import Settings from '../../components/settings/Settings.svelte';
+
 	import { onMount } from 'svelte';
 	import type { SidebarTab } from 'src/utils/types';
-	import IoIosFiling from 'svelte-icons/io/IoIosFiling.svelte';
-	import IoIosSettings from 'svelte-icons/io/IoIosSettings.svelte';
-	import IoMdText from 'svelte-icons/io/IoMdText.svelte';
-	import Profile from '../../components/profile/Profile.svelte';
-	import ProfileImage from '../../components/profile/ProfileImage.svelte';
-	import SidebarItem from '../../components/sidebar/SidebarItem.svelte';
+
+	import SidebarItem from 'src/components/sidebar/SidebarItem.svelte';
+	import Admin from 'src/components/admin/Admin.svelte';
+	import IoIosBuild from 'svelte-icons/io/IoIosBuild.svelte';
+	import { auth } from 'src/utils/auth/auth';
+	import { loadExercise, loadStandalone, standalone } from 'src/utils/exercise/exercise';
+	import { selectedTab } from 'src/utils/tabs/tabs';
+	import { save } from 'src/utils/codemirror/codemirror';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -55,28 +54,7 @@
 	/**
 	 * The tabs to display in the sidebar.
 	 */
-	const sidebarTabs: SidebarTab[] = [
-		{
-			name: 'profile',
-			icon: ProfileImage,
-			component: Profile
-		},
-		{
-			name: 'explorer',
-			icon: IoIosFiling,
-			component: Explorer
-		},
-		{
-			name: 'feedback',
-			icon: IoMdText,
-			component: Feedback
-		},
-		{
-			name: 'settings',
-			icon: IoIosSettings,
-			component: Settings
-		}
-	];
+	export let sidebarTabs: SidebarTab[];
 
 	/**
 	 * Update the selected index and collapsed state of the sidebar.
@@ -97,14 +75,28 @@
 		selecting = e.detail;
 	}
 
+	function handleSave() {
+		if ($selectedTab != '') {
+			save();
+		}
+	}
+
 	/**
 	 * Called when the user presses a key while using the application
 	 * @param e The event that triggered this function.
 	 */
 	function keydown(e: KeyboardEvent) {
-		if (e.code == 'KeyB' && e.ctrlKey) {
-			e.preventDefault();
-			collapsed ? openSidebar() : collapseSidebar();
+		if (e.ctrlKey) {
+			switch (e.code) {
+				case 'KeyB':
+					e.preventDefault();
+					collapsed ? openSidebar() : collapseSidebar();
+					break;
+				case 'KeyS':
+					e.preventDefault();
+					handleSave();
+					break;
+			}
 		}
 	}
 
@@ -131,15 +123,28 @@
 	}
 
 	// Add a listener for key combinations
-	onMount(() => {
+	onMount(async () => {
+		if ($standalone) {
+			loadStandalone();
+		} else {
+			loadExercise();
+		}
+
+		// Add a listener for application-wide keyboard shortcuts
 		window.addEventListener('keydown', keydown);
+
+		if (import.meta.env.DEV && (await auth.isAdmin($auth))) {
+			sidebarTabs.push({
+				name: 'admin',
+				component: Admin,
+				icon: IoIosBuild
+			});
+			sidebarTabs = sidebarTabs;
+		}
 	});
 </script>
 
-<div
-	class="h-screen {$darkMode &&
-		'dark'} text-light-text dark:text-dark-text dark:bg-dark-bglight flex flex-row"
->
+<div class="h-screen text-light-text dark:text-dark-text dark:bg-dark-bglight flex flex-row">
 	<Sidebar
 		on:collapse={() => collapseSidebar()}
 		on:select={(e) => updateSidebar(e.detail)}

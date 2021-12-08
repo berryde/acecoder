@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 import type { Filesystem, FSFile, FSFolder } from '../types';
 import type { File } from '../../utils/types';
 import { saveAs } from 'file-saver';
+import { get } from 'svelte/store';
 import JSZip from 'jszip';
 
 /**
@@ -19,7 +20,7 @@ export const createFile = (path: string, value?: string): void => {
 	const name = tail(path);
 
 	filesystem.update((state) => {
-		const dir = navigateToFile(state, path);
+		const dir = navigateToFile(path);
 
 		if (name in dir) {
 			console.error('File ' + path + ' already exists');
@@ -43,7 +44,7 @@ export const createFolder = (path: string): void => {
 	const name = tail(path);
 
 	filesystem.update((state) => {
-		const dir = navigateToFile(state, path);
+		const dir = navigateToFile(path);
 
 		if (name in dir) {
 			console.error('Directory ' + path + ' already exists');
@@ -67,12 +68,19 @@ export const deleteFile = (path: string): void => {
 	const name = tail(path);
 
 	filesystem.update((state) => {
-		const dir = navigateToFile(state, path);
+		const dir = navigateToFile(path);
 		delete dir[name];
 		return state;
 	});
 };
 
+/**
+ * A custom comparator for filesystem objects.
+ *
+ * @param a The first file to compare
+ * @param b The second file to compare
+ * @returns Whether a should be ordered before b
+ */
 export const compareFile = (
 	a: [string, FSFile | FSFolder],
 	b: [string, FSFile | FSFolder]
@@ -103,11 +111,11 @@ export const renameFile = (path: string, target: string): void => {
 
 	filesystem.update((state) => {
 		// Clone the object at path.
-		const src = navigateToFile(state, path);
+		const src = navigateToFile(path);
 		const clone = Object.assign({}, src[oldName]);
 
 		// Write the clone to target.
-		const dir = navigateToFile(state, target);
+		const dir = navigateToFile(target);
 		dir[newName] = clone;
 
 		// Delete the original
@@ -127,7 +135,7 @@ export const updateFile = (filepath: string, contents: string): void => {
 	const filename = tail(filepath);
 
 	filesystem.update((state) => {
-		const dir = navigateToFile(state, filepath);
+		const dir = navigateToFile(filepath);
 		dir[filename] = {
 			type: 'file',
 			value: contents
@@ -145,7 +153,7 @@ export const updateFile = (filepath: string, contents: string): void => {
  * @param filepath The path to split
  * @returns A list of directories from the path.
  */
-export const getDirectories = (path: string): string[] => {
+const getDirectories = (path: string): string[] => {
 	if (!path.includes('/')) {
 		return [];
 	} else {
@@ -215,9 +223,9 @@ export const getExtension = (path: string): string => {
  * @param filepath The filepath to navigate to.
  * @returns The directory containing the file specified by filepath.
  */
-export const navigateToFile = (state: Filesystem, path: string): Filesystem => {
+export const navigateToFile = (path: string): Filesystem => {
 	const directories = getDirectories(path);
-	let dir = state;
+	let dir = get(filesystem);
 	for (let i = 0; i < directories.length; i++) {
 		if (!dir[directories[i]])
 			dir[directories[i]] = {
@@ -237,8 +245,8 @@ export const navigateToFile = (state: Filesystem, path: string): Filesystem => {
  * @param path The object to check existence for.
  * @returns Whether there is an object at path.
  */
-export const exists = (state: Filesystem, path: string): boolean => {
-	const parent = navigateToFile(state, path);
+export const exists = (path: string): boolean => {
+	const parent = navigateToFile(path);
 	const name = tail(path);
 	return name in parent;
 };
@@ -250,8 +258,8 @@ export const exists = (state: Filesystem, path: string): boolean => {
  * @param path The path of the object to retrieve.
  * @returns The retrieved object.
  */
-export const getFile = (state: Filesystem, path: string): FSFile | FSFolder => {
-	const parent = navigateToFile(state, path);
+export const getFile = (path: string): FSFile | FSFolder => {
+	const parent = navigateToFile(path);
 	const name = tail(path);
 	return parent[name];
 };
@@ -262,9 +270,9 @@ export const getFile = (state: Filesystem, path: string): FSFile | FSFolder => {
  * @param state The filesystem
  * @returns A list of all files in the filesystem with their values.
  */
-export const getAllFiles = (prefix: string, state: Filesystem): File[] => {
+export const getAllFiles = (prefix: string, root: Filesystem): File[] => {
 	let files: File[] = [];
-	for (const [name, file] of Object.entries(state)) {
+	for (const [name, file] of Object.entries(root)) {
 		if (file.type === 'file') {
 			files.push({
 				code: file.value,
@@ -290,8 +298,8 @@ const createZip = (zip: JSZip, state: Filesystem) => {
 	return zip;
 };
 
-export const exportFilesystem = (state: Filesystem): void => {
-	const zip = createZip(new JSZip(), state);
+export const exportFilesystem = (): void => {
+	const zip = createZip(new JSZip(), get(filesystem));
 
 	zip.generateAsync({ type: 'blob' }).then(function (content) {
 		saveAs(content, 'application.zip');

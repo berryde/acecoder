@@ -10,10 +10,10 @@ describe('The settings component', () => {
 		formatOnSave.subscribe((value) => {
 			fos = value;
 		});
-		expect(fos).toBeFalsy();
+		expect(fos).toBeTruthy();
 		const toggle = screen.getByTestId('toggle-format');
 		fireEvent.click(toggle);
-		expect(fos).toBeTruthy();
+		expect(fos).toBeFalsy();
 	});
 	it('Updates dark mode', () => {
 		render(Settings);

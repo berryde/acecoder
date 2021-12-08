@@ -6,13 +6,14 @@ import {
 	signOut as _signOut,
 	onAuthStateChanged,
 	GoogleAuthProvider,
-	getAuth
+	getAuth,
+	sendPasswordResetEmail
 } from 'firebase/auth';
 import { browser } from '$app/env';
 import type { User, AuthProvider } from 'firebase/auth';
 
 import { writable } from 'svelte/store';
-import { app } from './firebase';
+import { app } from '../firebase';
 import type { AuthError } from '../types';
 import { goto } from '$app/navigation';
 
@@ -34,8 +35,11 @@ const initAuth = () => {
 			auth,
 			(user) => {
 				set(user);
-				if (user) {
-					goto('/');
+
+				if (user && window) {
+					if (window.location.href.endsWith('login') || window.location.href.endsWith('register')) {
+						goto('/');
+					}
 				} else {
 					goto('login');
 				}
@@ -50,6 +54,13 @@ const initAuth = () => {
 		set(null);
 	}
 
+	/**
+	 * Register a new user to the application.
+	 *
+	 * @param email The new user's email
+	 * @param password The new user's password
+	 * @returns An auth error if registering failed
+	 */
 	const register = async (email: string, password: string): Promise<AuthError | void> => {
 		const auth = getAuth(app);
 		try {
@@ -112,13 +123,64 @@ const initAuth = () => {
 		}
 	};
 
+	const isAdmin = async (user: User) => {
+		if (!user) return false;
+		const token = await user.getIdTokenResult();
+		if ('admin' in token.claims) return token.claims['admin'] as unknown as boolean;
+	};
+
+	const resetPassword = async (email: string): Promise<AuthError | void> => {
+		const auth = getAuth(app);
+		try {
+			await sendPasswordResetEmail(auth, email);
+		} catch (error) {
+			return {
+				errorCode: error.code,
+				errorMessage: error.message
+			};
+		}
+	};
+
 	return {
 		register,
 		signInWith,
 		signIn,
 		signOut,
-		subscribe
+		subscribe,
+		resetPassword,
+		isAdmin
 	};
+};
+
+export const getErrorMessage = (firebaseError: AuthError): AuthError => {
+	switch (firebaseError.errorCode) {
+		case 'auth/wrong-password':
+			return {
+				errorCode: 'Incorrect password',
+				errorMessage: 'Please check your password and try again.'
+			};
+		case 'auth/invalid-email':
+			return {
+				errorCode: 'Invalid email',
+				errorMessage: 'Please provide a valid email address.'
+			};
+		case 'auth/invalid-password':
+			return {
+				errorCode: 'Invalid password',
+				errorMessage:
+					'Please provide a valid password. It must be a string with at least six characters.'
+			};
+		case 'auth/user-not-found':
+			return {
+				errorCode: 'Invalid email',
+				errorMessage: 'No user could be found with that email address.'
+			};
+		default:
+			return {
+				errorCode: 'Unknown error',
+				errorMessage: 'An unknown error occurred. Please try again later.'
+			};
+	}
 };
 
 export const auth = initAuth();

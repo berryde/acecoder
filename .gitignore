@@ -5,5 +5,9 @@ node_modules
 coverage
 static/worker.js
 static/worker.js.map
-src/utils/auth/firebase.ts
 .netlify
+*.log
+.firebase-config/service-account.json
+.firebase
+/src/components/preview/template/template.js
+.vscode/settings.json

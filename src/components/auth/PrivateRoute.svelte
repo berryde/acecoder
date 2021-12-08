@@ -1,5 +1,5 @@
 <script>
-	import { auth } from '../../utils/auth/auth';
+	import { auth } from 'src/utils/auth/auth';
 	import OrbitProgressIndicator from '../loaders/OrbitProgressIndicator.svelte';
 </script>
 

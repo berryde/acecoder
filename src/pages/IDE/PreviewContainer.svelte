@@ -3,26 +3,27 @@
 
 	import Preview from '../../components/preview/Preview.svelte';
 	import SplitPane from '../../components/splitpane/SplitPane.svelte';
-	import { createFile, filesystem, getAllFiles } from '../../utils/filesystem/filesystem';
-	import type { Filesystem, WorkerError, WorkerResponse } from '../../utils/types';
+	import { filesystem, getAllFiles } from '../../utils/filesystem/filesystem';
+	import type { WorkerError, WorkerResponse } from '../../utils/types';
 	import { onMount } from 'svelte';
-	import { reactTemplate } from '../../utils/templates/templates';
+
 	import Console from '../../components/console/Console.svelte';
+
+	import { standalone, save, template } from 'src/utils/exercise/exercise';
+	import { compiled } from 'src/utils/compiler/compiler';
+	import { doc, setDoc } from 'firebase/firestore';
+	import { db } from 'src/utils/firebase';
+	import { auth } from 'src/utils/auth/auth';
 
 	export let resizingX = false;
 	export let selecting = false;
 
-	let compiled: WorkerResponse = {
-		css: '',
-		js: '',
-		public: {}
-	};
-
+	let initialised = false;
 	let worker: Worker;
 
 	onMount(() => {
-		worker = new Worker('./worker.js');
-
+		// Import the worker from the absolute path
+		worker = new Worker(new URL('/worker.js', window.location.origin));
 		// Add a listener for compiler responses.
 		worker.addEventListener('message', (event) => {
 			const e = event.data.error as WorkerError;
@@ -34,37 +35,48 @@
 				latestError.set(e);
 			} else {
 				latestError.set(undefined);
-
-				compiled = event.data as WorkerResponse;
+				compiled.set(event.data as WorkerResponse);
 			}
 		});
 
-		function loadTemplate(template: { [key: string]: string }) {
-			for (const [path, value] of Object.entries(template)) {
-				createFile(path, value);
+		template.subscribe((template) => {
+			if (template) {
+				initialised = true;
 			}
-		}
+		});
 
-		// Load the react template.
-		loadTemplate(reactTemplate);
+		filesystem.subscribe(() => {
+			if (initialised) {
+				save();
+				refresh();
+			}
+		});
+
+		if ($standalone) {
+			compiled.subscribe((compiled) => {
+				// Update the compiled value in firebase
+				if ($standalone && compiled && compiled != { css: '', js: '', public: {} }) {
+					setDoc(doc(db, 'preview', $auth.uid), compiled);
+				}
+			});
+		}
 	});
 
 	/**
 	 * Reload the preview whenever the filesystem is changed.
 	 */
 
-	filesystem.subscribe((fs) => {
-		refresh(fs);
-	});
-
-	function refresh(fs: Filesystem) {
+	function refresh() {
 		if (worker) {
-			worker.postMessage(getAllFiles('', fs));
+			worker.postMessage(getAllFiles('', $filesystem));
 		}
 	}
+
+	// Perform the initial reload
+	$: initialised && refresh();
 </script>
 
-<div class="h-screen w-full">
+<div class="h-screen w-full overflow-hidden">
 	<SplitPane
 		minPane1Size="2rem"
 		minPane2Size="2.5rem"
@@ -74,10 +86,10 @@
 	>
 		<top slot="pane1" let:resizing={resizingY}>
 			<Preview
-				{compiled}
+				compiled={$compiled}
 				resizing={resizingX || resizingY || selecting}
 				error={$latestError}
-				on:refresh={() => refresh($filesystem)}
+				on:refresh={() => refresh()}
 			/>
 		</top>
 		<bottom slot="pane2">

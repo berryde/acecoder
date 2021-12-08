@@ -1,11 +1,11 @@
 <script lang="ts">
-	import Button from '../../components/auth/Button.svelte';
+	import Button from 'src/components/common/Button.svelte';
 	import IoLogoGoogle from 'svelte-icons/io/IoLogoGoogle.svelte';
 	import IoLogoGithub from 'svelte-icons/io/IoLogoGithub.svelte';
 	import IoMdPerson from 'svelte-icons/io/IoMdPerson.svelte';
 	import IoMdLock from 'svelte-icons/io/IoMdLock.svelte';
-	import { auth } from '../../utils/auth/auth';
-	import Input from '../../components/auth/Input.svelte';
+	import { auth, getErrorMessage } from 'src/utils/auth/auth';
+	import Input from 'src/components/common/Input.svelte';
 	import type { AuthError } from 'src/utils/types';
 
 	let loading = false;
@@ -15,13 +15,24 @@
 	let error: AuthError;
 
 	async function signIn() {
+		if (email == '' || !/\S+@\S+\.\S+/.test(email)) {
+			error = {
+				errorCode: 'Email invalid',
+				errorMessage: 'Please provide a valid email address.'
+			};
+		} else if (password == '') {
+			error = {
+				errorCode: 'Password invalid',
+				errorMessage: 'Please provide a valid password'
+			};
+		}
 		method = 'default';
 		error = undefined;
 		loading = true;
 		const result = await auth.signIn(email, password);
 		loading = false;
 
-		if (result) error = result;
+		if (result) error = getErrorMessage(result);
 	}
 
 	async function signInWith(provider: 'github' | 'google') {
@@ -30,7 +41,7 @@
 		loading = true;
 		const result = await auth.signInWith(provider);
 		loading = false;
-		if (result) error = result;
+		if (result) error = getErrorMessage(result);
 	}
 </script>
 
@@ -46,6 +57,10 @@
 			<IoMdLock />
 		</Input>
 
+		<a class="text-right pb-3 text-blue-600 textlink whitespace-nowrap" href="/account-recovery">
+			Forgot your password?
+		</a>
+
 		<Button
 			text="Sign in"
 			on:click={() => signIn()}
@@ -54,7 +69,7 @@
 		/>
 
 		{#if error}
-			<div class="bg-red-900 text-red-400 bg-opacity-50 p-3 mb-3 rounded">
+			<div class="bg-red-900 text-red-400 bg-opacity-50 p-3 mt-3 rounded">
 				<p class="font-bold">{error.errorCode}</p>
 				<p>
 					{error.errorMessage}

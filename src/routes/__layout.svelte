@@ -1,5 +1,8 @@
 <script>
 	import '../app.css';
+	import { darkMode } from 'src/utils/settings/settings';
 </script>
 
-<slot />
+<div class={$darkMode && 'dark'}>
+	<slot />
+</div>

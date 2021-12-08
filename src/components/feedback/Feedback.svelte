@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Button from '../auth/Button.svelte';
+	import Button from '../common/Button.svelte';
 	import { getFirestore, collection, addDoc, Timestamp } from 'firebase/firestore';
-	import { app } from '../../utils/auth/firebase';
+	import { app } from 'src/utils/firebase';
 
 	async function submitFeedback() {
 		if (valid) {
@@ -46,7 +46,7 @@
 	/>
 	<Button
 		text="Submit"
-		classes="bg-light-bglight text-light-text hover:bg-opacity-50 dark:bg-dark-bglight dark:hover:bg-opacity-50 dark:text-dark-text h-7 mt-2 "
+		classes="bg-light-bglight text-light-text hover:bg-opacity-50 dark:bg-dark-bglight dark:hover:bg-opacity-50 dark:text-dark-text h-7 mt-2"
 		{loading}
 		on:click={() => submitFeedback()}
 	/>

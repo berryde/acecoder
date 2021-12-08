@@ -1,8 +1,8 @@
-import { javascript } from '@codemirror/lang-javascript';
+import { javascript, jsxLanguage, tsxLanguage } from '@codemirror/lang-javascript';
 import { css } from '@codemirror/lang-css';
 import { html } from '@codemirror/lang-html';
 import { json } from '@codemirror/lang-json';
-import type { LanguageSupport } from '@codemirror/language';
+import { LanguageSupport } from '@codemirror/language';
 import { history, historyKeymap } from '@codemirror/history';
 import { foldGutter, foldKeymap } from '@codemirror/fold';
 import { indentOnInput } from '@codemirror/language';
@@ -22,16 +22,25 @@ import {
 	keymap,
 	highlightSpecialChars,
 	drawSelection,
-	highlightActiveLine
+	highlightActiveLine,
+	EditorView
 } from '@codemirror/view';
 import { indentWithTab } from '@codemirror/commands';
 import { EditorState } from '@codemirror/state';
 import type { Parser } from 'prettier';
+import prettier from 'prettier';
+import { get, writable } from 'svelte/store';
+import { formatOnSave } from '../settings/settings';
+import { getExtension, updateFile } from '../filesystem/filesystem';
+import { selectedTab } from 'src/utils/tabs/tabs';
+import { saveTab } from '../tabs/tabs';
 
 /**
  * Supported file extensions.
  */
 export const supportedExtensions = ['jsx', 'css', 'js', 'ts', 'html', 'tsx', 'json'];
+
+export const contents = writable<string>('');
 
 /**
  * Get the codemirror language support for the current language.
@@ -43,14 +52,9 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 		case 'html':
 			return html();
 		case 'tsx':
-			return javascript({
-				typescript: true,
-				jsx: true
-			});
+			return new LanguageSupport(tsxLanguage, tsxLanguage.data.of({}));
 		case 'jsx':
-			return javascript({
-				jsx: true
-			});
+			return new LanguageSupport(jsxLanguage, jsxLanguage.data.of({}));
 		case 'ts':
 			return javascript({
 				typescript: true
@@ -62,6 +66,17 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 		default:
 			return javascript();
 	}
+};
+
+export const format = (value: string, language: string): string => {
+	if (isSupported(language)) {
+		if (language == 'json') {
+			return JSON.stringify(JSON.parse(value), null, 2);
+		} else {
+			return prettier.format(value, getParser(language));
+		}
+	}
+	return value;
 };
 
 export const getParser = (
@@ -112,6 +127,7 @@ export const defaultExtensions = [
 	foldGutter(),
 	drawSelection(),
 	EditorState.allowMultipleSelections.of(true),
+	EditorView.lineWrapping,
 	indentOnInput(),
 	defaultHighlightStyle.fallback,
 	bracketMatching(),
@@ -132,3 +148,13 @@ export const defaultExtensions = [
 		indentWithTab
 	])
 ];
+
+export const save = (): void => {
+	let doc = get(contents);
+	const tab: string = get(selectedTab);
+	if (get(formatOnSave)) {
+		doc = format(doc, getExtension(tab));
+	}
+	saveTab(tab);
+	updateFile(tab, doc);
+};

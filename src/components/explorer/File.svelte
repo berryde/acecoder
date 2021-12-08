@@ -7,7 +7,6 @@
 	import {
 		tail,
 		deleteFile,
-		filesystem,
 		getParentDir,
 		getExistingFiles,
 		navigateToFile,
@@ -16,6 +15,7 @@
 	import { closeTab, openTab, renameTab, selectedTab } from '../../utils/tabs/tabs';
 	import { latestError } from '../../utils/console/console';
 	import Icon from '../common/Icon.svelte';
+	import Draggable from '../common/Draggable.svelte';
 
 	/**
 	 * The full path to this file including the filename.
@@ -92,26 +92,26 @@
 	$: name = tail(path);
 </script>
 
-<div>
-	{#if renaming}
-		<ExplorerInput
-			reservedNames={getExistingFiles(navigateToFile($filesystem, path))}
-			{depth}
-			initialValue={name}
-			on:submit={(e) => handleRename(e.detail)}
-			on:cancelled={() => setRenaming(false)}
-		>
-			<Icon>
-				<FileIcon />
-			</Icon>
-		</ExplorerInput>
-	{:else}
+{#if renaming}
+	<ExplorerInput
+		reservedNames={getExistingFiles(navigateToFile(path))}
+		{depth}
+		initialValue={name}
+		on:submit={(e) => handleRename(e.detail)}
+		on:cancelled={() => setRenaming(false)}
+	>
+		<Icon>
+			<FileIcon />
+		</Icon>
+	</ExplorerInput>
+{:else}
+	<Draggable data={path} variant="explorer">
 		<Hoverable let:hovering>
 			<div
 				class="flex transition flex-row items-center space-x-2 {$latestError &&
 				$latestError.location == path
 					? 'text-red-400'
-					: 'dark:text-dark-text'} h-8 {$selectedTab === path && 'dark:bg-gray-800'}"
+					: 'dark:text-dark-text'} h-8 {$selectedTab === path && 'dark:bg-gray-800 bg-gray-100 '}"
 				style="padding-left: {(depth + 1.5) * 0.5}rem;"
 				draggable="true"
 				on:dragstart={handleDragStart}
@@ -126,14 +126,19 @@
 					class="flex flex-row dark:text-dark-text justify-end items-center flex-grow pr-2 space-x-1 {!hovering &&
 						'hidden'}"
 				>
-					<Icon on:click={() => setRenaming(true)} testId="rename-file" button={true}>
+					<Icon
+						on:click={() => setRenaming(true)}
+						testId="rename-file"
+						button={true}
+						label="Rename"
+					>
 						<Pen />
 					</Icon>
-					<Icon on:click={handleDelete} testId="delete-file" button={true}>
+					<Icon on:click={handleDelete} testId="delete-file" button={true} label="Delete">
 						<Trash />
 					</Icon>
 				</div>
 			</div>
 		</Hoverable>
-	{/if}
-</div>
+	</Draggable>
+{/if}

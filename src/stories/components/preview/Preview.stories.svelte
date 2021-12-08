@@ -1,6 +1,6 @@
 <script>
 	import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
-	import Preview from '../../../components/preview/Preview.svelte';
+	import Preview from 'src/components/preview/Preview.svelte';
 </script>
 
 <Meta

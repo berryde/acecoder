@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { addMessage } from '../../utils/console/console';
+	import { addMessage } from 'src/utils/console/console';
 	import Error from './Error.svelte';
 	import type {
 		PreviewMessage,
@@ -14,6 +14,9 @@
 	import IoIosExpand from 'svelte-icons/io/IoIosExpand.svelte';
 	import Icon from '../common/Icon.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import IoIosShareAlt from 'svelte-icons/io/IoIosShareAlt.svelte';
+	import { standalone } from 'src/utils/exercise/exercise';
+	import { auth } from 'src/utils/auth/auth';
 
 	/**
 	 * The compiled code
@@ -52,6 +55,7 @@
 	 * @param compiled
 	 */
 	function build(compiled: WorkerResponse) {
+		// Update 'compiled' in firebase if this is not an exercise
 		const message: ReloadMessage = {
 			compiled: compiled,
 			type: 'reload'
@@ -90,6 +94,11 @@
 		}
 	}
 
+	let sharing = false;
+	function handleShare() {
+		sharing = !sharing;
+	}
+
 	onMount(() => {
 		// Load the preview template
 		srcdoc = previewTemplate;
@@ -111,7 +120,7 @@
 			if (msg.type == 'system') {
 				switch (msg.data) {
 					case 'loaded':
-						// The pop has loaded successfully and should be sent the project code.
+						// The popup has loaded successfully and should be sent the project code.
 						popup.document.title = 'Preview';
 						popup.postMessage({
 							compiled: compiled,
@@ -127,18 +136,53 @@
 		});
 	});
 
+	let copied = false;
+	async function handleCopy() {
+		const link = window.location.host + '/preview/' + $auth.uid;
+		await navigator.clipboard.writeText(link);
+		copied = true;
+		setTimeout(() => {
+			copied = false;
+		}, 500);
+	}
+
 	// Update the preview whenever the compiled code changes.
 	$: build(compiled);
 </script>
 
 <div class="flex-grow h-full w-full flex flex-col overflow-hidden bg-gray-200 dark:bg-dark-bglight">
-	<div class=" dark:text-dark-text flex flex-row justify-between w-full items-center p-2">
+	<div class=" dark:text-dark-text flex flex-row justify-between w-full items-center py-2 px-5">
 		<div class="font-bold uppercase text-xs ">Preview</div>
 		<div class="flex flex-row space-x-2">
-			<Icon on:click={() => handlePopup()} button={true}>
+			{#if $standalone}
+				<Icon on:click={() => handleShare()} button={true} label="Share">
+					<IoIosShareAlt />
+				</Icon>
+				{#if sharing}
+					<div
+						class="dark:bg-dark-bglight border-light-bglight w-96 text-white absolute block z-50 right-2 top-10 rounded p-3 text-sm space-y-2 shadow-md"
+					>
+						<p class="dark:text-dark-text text-light-text uppercase text-xs font-bold">SHARE</p>
+						<p>
+							You can use this link to access your site from any device. Anyone with the link can
+							view the site, so be careful when sharing it.
+						</p>
+						<p class="text-xs">Click on the link to copy it to the clipboard.</p>
+						<div
+							class="overflow-x-auto p-1 text-xs text-center transition-all {copied
+								? 'text-green-400 bg-green-900'
+								: 'text-blue-400 bg-dark-bgdark'}"
+							on:click={() => handleCopy()}
+						>
+							<p>{window.location.host}/preview/{$auth.uid}</p>
+						</div>
+					</div>
+				{/if}
+			{/if}
+			<Icon on:click={() => handlePopup()} button={true} label="Popout">
 				<IoIosExpand />
 			</Icon>
-			<Icon on:click={() => handleRefresh()} button={true}>
+			<Icon on:click={() => handleRefresh()} button={true} label="Refresh">
 				<IoIosPlay />
 			</Icon>
 		</div>

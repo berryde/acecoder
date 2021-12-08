@@ -1,6 +1,6 @@
 <script>
 	import { Meta, Template, Story } from '@storybook/addon-svelte-csf';
-	import Settings from '../../../components/settings/Settings.svelte';
+	import Settings from 'src/components/settings/Settings.svelte';
 </script>
 
 <Meta title="Settings/Settings" component={Settings} />

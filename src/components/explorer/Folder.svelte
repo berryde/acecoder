@@ -20,7 +20,6 @@
 		deleteFile,
 		getParentDir,
 		getExistingFiles,
-		filesystem,
 		navigateToFile,
 		createFile,
 		createFolder,
@@ -28,7 +27,7 @@
 		exists
 	} from '../../utils/filesystem/filesystem';
 	import type { Filesystem } from '../../utils/types';
-	import { renameTabs, closeTabs, openTab } from '../../utils/tabs/tabs';
+	import { renameTabs, closeTabs, openTab, renameTab } from '../../utils/tabs/tabs';
 	import Droppable from '../common/Droppable.svelte';
 	import Draggable from '../common/Draggable.svelte';
 	import Icon from '../common/Icon.svelte';
@@ -92,13 +91,14 @@
 	function dropped(data: string) {
 		// A file can't be moved into itself or into the parent directory as it's already in it.
 		if (
-			exists($filesystem, data) &&
+			exists(data) &&
 			path !== data &&
 			getParentDir(data) !== path &&
 			getParentDir(path) !== data
 		) {
 			const oldName = tail(data);
 			renameFile(data, path + '/' + oldName);
+			renameTab(data, path + '/' + oldName);
 		}
 	}
 
@@ -164,7 +164,7 @@
 <div>
 	{#if renaming}
 		<ExplorerInput
-			reservedNames={getExistingFiles(navigateToFile($filesystem, path))}
+			reservedNames={getExistingFiles(navigateToFile(path))}
 			{depth}
 			initialValue={name}
 			on:submit={(e) => handleRename(e.detail)}
@@ -175,12 +175,12 @@
 			</Icon>
 		</ExplorerInput>
 	{:else}
-		<Hoverable let:hovering>
+		<Droppable let:dropping on:dropped={(e) => dropped(e.detail)} variant="explorer">
 			<Draggable data={path} variant="explorer">
-				<Droppable let:dropping on:dropped={(e) => dropped(e.detail)} variant="explorer">
+				<Hoverable let:hovering>
 					<div
 						class="flex transition flex-row items-center space-x-2 dark:text-dark-text h-8 {dropping &&
-							'bg-blue-500'}"
+							'bg-blue-500 bg-opacity-50'}"
 						style="padding-left: {(depth + 1.5) * 0.5}rem;"
 					>
 						<div on:click={toggleCollapse}>
@@ -199,13 +199,19 @@
 							class="flex flex-row flex-grow items-center justify-end pr-2 space-x-1 {!hovering &&
 								'hidden'}"
 						>
-							<Icon on:click={() => setRenaming(true)} testId="rename-folder" button={true}>
+							<Icon
+								on:click={() => setRenaming(true)}
+								testId="rename-folder"
+								button={true}
+								label="Rename"
+							>
 								<Pen />
 							</Icon>
 							<Icon
 								on:click={() => setCreating(true, true)}
 								testId="create-child-file"
 								button={true}
+								label="New file"
 							>
 								<FileIcon />
 							</Icon>
@@ -213,29 +219,32 @@
 								on:click={() => setCreating(true, false)}
 								testId="create-child-folder"
 								button={true}
+								label="New folder"
 							>
 								<Folder />
 							</Icon>
-							<Icon on:click={handleDelete} testId="delete-folder" button={true}>
+							<Icon on:click={handleDelete} testId="delete-folder" button={true} label="Delete">
 								<Trash />
 							</Icon>
 						</div>
 					</div>
-				</Droppable>
+				</Hoverable>
 			</Draggable>
-		</Hoverable>
+		</Droppable>
+
+		{#if !collapsed}
+			<div>
+				{#each Object.entries(children).sort(compareFile) as [name, object]}
+					{#if object.type === 'file'}
+						<File path={path + '/' + name} depth={depth + 1} />
+					{:else}
+						<svelte:self children={object.children} path={path + '/' + name} depth={depth + 1} />
+					{/if}
+				{/each}
+			</div>
+		{/if}
 	{/if}
-	{#if !collapsed}
-		<div>
-			{#each Object.entries(children).sort(compareFile) as [name, object]}
-				{#if object.type === 'file'}
-					<File path={path + '/' + name} depth={depth + 1} />
-				{:else}
-					<svelte:self children={object.children} path={path + '/' + name} depth={depth + 1} />
-				{/if}
-			{/each}
-		</div>
-	{/if}
+
 	{#if creating}
 		<ExplorerInput
 			on:submit={(e) => handleCreate(e.detail)}

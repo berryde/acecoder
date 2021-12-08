@@ -12,7 +12,8 @@ describe('The Tabs component', () => {
 			props: {
 				tabs: tabs,
 				selected: selected,
-				unsaved: unsaved
+				unsaved: unsaved,
+				temporary: false
 			}
 		});
 		expect(screen.getByText('index.tsx')).toBeInTheDocument();
@@ -26,7 +27,8 @@ describe('The Tabs component', () => {
 			props: {
 				tabs: tabs,
 				selected: selected,
-				unsaved: unsaved
+				unsaved: unsaved,
+				temporary: false
 			}
 		});
 		expect(screen.getByTestId('unsaved-dot')).toBeInTheDocument();
@@ -45,7 +47,8 @@ describe('The Tabs component', () => {
 			props: {
 				tabs: tabs,
 				selected: selected,
-				unsaved: unsaved
+				unsaved: unsaved,
+				temporary: false
 			}
 		});
 		expect(screen.getByText('index.tsx').parentElement).toHaveClass('text-red-400');

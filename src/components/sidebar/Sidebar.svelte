@@ -42,7 +42,7 @@
 				on:click={() => select(index)}
 				data-testid={tab.name}
 			>
-				<Icon size="large" button={true}>
+				<Icon size="large" button={true} label={tab.name}>
 					<svelte:component this={tab.icon} />
 				</Icon>
 			</div>

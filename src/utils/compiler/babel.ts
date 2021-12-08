@@ -1,22 +1,8 @@
 import type { File } from '../types';
 import type { Plugin } from 'rollup';
 import { transform } from '@babel/standalone';
-import type { RollupWarning } from 'rollup';
+import { resolveRelativePath } from './compiler';
 const CDN_URL = 'https://cdn.skypack.dev';
-
-export const resolveRelativePath = (importee: string, importer: string): string => {
-	// If the importer is not in a directory then the import is not actually relative.
-	if (importer.includes('/')) {
-		// Remove the filename (anything after the last /) to resolve relative imports.
-		const split = importer.split('/');
-		split.pop();
-		const filename = importee.slice(1, importee.length);
-		const result = split.join('/') + filename;
-		return result;
-	} else {
-		return importee.slice(2);
-	}
-};
 
 /**
  * A rollup plugin wrapper for babel standalone to transpile JSX and typescript in the browser.
@@ -41,12 +27,23 @@ export default function babel(
 			if (importee in files) {
 				return importee;
 			}
-			if (importee.startsWith('./')) {
-				return resolveRelativePath(importee, importer);
-			}
-			// Otherwise it will be a node module.
 
-			// Get the version from dependencies. If the requested dependency is not present, throw an error.
+			// Check if it's a relative import
+			else if (/(\.\/|(\.\.\/)+)[^/]*/g.test(importee)) {
+				// If it has a file extension
+				try {
+					return resolveRelativePath(importee, importer, files);
+				} catch (err) {
+					this.warn({
+						message: `Failed to resolve file ${importee} from ${importer}. Check that this file exists.`,
+						pos: 0,
+						id: importer,
+						name: 'FileNotFoundError'
+					});
+				}
+			}
+
+			// It's a node module. Get the version from dependencies. If the requested dependency is not present, throw an error.
 			const version = dependencies[importee];
 			if (version) {
 				return {
@@ -54,18 +51,15 @@ export default function babel(
 					external: true
 				};
 			} else {
-				const warning: RollupWarning = {
+				this.warn({
 					message: `Failed to resolve dependency ${importee} from ${importer}. Check that this dependency is present in your package.json file.`,
 					pos: 0,
 					id: importer,
 					name: 'DependencyError'
-				};
-				this.warn(warning);
-				return {
-					id: ''
-				};
+				});
 			}
 		},
+
 		/**
 		 * Loads the source for a requested file/module.
 		 *
@@ -74,10 +68,9 @@ export default function babel(
 		 */
 		async load(id) {
 			// Check if the import refers to another source file, else it's a node module.
-			if (id in files) {
-				return files[id].code;
-			}
+			return files[id].code;
 		},
+
 		/**
 		 * Rollup transform using babel to transpile JSX & typescript.
 		 *
