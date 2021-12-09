@@ -9,7 +9,11 @@
 	}
 
 	onMount(() => {
-		iconUrl = $auth.photoURL;
+		auth.subscribe((user) => {
+			if (user) {
+				iconUrl = user.photoURL;
+			}
+		});
 	});
 </script>
 

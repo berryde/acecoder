@@ -10,7 +10,6 @@
 	import ProfileImage from 'src/components/profile/ProfileImage.svelte';
 	import { auth } from 'src/utils/auth/auth';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
-	import { onMount } from 'svelte';
 	import { standalone } from 'src/utils/exercise/exercise';
 
 	const tabs = [
@@ -36,9 +35,7 @@
 		}
 	];
 
-	onMount(() => {
-		standalone.set(true);
-	});
+	standalone.set(true);
 </script>
 
 <svelte:head>

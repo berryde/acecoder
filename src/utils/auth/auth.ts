@@ -126,7 +126,7 @@ const initAuth = () => {
 	const isAdmin = async (user: User) => {
 		if (!user) return false;
 		const token = await user.getIdTokenResult();
-		if ('admin' in token.claims) return token.claims['admin'] as unknown as boolean;
+		return !!token.claims.admin;
 	};
 
 	const resetPassword = async (email: string): Promise<AuthError | void> => {

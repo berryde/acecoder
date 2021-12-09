@@ -42,16 +42,30 @@
 		}
 	}
 
+	/**
+	 * Due to CSS preprocessing, classes cannot be composed strings.
+	 */
 	function getOffset() {
-		const offset = labelPosition == 'above' ? '-top' : 'top';
-		switch (size) {
-			case 'small':
-				return offset + '-3';
-			case 'large':
-				return offset + '-8';
-			case 'medium':
-			default:
-				return offset + '-5';
+		if (labelPosition == 'above') {
+			switch (size) {
+				case 'small':
+					return '-top-3';
+				case 'large':
+					return '-top-8';
+				case 'medium':
+				default:
+					return '-top-5';
+			}
+		} else {
+			switch (size) {
+				case 'small':
+					return 'top-3';
+				case 'large':
+					return 'top-8';
+				case 'medium':
+				default:
+					return 'top-5';
+			}
 		}
 	}
 

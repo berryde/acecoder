@@ -3,10 +3,8 @@
 	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
 	import EditorContainer from './EditorContainer.svelte';
 	import PreviewContainer from './PreviewContainer.svelte';
-
 	import { onMount } from 'svelte';
 	import type { SidebarTab } from 'src/utils/types';
-
 	import SidebarItem from 'src/components/sidebar/SidebarItem.svelte';
 	import Admin from 'src/components/admin/Admin.svelte';
 	import IoIosBuild from 'svelte-icons/io/IoIosBuild.svelte';
@@ -133,7 +131,7 @@
 		// Add a listener for application-wide keyboard shortcuts
 		window.addEventListener('keydown', keydown);
 
-		if (import.meta.env.DEV && (await auth.isAdmin($auth))) {
+		if (await auth.isAdmin($auth)) {
 			sidebarTabs.push({
 				name: 'admin',
 				component: Admin,

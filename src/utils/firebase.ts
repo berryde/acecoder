@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 
 /**
@@ -30,9 +31,27 @@ const db = getFirestore(app);
  */
 const auth = getAuth(app);
 
+/**
+ * The Firebase functions instance.
+ */
+const functions = getFunctions(app, 'europe-west2');
+
 if (import.meta.env.DEV) {
 	connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
 	connectFirestoreEmulator(db, 'localhost', 8080);
+	connectFunctionsEmulator(functions, 'localhost', 5001);
 }
 
-export { app, db, auth };
+const setClaim = async (claim: Record<string, unknown>): Promise<boolean> => {
+	try {
+		const result = await httpsCallable<Record<string, unknown>, boolean>(
+			functions,
+			'setClaim'
+		)(claim);
+		return result.data;
+	} catch (err) {
+		return false;
+	}
+};
+
+export { app, db, auth, setClaim };

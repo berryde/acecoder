@@ -11,7 +11,7 @@
 		"baseUrl": ".",
 		"allowJs": true,
 		"module": "ES2020",
-		"types": ["jest", "svelte"]
+		"types": ["jest", "svelte", "vite/client"]
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules/*", "src/components/preview/template/*"]

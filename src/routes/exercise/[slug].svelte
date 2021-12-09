@@ -12,7 +12,6 @@
 	import MdBook from 'svelte-icons/md/MdBook.svelte';
 	import Exercise from 'src/components/exercise/Exercise.svelte';
 	import { exercise, exerciseID, standalone } from 'src/utils/exercise/exercise';
-	import { onMount } from 'svelte';
 	import { auth } from 'src/utils/auth/auth';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
 
@@ -44,17 +43,8 @@
 		}
 	];
 
-	/**
-	 * Load the exercise once the user is authenticated, given that it hasn't already been loaded.
-	 */
-	onMount(() => {
-		standalone.set(false);
-		auth.subscribe((auth) => {
-			if (auth) {
-				exerciseID.set($page.params.slug);
-			}
-		});
-	});
+	standalone.set(false);
+	exerciseID.set($page.params.slug);
 </script>
 
 <svelte:head>

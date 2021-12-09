@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { post } from 'src/utils/network/network';
+	import { setClaim } from 'src/utils/firebase';
 	import Button from '../common/Button.svelte';
 	import Input from '../common/Input.svelte';
 	let loading = false;
@@ -13,14 +13,11 @@
 			return;
 		}
 		loading = true;
-		const data = {
-			uid: uid,
-			claim: {
-				admin: true
-			}
-		};
-		const result = await post('/api/claims', data);
-		success = result['success'] as boolean;
+
+		success = await setClaim({
+			admin: true
+		});
+
 		if (success) {
 			message = 'Claim updated successfully';
 		} else {

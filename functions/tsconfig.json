@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"importsNotUsedAsValues": "error",
+		"sourceMap": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"baseUrl": ".",
+		"allowJs": true,
+	},
+
+}
