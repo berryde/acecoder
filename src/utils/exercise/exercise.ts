@@ -2,20 +2,50 @@ import { doc, getDoc as _getDoc, onSnapshot, setDoc } from 'firebase/firestore';
 import { writable, get } from 'svelte/store';
 import { format } from '../codemirror/codemirror';
 import { createFile, filesystem, getAllFiles, getExtension } from '../filesystem/filesystem';
-import { db } from '../firebase';
+import { auth, db } from '../firebase';
 import { get as httpGet } from '../network/network';
-import type { Exercise, Filesystem, Template, TestResult } from '../types';
+import type { Exercise, Template, TestResult } from '../types';
 import type { DocumentData } from 'firebase/firestore';
-import { auth } from '../auth/auth';
-import { openTab } from '../tabs/tabs';
+import { openTab, selectedTab, tabs, unsavedTabs } from '../tabs/tabs';
 
+/**
+ * The current exercise being completed
+ */
 export const exercise = writable<Exercise>();
+
+/**
+ * The ID of the current exercise
+ */
 export const exerciseID = writable<string>();
+
+/**
+ * The result of the latest submission
+ */
 export const result = writable<TestResult>();
+
+/**
+ * The template loaded when the exercise is first opened
+ */
 export const template = writable<Template>();
+
+/**
+ * Whether a submission is currently pending results
+ */
 export const pending = writable<boolean>(false);
+
+/**
+ * Whether a submission has failed and should be aborted
+ */
 export const aborted = writable<boolean>(false);
+
+/**
+ * Whether the user is using the standalone editor
+ */
 export const standalone = writable<boolean>();
+
+/**
+ * Whether the exercise is currently being loaded for the first time
+ */
 export const initialising = writable<boolean>(true);
 
 /**
@@ -29,11 +59,7 @@ let timeout: NodeJS.Timeout;
  * @param id The exercise ID
  */
 export const loadExercise = async (): Promise<void> => {
-	// Wipe the filesystem
-	template.set(undefined);
-	filesystem.set({});
-
-	const uid = get(auth).uid;
+	const uid = auth.currentUser.uid;
 
 	const ex = (await getDoc('exercises', get(exerciseID))) as Exercise;
 	// Check if the user has made a previous submission
@@ -57,7 +83,7 @@ export const loadExercise = async (): Promise<void> => {
  * @param uid The current user's uid
  */
 export const loadStandalone = async (): Promise<void> => {
-	const uid = get(auth).uid;
+	const uid = auth.currentUser.uid;
 	const standalone = (await getDoc('standalone', uid)) as Template;
 	if (standalone) {
 		initTemplate(standalone);
@@ -126,20 +152,16 @@ export const getDoc = async (collection: string, id: string): Promise<DocumentDa
  * @param filesystem The files of the submission.
  * @returns A void promise that resolves when the submission request is completed.
  */
-export const submit = async (
-	filesystem: Filesystem,
-	userID: string,
-	exerciseID: string
-): Promise<void> => {
-	const files = getAllFiles('', filesystem);
+export const submit = async (): Promise<void> => {
+	const files = getAllFiles('', get(filesystem));
 	const submission = {
 		files: {},
-		exercise: doc(db, 'exercises', exerciseID)
+		exercise: doc(db, 'exercises', get(exerciseID))
 	};
 	files.forEach((file) => (submission.files[file.name] = file.code));
 
-	const ID = exerciseID + userID;
-	const sub = doc(db, 'submissions', ID);
+	const id = get(exerciseID) + auth.currentUser.uid;
+	const sub = doc(db, 'submissions', id);
 	await setDoc(sub, submission);
 
 	aborted.set(false);
@@ -152,23 +174,37 @@ export const submit = async (
 	}, 120000);
 
 	if (import.meta.env.DEV) {
-		await httpGet('http://localhost:9080/submissions/' + ID);
+		await httpGet('http://localhost:9080/submissions/' + id);
 	} else {
-		await httpGet('https://submission-server-rly7tdzvgq-ew.a.run.app/submissions/' + ID);
+		await httpGet('https://submission-server-rly7tdzvgq-ew.a.run.app/submissions/' + id);
 	}
 };
 
 /**
  * Save the contents of the editor to firebase for standalone editor work.
  */
-export const save = async (): Promise<void> => {
+export const saveStandalone = async (): Promise<void> => {
 	const files = getAllFiles('', get(filesystem));
 	const submission = {
 		files: {}
 	};
 	files.forEach((file) => (submission.files[file.name] = file.code));
+	await setDoc(doc(db, 'standalone', auth.currentUser.uid), submission);
+};
 
-	await setDoc(doc(db, 'standalone', get(auth).uid), submission);
+export const restoreDefaults = (_standalone: boolean): void => {
+	initialising.set(true);
+	exercise.set(undefined);
+	aborted.set(false);
+	exerciseID.set(undefined);
+	pending.set(false);
+	standalone.set(_standalone);
+	result.set(undefined);
+	template.set(undefined);
+	filesystem.set({});
+	selectedTab.set(undefined);
+	tabs.set([]);
+	unsavedTabs.set([]);
 };
 
 /**
@@ -176,7 +212,7 @@ export const save = async (): Promise<void> => {
  * @param userID The UID of the current user.
  */
 export const listen = async (): Promise<void> => {
-	const uid = get(auth).uid;
+	const uid = auth.currentUser.uid;
 
 	onSnapshot(doc(db, 'results', get(exerciseID) + uid), (doc) => {
 		if (doc.data()) {

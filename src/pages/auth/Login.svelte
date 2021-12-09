@@ -4,8 +4,12 @@
 	import IoLogoGithub from 'svelte-icons/io/IoLogoGithub.svelte';
 	import IoMdPerson from 'svelte-icons/io/IoMdPerson.svelte';
 	import IoMdLock from 'svelte-icons/io/IoMdLock.svelte';
-	import { auth, getErrorMessage } from 'src/utils/auth/auth';
 	import Input from 'src/components/common/Input.svelte';
+	import {
+		signIn as _signIn,
+		signInWith as _signInWith,
+		getErrorMessage
+	} from 'src/utils/auth/auth';
 	import type { AuthError } from 'src/utils/types';
 
 	let loading = false;
@@ -29,7 +33,7 @@
 		method = 'default';
 		error = undefined;
 		loading = true;
-		const result = await auth.signIn(email, password);
+		const result = await _signIn(email, password);
 		loading = false;
 
 		if (result) error = getErrorMessage(result);
@@ -39,7 +43,7 @@
 		method = provider;
 		error = undefined;
 		loading = true;
-		const result = await auth.signInWith(provider);
+		const result = await _signInWith(provider);
 		loading = false;
 		if (result) error = getErrorMessage(result);
 	}

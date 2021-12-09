@@ -11,9 +11,9 @@
 	import ProfileImage from 'src/components/profile/ProfileImage.svelte';
 	import MdBook from 'svelte-icons/md/MdBook.svelte';
 	import Exercise from 'src/components/exercise/Exercise.svelte';
-	import { exercise, exerciseID, standalone } from 'src/utils/exercise/exercise';
-	import { auth } from 'src/utils/auth/auth';
+	import { exercise, exerciseID, restoreDefaults } from 'src/utils/exercise/exercise';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
+	import { auth } from 'src/utils/firebase';
 
 	const tabs = [
 		{
@@ -43,7 +43,8 @@
 		}
 	];
 
-	standalone.set(false);
+	// Reset all state on mount
+	restoreDefaults(false);
 	exerciseID.set($page.params.slug);
 </script>
 
@@ -51,7 +52,7 @@
 	<title>Exercise</title>
 </svelte:head>
 
-{#if !$auth}
+{#if !auth.currentUser}
 	<div class="h-screen w-screen bg-dark-bgdark flex justify-center items-center">
 		<OrbitProgressIndicator />
 	</div>

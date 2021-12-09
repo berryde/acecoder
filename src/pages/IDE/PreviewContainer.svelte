@@ -5,21 +5,27 @@
 	import SplitPane from '../../components/splitpane/SplitPane.svelte';
 	import { filesystem, getAllFiles } from '../../utils/filesystem/filesystem';
 	import type { WorkerError, WorkerResponse } from '../../utils/types';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	import Console from '../../components/console/Console.svelte';
 
-	import { standalone, save, template } from 'src/utils/exercise/exercise';
+	import { standalone, saveStandalone, template } from 'src/utils/exercise/exercise';
 	import { compiled } from 'src/utils/compiler/compiler';
 	import { doc, setDoc } from 'firebase/firestore';
-	import { db } from 'src/utils/firebase';
-	import { auth } from 'src/utils/auth/auth';
+	import { auth, db } from 'src/utils/firebase';
 
 	export let resizingX = false;
 	export let selecting = false;
 
 	let initialised = false;
 	let worker: Worker;
+
+	function save() {
+		if ($standalone) {
+			saveStandalone();
+		}
+		refresh();
+	}
 
 	onMount(() => {
 		// Import the worker from the absolute path
@@ -38,33 +44,31 @@
 				compiled.set(event.data as WorkerResponse);
 			}
 		});
-
-		template.subscribe((template) => {
-			if (template) {
-				initialised = true;
-			}
-		});
-
-		filesystem.subscribe(() => {
-			if (initialised) {
-				save();
-				refresh();
-			}
-		});
-
-		if ($standalone) {
-			compiled.subscribe((compiled) => {
-				// Update the compiled value in firebase
-				if ($standalone && compiled && compiled != { css: '', js: '', public: {} }) {
-					setDoc(doc(db, 'preview', $auth.uid), compiled);
-				}
-			});
-		}
 	});
 
-	/**
-	 * Reload the preview whenever the filesystem is changed.
-	 */
+	function storeCompiled() {
+		const _compiled = $compiled;
+		if (
+			_compiled &&
+			_compiled !=
+				{
+					css: '',
+					js: '',
+					public: {}
+				}
+		) {
+			setDoc(doc(db, 'preview', auth.currentUser.uid), _compiled);
+		}
+	}
+
+	// Rerender (and save in standalone) whenever the filesystem is updated
+	$: initialised && $filesystem && save();
+	// Update initialsed when the template is created
+	$: initialised = !!$template;
+	// Update the stored compiled preview whenever it changes if we are standalone
+	$: initialised && $standalone && $compiled && storeCompiled();
+	// Perform the initial reload
+	$: initialised && refresh();
 
 	function refresh() {
 		if (worker) {
@@ -72,8 +76,12 @@
 		}
 	}
 
-	// Perform the initial reload
-	$: initialised && refresh();
+	onDestroy(() => {
+		if (worker) {
+			worker.terminate();
+		}
+		compiled.set(undefined);
+	});
 </script>
 
 <div class="h-screen w-full overflow-hidden">

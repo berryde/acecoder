@@ -99,6 +99,23 @@
 		return $darkMode ? oneDark : EditorView.theme({});
 	}
 
+	function updateTheme() {
+		view.dispatch({
+			effects: [theme.reconfigure(getTheme())]
+		});
+	}
+
+	function updateContent() {
+		if ($selectedTab) {
+			// Update the contents and language support
+			const value = (getFile($selectedTab) as FSFile).value;
+			view.dispatch({
+				changes: [{ from: 0, to: view.state.doc.length, insert: value }],
+				effects: [languageSupport.reconfigure(getLanguage())]
+			});
+		}
+	}
+
 	function getLanguage(): Extension {
 		const language = getExtension($selectedTab);
 		return isSupported(language) ? getLanguageSupport(language) : [];
@@ -127,24 +144,10 @@
 			}),
 			parent: element
 		});
-
-		selectedTab.subscribe((tab) => {
-			if (tab) {
-				// Update the contents and language support
-				const value = (getFile(tab) as FSFile).value;
-				view.dispatch({
-					changes: [{ from: 0, to: view.state.doc.length, insert: value }],
-					effects: [languageSupport.reconfigure(getLanguage())]
-				});
-			}
-		});
-
-		darkMode.subscribe(() => {
-			view.dispatch({
-				effects: [theme.reconfigure(getTheme())]
-			});
-		});
 	});
+
+	$: view && $selectedTab && updateContent();
+	$: view && ($darkMode || !$darkMode) && updateTheme();
 </script>
 
 <div bind:this={element} class="text-sm" on:mousedown={mouseDown} />

@@ -8,9 +8,8 @@
 	import IoMdText from 'svelte-icons/io/IoMdText.svelte';
 	import Profile from 'src/components/profile/Profile.svelte';
 	import ProfileImage from 'src/components/profile/ProfileImage.svelte';
-	import { auth } from 'src/utils/auth/auth';
-	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
-	import { standalone } from 'src/utils/exercise/exercise';
+	import { restoreDefaults } from 'src/utils/exercise/exercise';
+	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
 
 	const tabs = [
 		{
@@ -35,17 +34,13 @@
 		}
 	];
 
-	standalone.set(true);
+	restoreDefaults(true);
 </script>
 
 <svelte:head>
 	<title>Editor</title>
 </svelte:head>
 
-{#if !$auth}
-	<div class="w-screen h-screen flex justify-center items-center bg-dark-bgdark">
-		<OrbitProgressIndicator />
-	</div>
-{:else}
+<PrivateRoute>
 	<IDE sidebarTabs={tabs} />
-{/if}
+</PrivateRoute>

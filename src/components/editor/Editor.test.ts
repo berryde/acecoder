@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/svelte';
 import { createFile } from 'src/utils/filesystem/filesystem';
-import { selectedTab } from 'src/utils/tabs/tabs';
+import { openTab, selectedTab } from 'src/utils/tabs/tabs';
 import Editor from './Editor.svelte';
 
 describe('The Editor component', () => {
@@ -14,9 +14,12 @@ describe('The Editor component', () => {
 		createFile('hello.jsx', 'Hello');
 		selectedTab.set('test.jsx');
 
-		const { getByText } = render(Editor);
+		const { getByText, rerender } = render(Editor);
 		expect(getByText('Testing')).toBeInTheDocument();
-		selectedTab.set('hello.jsx');
+		openTab('hello.jsx');
+
+		rerender({});
+
 		expect(getByText('Hello')).toBeInTheDocument();
 	});
 	it('displays the value of the selected tab', () => {

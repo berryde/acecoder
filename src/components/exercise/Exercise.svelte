@@ -5,22 +5,17 @@
 		listen,
 		pending,
 		exercise,
-		exerciseID,
 		aborted
 	} from 'src/utils/exercise/exercise';
-	import { filesystem } from 'src/utils/filesystem/filesystem';
 	import Error from './Error.svelte';
 	import Button from '../common/Button.svelte';
 	import CircularProgressIndicator from '../loaders/CircularProgressIndicator.svelte';
-	import { auth } from 'src/utils/auth/auth';
 	import { onMount } from 'svelte';
 
 	async function submit() {
 		// If we are not already waiting for a submission
 		if (!$pending) {
-			const uid = $auth.uid;
-			const eid = $exerciseID;
-			await submitExercise($filesystem, uid, eid);
+			await submitExercise();
 		}
 	}
 

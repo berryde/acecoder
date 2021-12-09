@@ -2,7 +2,7 @@
 	import Button from 'src/components/common/Button.svelte';
 	import IoLogoGoogle from 'svelte-icons/io/IoLogoGoogle.svelte';
 	import IoLogoGithub from 'svelte-icons/io/IoLogoGithub.svelte';
-	import { auth } from 'src/utils/auth/auth';
+	import { getErrorMessage, register, signInWith } from 'src/utils/auth/auth';
 	import Input from 'src/components/common/Input.svelte';
 	import IoMdPerson from 'svelte-icons/io/IoMdPerson.svelte';
 	import IoMdLock from 'svelte-icons/io/IoMdLock.svelte';
@@ -30,9 +30,9 @@
 				errorMessage: 'Please try again, ensuring that you type both passwords correctly.'
 			};
 		} else {
-			const result = await auth.register(email, password);
+			const result = await register(email, password);
 
-			if (typeof result != 'undefined') error = result;
+			if (typeof result != 'undefined') error = getErrorMessage(result);
 		}
 	}
 </script>
@@ -81,7 +81,7 @@
 			icon={true}
 			classes="hover:bg-opacity-50 bg-dark-bglight mb-3"
 			on:click={() => {
-				auth.signInWith('google');
+				signInWith('google');
 			}}><IoLogoGoogle /></Button
 		>
 		<Button
@@ -89,7 +89,7 @@
 			icon={true}
 			classes="hover:bg-opacity-50 bg-dark-bglight"
 			on:click={() => {
-				auth.signInWith('github');
+				signInWith('github');
 			}}><IoLogoGithub /></Button
 		>
 		<span class="mt-3"

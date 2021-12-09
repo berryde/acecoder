@@ -27,7 +27,7 @@
 	}
 </script>
 
-<div class="flex flex-row bg-gray-200 dark:bg-dark-bgdark  overflow-x-auto">
+<div class="flex flex-row bg-gray-200 dark:bg-dark-bgdark h-8 overflow-x-auto">
 	{#each tabs as path}
 		<Draggable data={path} variant="tabs">
 			<Droppable let:dropping on:dropped={(e) => handleDropped(path, e.detail)} variant="tabs">

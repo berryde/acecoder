@@ -8,10 +8,10 @@
 	import SidebarItem from 'src/components/sidebar/SidebarItem.svelte';
 	import Admin from 'src/components/admin/Admin.svelte';
 	import IoIosBuild from 'svelte-icons/io/IoIosBuild.svelte';
-	import { auth } from 'src/utils/auth/auth';
 	import { loadExercise, loadStandalone, standalone } from 'src/utils/exercise/exercise';
 	import { selectedTab } from 'src/utils/tabs/tabs';
 	import { save } from 'src/utils/codemirror/codemirror';
+	import { isAdmin } from 'src/utils/auth/auth';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -131,7 +131,7 @@
 		// Add a listener for application-wide keyboard shortcuts
 		window.addEventListener('keydown', keydown);
 
-		if (await auth.isAdmin($auth)) {
+		if (await isAdmin()) {
 			sidebarTabs.push({
 				name: 'admin',
 				component: Admin,

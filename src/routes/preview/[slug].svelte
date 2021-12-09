@@ -4,7 +4,7 @@
 	import template from 'src/components/preview/template/template';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import NotFound from 'src/pages/error/NotFound.svelte';
+	import ErrorPage from 'src/pages/error/Error.svelte';
 	import { doc, onSnapshot } from 'firebase/firestore';
 	import { db } from 'src/utils/firebase';
 
@@ -80,6 +80,6 @@
 			{srcdoc}
 		/>
 	{:else}
-		<NotFound />
+		<ErrorPage />
 	{/if}
 </div>

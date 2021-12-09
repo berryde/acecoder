@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { auth } from '../../utils/auth/auth';
 	import MdAccountCircle from 'svelte-icons/md/MdAccountCircle.svelte';
 	import { onMount } from 'svelte';
+	import { auth } from 'src/utils/firebase';
 	let iconUrl: string;
 
 	function handleImageError() {
@@ -9,11 +9,9 @@
 	}
 
 	onMount(() => {
-		auth.subscribe((user) => {
-			if (user) {
-				iconUrl = user.photoURL;
-			}
-		});
+		if (auth.currentUser.photoURL) {
+			iconUrl = auth.currentUser.photoURL;
+		}
 	});
 </script>
 

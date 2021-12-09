@@ -16,7 +16,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import IoIosShareAlt from 'svelte-icons/io/IoIosShareAlt.svelte';
 	import { standalone } from 'src/utils/exercise/exercise';
-	import { auth } from 'src/utils/auth/auth';
+	import { auth } from 'src/utils/firebase';
 
 	/**
 	 * The compiled code
@@ -138,7 +138,7 @@
 
 	let copied = false;
 	async function handleCopy() {
-		const link = window.location.host + '/preview/' + $auth.uid;
+		const link = window.location.host + '/preview/' + auth.currentUser.uid;
 		await navigator.clipboard.writeText(link);
 		copied = true;
 		setTimeout(() => {
@@ -174,7 +174,7 @@
 								: 'text-blue-400 bg-dark-bgdark'}"
 							on:click={() => handleCopy()}
 						>
-							<p>{window.location.host}/preview/{$auth.uid}</p>
+							<p>{window.location.host}/preview/{auth.currentUser.uid}</p>
 						</div>
 					</div>
 				{/if}

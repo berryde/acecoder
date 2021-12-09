@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 // open editors
 export const tabs = writable<string[]>([]);
@@ -14,10 +14,8 @@ export const unsavedTabs = writable<string[]>([]);
  */
 export const openTab = (path: string): void => {
 	tabs.update((tabs) => {
-		let temporary = '';
-		let selected = '';
-		temporaryTab.subscribe((tab) => (temporary = tab));
-		selectedTab.subscribe((tab) => (selected = tab));
+		const temporary = get(temporaryTab);
+		const selected = get(selectedTab);
 
 		if (tabs.includes(path)) {
 			if (temporary == path) {

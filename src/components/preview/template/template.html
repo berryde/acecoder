@@ -155,12 +155,13 @@
 							}
 
 							// Load the script bundle
-							document.head.removeChild(script);
-							script = createScript(e.data.compiled.js);
-							document.head.appendChild(script);
+							const newScript = createScript(e.data.compiled.js);
+							document.head.replaceChild(newScript, script);
+							script = newScript;
 
 							// Load the styles
 							style.innerHTML = e.data.compiled.css;
+
 							break;
 						}
 				}

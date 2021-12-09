@@ -1,7 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
-	import { auth } from 'src/utils/auth/auth';
+	import { getName } from 'src/utils/auth/auth';
 
 	let loading = false;
 
@@ -22,7 +22,7 @@
 	{:else}
 		<div class="w-1/3 text-dark-text space-y-5">
 			<h1 class="font-bold text-2xl">
-				Welcome back, {$auth.displayName.split(' ')[0]}
+				Welcome back, {getName()}
 			</h1>
 			<p>
 				Choose a function from the options below. Use the <strong>editor</strong> to create and

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { auth, getErrorMessage } from 'src/utils/auth/auth';
+	import { getErrorMessage, resetPassword } from 'src/utils/auth/auth';
 	import Button from 'src/components/common/Button.svelte';
 	import Input from 'src/components/common/Input.svelte';
 	import IoMdPerson from 'svelte-icons/io/IoMdPerson.svelte';
@@ -8,12 +8,21 @@
 	let email: string = '';
 	let loading = false;
 	let error: AuthError;
+	let success: boolean;
 
 	async function handleReset() {
 		if (email != '') {
 			loading = true;
-			const result = await auth.resetPassword(email);
-			if (result) error = getErrorMessage(result);
+
+			const result = await resetPassword(email);
+			if (result) {
+				error = getErrorMessage(result);
+				success = false;
+			} else {
+				email = '';
+				success = true;
+			}
+
 			loading = false;
 		}
 	}
@@ -44,6 +53,13 @@
 				<p class="font-bold">{error.errorCode}</p>
 				<p>
 					{error.errorMessage}
+				</p>
+			</div>
+		{:else if success}
+			<div class="bg-green-900 text-green-400 bg-opacity-50 p-3 mt-3 rounded">
+				<p>
+					Recovery email sent successfully. Please check your inbox for steps on how to recover your
+					account.
 				</p>
 			</div>
 		{/if}

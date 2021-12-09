@@ -6,14 +6,11 @@ import {
 	signOut as _signOut,
 	onAuthStateChanged,
 	GoogleAuthProvider,
-	getAuth,
 	sendPasswordResetEmail
 } from 'firebase/auth';
 import { browser } from '$app/env';
-import type { User, AuthProvider } from 'firebase/auth';
-
-import { writable } from 'svelte/store';
-import { app } from '../firebase';
+import type { AuthProvider } from 'firebase/auth';
+import { auth } from '../firebase';
 import type { AuthError } from '../types';
 import { goto } from '$app/navigation';
 
@@ -23,133 +20,108 @@ type AuthFederation = 'google' | 'github';
  * Helper methods for interacting with Firebase authentication.
  * @returns The authentication library
  */
-const initAuth = () => {
-	const { subscribe, set } = writable<User>();
 
-	/**
-	 * Listen to auth state changes.
-	 */
-	const listen = async () => {
-		const auth = getAuth(app);
-		onAuthStateChanged(
-			auth,
-			(user) => {
-				set(user);
-
-				if (user && window) {
-					if (window.location.href.endsWith('login') || window.location.href.endsWith('register')) {
-						goto('/');
-					}
-				} else {
-					goto('login');
+onAuthStateChanged(
+	auth,
+	(user) => {
+		if (browser) {
+			if (user) {
+				if (window.location.href.endsWith('login') || window.location.href.endsWith('register')) {
+					goto('/');
 				}
-			},
-			(err) => console.error(err.message)
-		);
-	};
+			} else {
+				goto('login');
+			}
+		}
+	},
+	(err) => console.error(err.message)
+);
 
-	if (browser) {
-		listen();
-	} else {
-		set(null);
+/**
+ * Register a new user to the application.
+ *
+ * @param email The new user's email
+ * @param password The new user's password
+ * @returns An auth error if registering failed
+ */
+export const register = async (email: string, password: string): Promise<AuthError | void> => {
+	try {
+		await createUserWithEmailAndPassword(auth, email, password);
+	} catch (error) {
+		return {
+			errorCode: error.code,
+			errorMessage: error.message
+		};
+	}
+};
+
+export const signIn = async (email: string, password: string): Promise<AuthError | void> => {
+	try {
+		await signInWithEmailAndPassword(auth, email, password);
+	} catch (error) {
+		return {
+			errorCode: error.code,
+			errorMessage: error.message
+		};
+	}
+};
+
+export const signInWith = async (federation: AuthFederation): Promise<AuthError | void> => {
+	// Get the relevant authentication provider.
+	let provider: AuthProvider;
+	switch (federation) {
+		case 'google':
+			provider = new GoogleAuthProvider();
+			break;
+		case 'github':
+			provider = new GithubAuthProvider();
+			break;
 	}
 
-	/**
-	 * Register a new user to the application.
-	 *
-	 * @param email The new user's email
-	 * @param password The new user's password
-	 * @returns An auth error if registering failed
-	 */
-	const register = async (email: string, password: string): Promise<AuthError | void> => {
-		const auth = getAuth(app);
-		try {
-			await createUserWithEmailAndPassword(auth, email, password);
-		} catch (error) {
-			return {
-				errorCode: error.code,
-				errorMessage: error.message
-			};
-		}
-	};
+	// Trigger the federated sign in popup.
+	try {
+		await signInWithPopup(auth, provider);
+	} catch (error) {
+		return {
+			errorCode: error.code,
+			errorMessage: error.message
+		};
+	}
+};
 
-	const signIn = async (email: string, password: string): Promise<AuthError | void> => {
-		const auth = getAuth(app);
-		try {
-			await signInWithEmailAndPassword(auth, email, password);
-		} catch (error) {
-			return {
-				errorCode: error.code,
-				errorMessage: error.message
-			};
-		}
-	};
+export const signOut = async (): Promise<AuthError | void> => {
+	try {
+		await _signOut(auth);
+	} catch (error) {
+		return {
+			errorCode: error.code,
+			errorMessage: error.message
+		};
+	}
+};
 
-	const signInWith = async (federation: AuthFederation): Promise<AuthError | void> => {
-		const auth = getAuth(app);
+export const isAdmin = async (): Promise<boolean> => {
+	const user = auth.currentUser;
+	if (!user) return false;
+	const token = await user.getIdTokenResult();
+	return !!token.claims.admin;
+};
 
-		// Get the relevant authentication provider.
-		let provider: AuthProvider;
-		switch (federation) {
-			case 'google':
-				provider = new GoogleAuthProvider();
-				break;
-			case 'github':
-				provider = new GithubAuthProvider();
-				break;
-		}
+export const resetPassword = async (email: string): Promise<AuthError | void> => {
+	try {
+		await sendPasswordResetEmail(auth, email);
+	} catch (error) {
+		return {
+			errorCode: error.code,
+			errorMessage: error.message
+		};
+	}
+};
 
-		// Trigger the federated sign in popup.
-		try {
-			await signInWithPopup(auth, provider);
-		} catch (error) {
-			return {
-				errorCode: error.code,
-				errorMessage: error.message
-			};
-		}
-	};
-
-	const signOut = async (): Promise<AuthError | void> => {
-		const auth = getAuth(app);
-
-		try {
-			await _signOut(auth);
-		} catch (error) {
-			return {
-				errorCode: error.code,
-				errorMessage: error.message
-			};
-		}
-	};
-
-	const isAdmin = async (user: User) => {
-		if (!user) return false;
-		const token = await user.getIdTokenResult();
-		return !!token.claims.admin;
-	};
-
-	const resetPassword = async (email: string): Promise<AuthError | void> => {
-		const auth = getAuth(app);
-		try {
-			await sendPasswordResetEmail(auth, email);
-		} catch (error) {
-			return {
-				errorCode: error.code,
-				errorMessage: error.message
-			};
-		}
-	};
-
-	return {
-		register,
-		signInWith,
-		signIn,
-		signOut,
-		subscribe,
-		resetPassword,
-		isAdmin
-	};
+export const getName = (): string => {
+	return auth.currentUser.displayName
+		? auth.currentUser.displayName.split(' ')[0]
+		: auth.currentUser.email.split('@')[0];
 };
 
 export const getErrorMessage = (firebaseError: AuthError): AuthError => {
@@ -182,5 +154,3 @@ export const getErrorMessage = (firebaseError: AuthError): AuthError => {
 			};
 	}
 };
-
-export const auth = initAuth();
