@@ -14,6 +14,8 @@
 
 	export let labelPosition: 'below' | 'above' = 'below';
 
+	export let label: string = undefined;
+
 	/**
 	 * The test-id of this icon, so that it can be identified programatically in tests.
 	 */
@@ -68,8 +70,6 @@
 			}
 		}
 	}
-
-	export let label: string = undefined;
 </script>
 
 <Hoverable let:hovering>

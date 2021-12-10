@@ -1,5 +1,5 @@
 <!-- Loader adapted from https://cssloaders.github.io/ -->
-<div class="loader" />
+<div class="loader" data-testid="loader" />
 
 <style>
 	.loader {

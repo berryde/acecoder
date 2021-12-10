@@ -4,7 +4,7 @@
 	import { app } from 'src/utils/firebase';
 
 	async function submitFeedback() {
-		if (valid) {
+		if (comment != '' && component != '') {
 			const db = getFirestore(app);
 			loading = true;
 			await addDoc(collection(db, 'feedback'), {
@@ -20,8 +20,6 @@
 	let loading = false;
 	let comment = '';
 	let component = '';
-
-	$: valid = comment != '' && component != '';
 </script>
 
 <div class="px-3 h-full">
@@ -30,6 +28,7 @@
 	<select
 		class="w-full bg-light-bglight dark:bg-dark-bglight px-2 h-8 focus:outline-none focus:ring-1 focus:ring-bluegray-300"
 		bind:value={component}
+		data-testid="select-component"
 	>
 		<option value="File explorer">File explorer</option>
 		<option value="Text editor">Text editor</option>
@@ -43,6 +42,7 @@
 		class="w-full dark:bg-dark-bglight focus:outline-none focus:ring-1 focus:ring-bluegray-300 px-3 py-1 h-1/3 resize-none"
 		spellcheck={true}
 		bind:value={comment}
+		data-testid="feedback-comment"
 	/>
 	<Button
 		text="Submit"

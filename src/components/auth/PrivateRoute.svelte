@@ -14,7 +14,7 @@
 	});
 </script>
 
-{#if user}
+{#if !!user}
 	<slot />
 {:else}
 	<div class="h-screen w-screen bg-dark-bgdark flex justify-center items-center">

@@ -10,7 +10,6 @@
 	import Error from './Error.svelte';
 	import Button from '../common/Button.svelte';
 	import CircularProgressIndicator from '../loaders/CircularProgressIndicator.svelte';
-	import { onMount } from 'svelte';
 
 	async function submit() {
 		// If we are not already waiting for a submission
@@ -27,9 +26,7 @@
 		return result ? 'bg-green-500' : 'bg-red-500';
 	}
 
-	onMount(() => {
-		listen();
-	});
+	$: $pending && listen();
 </script>
 
 {#if $exercise}
