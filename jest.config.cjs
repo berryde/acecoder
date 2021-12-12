@@ -15,5 +15,6 @@ module.exports = {
 	},
 	setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect'],
 	testEnvironment: 'jsdom',
-	transformIgnorePatterns: ['node_modules/(?!(svelte-icons)/)']
+	transformIgnorePatterns: ['node_modules/(?!(svelte-icons)/)'],
+	coveragePathIgnorePatterns: ['node_modules', '.svelte-kit']
 };

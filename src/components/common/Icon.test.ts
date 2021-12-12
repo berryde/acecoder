@@ -13,7 +13,7 @@ describe('The icon component', () => {
 		expect(getByText('Hello world')).toBeInTheDocument();
 	});
 	it('emits a click event on click when using the button variant', () => {
-		const { getByText, getByTestId, component } = render(Icon, {
+		const { getByTestId, component } = render(Icon, {
 			button: true,
 			testId: 'test-button'
 		});

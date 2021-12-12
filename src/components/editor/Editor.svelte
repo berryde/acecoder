@@ -38,7 +38,7 @@
 	 * @returns Whether the format was successful
 	 */
 	const formatEditor: Command = (view: EditorView): boolean => {
-		view.state.update({
+		view.dispatch({
 			changes: {
 				from: 0,
 				to: view.state.doc.length,
