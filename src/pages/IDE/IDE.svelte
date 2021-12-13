@@ -8,10 +8,24 @@
 	import SidebarItem from 'src/components/sidebar/SidebarItem.svelte';
 	import Admin from 'src/components/admin/Admin.svelte';
 	import IoIosBuild from 'svelte-icons/io/IoIosBuild.svelte';
-	import { loadExercise, loadStandalone, standalone } from 'src/utils/exercise/exercise';
+	import { initialising, loadExercise, result } from 'src/utils/exercise/exercise';
 	import { selectedTab } from 'src/utils/tabs/tabs';
 	import { save } from 'src/utils/codemirror/codemirror';
+	import { save as writeToFirebase } from 'src/utils/exercise/exercise';
 	import { isAdmin } from 'src/utils/auth/auth';
+	import Explorer from 'src/components/explorer/Explorer.svelte';
+	import Feedback from 'src/components/feedback/Feedback.svelte';
+	import Settings from 'src/components/settings/Settings.svelte';
+	import IoIosFiling from 'svelte-icons/io/IoIosFiling.svelte';
+	import IoIosSettings from 'svelte-icons/io/IoIosSettings.svelte';
+	import IoMdText from 'svelte-icons/io/IoMdText.svelte';
+	import Profile from 'src/components/profile/Profile.svelte';
+	import ProfileImage from 'src/components/profile/ProfileImage.svelte';
+	import MdBook from 'svelte-icons/md/MdBook.svelte';
+	import Exercise from 'src/components/exercise/Exercise.svelte';
+	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
+	import { loadSettings } from 'src/utils/settings/settings';
+	import ResultsPopup from 'src/components/exercise/ResultsPopup.svelte';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -49,10 +63,33 @@
 	 */
 	let R = 87;
 
-	/**
-	 * The tabs to display in the sidebar.
-	 */
-	export let sidebarTabs: SidebarTab[];
+	let sidebarTabs: SidebarTab[] = [
+		{
+			name: 'profile',
+			icon: ProfileImage,
+			component: Profile
+		},
+		{
+			name: 'Exercise',
+			icon: MdBook,
+			component: Exercise
+		},
+		{
+			name: 'explorer',
+			icon: IoIosFiling,
+			component: Explorer
+		},
+		{
+			name: 'feedback',
+			icon: IoMdText,
+			component: Feedback
+		},
+		{
+			name: 'settings',
+			icon: IoIosSettings,
+			component: Settings
+		}
+	];
 
 	/**
 	 * Update the selected index and collapsed state of the sidebar.
@@ -76,6 +113,7 @@
 	function handleSave() {
 		if ($selectedTab != '') {
 			save();
+			writeToFirebase();
 		}
 	}
 
@@ -122,11 +160,8 @@
 
 	// Add a listener for key combinations
 	onMount(async () => {
-		if ($standalone) {
-			loadStandalone();
-		} else {
-			loadExercise();
-		}
+		loadExercise();
+		loadSettings();
 
 		// Add a listener for application-wide keyboard shortcuts
 		window.addEventListener('keydown', keydown);
@@ -142,37 +177,46 @@
 	});
 </script>
 
-<div class="h-screen text-light-text dark:text-dark-text dark:bg-dark-bglight flex flex-row">
-	<Sidebar
-		on:collapse={() => collapseSidebar()}
-		on:select={(e) => updateSidebar(e.detail)}
-		{collapsed}
-		{selected}
-		tabs={sidebarTabs}
-	/>
-	<SplitPane
-		isHorizontal={true}
-		minPane1Size={collapsed ? '0' : undefined}
-		bind:pane1Size={L}
-		bind:pane2Size={R}
-		on:resize={() => collapsed && openSidebar(0, 100)}
-	>
-		<div slot="pane1" class="bg-dark-bgdark">
-			{#if !collapsed}
-				<SidebarItem title={sidebarTabs[selected].name}>
-					<svelte:component this={sidebarTabs[selected].component} />
-				</SidebarItem>
-			{/if}
-		</div>
-		<div slot="pane2">
-			<SplitPane isHorizontal={true} let:resizing={resizingX}>
-				<div slot="pane1">
-					<EditorContainer on:drag={toggleSelecting} />
-				</div>
-				<div slot="pane2">
-					<PreviewContainer {resizingX} {selecting} />
-				</div>
-			</SplitPane>
-		</div>
-	</SplitPane>
-</div>
+{#if $initialising}
+	<div class="h-screen w-screen bg-dark-bgdark flex justify-center items-center">
+		<OrbitProgressIndicator />
+	</div>
+{:else}
+	{#if $result}
+		<ResultsPopup />
+	{/if}
+	<div class="h-screen text-light-text dark:text-dark-text dark:bg-dark-bglight flex flex-row">
+		<Sidebar
+			on:collapse={() => collapseSidebar()}
+			on:select={(e) => updateSidebar(e.detail)}
+			{collapsed}
+			{selected}
+			tabs={sidebarTabs}
+		/>
+		<SplitPane
+			isHorizontal={true}
+			minPane1Size={collapsed ? '0' : undefined}
+			bind:pane1Size={L}
+			bind:pane2Size={R}
+			on:resize={() => collapsed && openSidebar(0, 100)}
+		>
+			<div slot="pane1">
+				{#if !collapsed}
+					<SidebarItem title={sidebarTabs[selected].name}>
+						<svelte:component this={sidebarTabs[selected].component} />
+					</SidebarItem>
+				{/if}
+			</div>
+			<div slot="pane2">
+				<SplitPane isHorizontal={true} let:resizing={resizingX}>
+					<div slot="pane1">
+						<EditorContainer on:drag={toggleSelecting} />
+					</div>
+					<div slot="pane2">
+						<PreviewContainer {resizingX} {selecting} />
+					</div>
+				</SplitPane>
+			</div>
+		</SplitPane>
+	</div>
+{/if}

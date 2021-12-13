@@ -16,18 +16,19 @@ export const filesystem = writable<Filesystem>({});
  * @param filename The name of the new file.
  * @param value The initial value of the new file.
  */
-export const createFile = (path: string, value?: string): void => {
+export const createFile = (path: string, value?: string, modifiable = true): void => {
 	const name = tail(path);
 
 	filesystem.update((state) => {
-		const dir = navigateToFile(path);
+		const dir = navigateToFile(path, modifiable);
 
 		if (name in dir) {
 			console.error('File ' + path + ' already exists');
 		} else {
 			dir[name] = {
 				type: 'file',
-				value: value ? value : ''
+				value: value ? value : '',
+				modifiable: modifiable
 			};
 		}
 
@@ -40,7 +41,7 @@ export const createFile = (path: string, value?: string): void => {
  *
  * @param filename The name of the new folder.
  */
-export const createFolder = (path: string): void => {
+export const createFolder = (path: string, modifiable = true): void => {
 	const name = tail(path);
 
 	filesystem.update((state) => {
@@ -51,7 +52,8 @@ export const createFolder = (path: string): void => {
 		} else {
 			dir[name] = {
 				type: 'folder',
-				children: {}
+				children: {},
+				modifiable: modifiable
 			};
 		}
 
@@ -138,7 +140,8 @@ export const updateFile = (filepath: string, contents: string): void => {
 		const dir = navigateToFile(filepath);
 		dir[filename] = {
 			type: 'file',
-			value: contents
+			value: contents,
+			modifiable: false
 		};
 		return state;
 	});
@@ -223,14 +226,15 @@ export const getExtension = (path: string): string => {
  * @param filepath The filepath to navigate to.
  * @returns The directory containing the file specified by filepath.
  */
-export const navigateToFile = (path: string): Filesystem => {
+export const navigateToFile = (path: string, modifiable = true): Filesystem => {
 	const directories = getDirectories(path);
 	let dir = get(filesystem);
 	for (let i = 0; i < directories.length; i++) {
 		if (!dir[directories[i]])
 			dir[directories[i]] = {
 				type: 'folder',
-				children: {}
+				children: {},
+				modifiable: modifiable
 			};
 		const folder = dir[directories[i]] as FSFolder;
 		dir = folder.children;

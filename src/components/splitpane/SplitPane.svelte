@@ -206,12 +206,10 @@
 	.pane1-horizontal {
 		width: var(--left-pane-size);
 		min-width: var(--min-left-pane-size);
-		height: 100%;
 	}
 	.pane2-horizontal {
 		width: var(--right-pane-size);
 		min-width: var(--min-right-pane-size);
-		height: 100%;
 	}
 	.pane1-vertical {
 		height: var(--left-pane-size);

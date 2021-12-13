@@ -1,31 +1,17 @@
 <script lang="ts">
 	import { addMessage, latestError, messages } from '../../utils/console/console';
-
 	import Preview from '../../components/preview/Preview.svelte';
 	import SplitPane from '../../components/splitpane/SplitPane.svelte';
 	import { filesystem, getAllFiles } from '../../utils/filesystem/filesystem';
 	import type { WorkerError, WorkerResponse } from '../../utils/types';
 	import { onDestroy, onMount } from 'svelte';
-
 	import Console from '../../components/console/Console.svelte';
-
-	import { standalone, saveStandalone, template } from 'src/utils/exercise/exercise';
 	import { compiled } from 'src/utils/compiler/compiler';
-	import { doc, setDoc } from 'firebase/firestore';
-	import { auth, db } from 'src/utils/firebase';
 
 	export let resizingX = false;
 	export let selecting = false;
 
-	let initialised = false;
 	let worker: Worker;
-
-	function save() {
-		if ($standalone) {
-			saveStandalone();
-		}
-		refresh();
-	}
 
 	onMount(() => {
 		// Import the worker from the absolute path
@@ -44,31 +30,9 @@
 				compiled.set(event.data as WorkerResponse);
 			}
 		});
+
+		refresh();
 	});
-
-	function storeCompiled() {
-		const _compiled = $compiled;
-		if (
-			_compiled &&
-			_compiled !=
-				{
-					css: '',
-					js: '',
-					public: {}
-				}
-		) {
-			setDoc(doc(db, 'preview', auth.currentUser.uid), _compiled);
-		}
-	}
-
-	// Rerender (and save in standalone) whenever the filesystem is updated
-	$: initialised && $filesystem && save();
-	// Update initialsed when the template is created
-	$: initialised = !!$template;
-	// Update the stored compiled preview whenever it changes if we are standalone
-	$: initialised && $standalone && $compiled && storeCompiled();
-	// Perform the initial reload
-	$: initialised && refresh();
 
 	function refresh() {
 		if (worker) {
@@ -82,6 +46,8 @@
 		}
 		compiled.set(undefined);
 	});
+
+	$: $filesystem && refresh();
 </script>
 
 <div class="h-screen w-full overflow-hidden">

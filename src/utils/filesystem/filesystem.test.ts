@@ -13,11 +13,13 @@ describe('The Filesystem utility', () => {
 		const files: Filesystem = {
 			test: {
 				type: 'file',
-				value: ''
+				value: '',
+				modifiable: false
 			},
 			'package.json': {
 				type: 'file',
-				value: ''
+				value: '',
+				modifiable: false
 			}
 		};
 		filesystem.set(files);
@@ -27,11 +29,13 @@ describe('The Filesystem utility', () => {
 		const files: Filesystem = {
 			test: {
 				type: 'file',
-				value: ''
+				value: '',
+				modifiable: false
 			},
 			'package.json': {
 				type: 'file',
-				value: ''
+				value: '',
+				modifiable: false
 			}
 		};
 		expect(getExistingFiles(files).toString()).toBe(['test', 'package.json'].toString());

@@ -64,6 +64,10 @@ export type FSFile = {
 	 * The text content of the file.
 	 */
 	value: string;
+	/**
+	 * Whether this file can be deleted and renamed.
+	 */
+	modifiable: boolean;
 };
 
 /**
@@ -78,6 +82,10 @@ export type FSFolder = {
 	 * The folder's children.
 	 */
 	children: Filesystem;
+	/**
+	 * Whether this file can be deleted and renamed.
+	 */
+	modifiable: boolean;
 };
 
 /**
@@ -197,6 +205,10 @@ export type Exercise = {
 	 * A brief description of the tasks required by the exercise.
 	 */
 	description: string;
+	/**
+	 * Any files that should override the template for this project.
+	 */
+	overrides?: { [key: string]: string };
 };
 
 /**
@@ -239,4 +251,15 @@ export type TestResult = {
 	 * The timestamp of the result.
 	 */
 	timestamp: Timestamp;
+};
+
+export type Project = {
+	name: string;
+
+	description: string;
+	exercises: {
+		title: string;
+		id: string;
+		completed: boolean;
+	}[];
 };

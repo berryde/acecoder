@@ -84,7 +84,7 @@ export default function babel(
 			if (/.*\.(js|ts)x?/.test(id)) {
 				const options = {
 					filename: id,
-					presets: ['react']
+					presets: ['react', 'typescript']
 				};
 				try {
 					const transformed = transform(code, options);

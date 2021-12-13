@@ -16,10 +16,16 @@
 	import { linter } from '@codemirror/lint';
 	import { latestError } from '../../utils/console/console';
 	import { darkMode } from '../../utils/settings/settings';
-	import { selectedTab } from '../../utils/tabs/tabs';
 	import { oneDark } from '@codemirror/theme-one-dark';
 	import { getExtension, getFile } from 'src/utils/filesystem/filesystem';
 	import type { FSFile } from 'src/utils/types';
+
+	/**
+	 * The path of the file being edited.
+	 */
+	export let filename: string;
+
+	export let visible: boolean;
 
 	/**
 	 * Event dispatcher to send custom events.
@@ -42,7 +48,7 @@
 			changes: {
 				from: 0,
 				to: view.state.doc.length,
-				insert: _format(view.state.doc.toString(), getExtension($selectedTab))
+				insert: _format(view.state.doc.toString(), getExtension(filename))
 			}
 		});
 
@@ -52,7 +58,7 @@
 	const getError = (view: EditorView): readonly Diagnostic[] => {
 		const error = $latestError;
 		let output: readonly Diagnostic[] = [];
-		if (error && error.location == $selectedTab) {
+		if (error && error.location == filename) {
 			output = [
 				{
 					from: Math.max(0, error.pos - 5),
@@ -105,19 +111,8 @@
 		});
 	}
 
-	function updateContent() {
-		if ($selectedTab) {
-			// Update the contents and language support
-			const value = (getFile($selectedTab) as FSFile).value;
-			view.dispatch({
-				changes: [{ from: 0, to: view.state.doc.length, insert: value }],
-				effects: [languageSupport.reconfigure(getLanguage())]
-			});
-		}
-	}
-
 	function getLanguage(): Extension {
-		const language = getExtension($selectedTab);
+		const language = getExtension(filename);
 		return isSupported(language) ? getLanguageSupport(language) : [];
 	}
 
@@ -126,9 +121,13 @@
 	let view: EditorView;
 
 	onMount(() => {
+		setView();
+	});
+
+	function setView() {
 		view = new EditorView({
 			state: EditorState.create({
-				doc: '',
+				doc: (getFile(filename) as FSFile).value,
 				extensions: [
 					defaultExtensions,
 					EditorView.updateListener.of((viewUpdate: ViewUpdate) => {
@@ -144,13 +143,31 @@
 			}),
 			parent: element
 		});
-	});
+	}
 
-	$: view && $selectedTab && updateContent();
+	/**
+	 * The number of times this component has been reused
+	 */
+	let count = 0;
+
+	/**
+	 * Destroy the previous view if this component is being reused (handles temporary files).
+	 */
+	function reset() {
+		count += 1;
+		if (count > 1) {
+			if (view) {
+				view.destroy();
+			}
+			setView();
+		}
+	}
+
+	$: filename && reset();
 	$: view && ($darkMode || !$darkMode) && updateTheme();
 </script>
 
-<div bind:this={element} class="text-sm" on:mousedown={mouseDown} />
+<div bind:this={element} class="text-sm {!visible && 'hidden'}" on:mousedown={mouseDown} />
 
 <style lang="postcss">
 	:global(.cm-editor) {

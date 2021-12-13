@@ -14,6 +14,7 @@ import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { commentKeymap } from '@codemirror/comment';
 import parserBabel from 'prettier/parser-babel.js';
+import parserTypescript from 'prettier/parser-typescript.js';
 import parserHtml from 'prettier/parser-html.js';
 import parserCss from 'prettier/parser-postcss.js';
 import { defaultHighlightStyle } from '@codemirror/highlight';
@@ -94,9 +95,17 @@ export const getParser = (
 				plugins: [parserCss]
 			};
 		case 'tsx':
-		case 'jsx':
+			return {
+				parser: 'babel-ts',
+				plugins: [parserBabel]
+			};
 		case 'ts':
+			return {
+				parser: 'typescript',
+				plugins: [parserTypescript]
+			};
 		case 'js':
+		case 'jsx':
 		case 'json':
 			return {
 				parser: 'babel',

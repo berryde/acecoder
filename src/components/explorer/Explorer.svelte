@@ -3,6 +3,7 @@
 	import FileIcon from 'svelte-icons/fa/FaFile.svelte';
 	import OutlineFileIcon from 'svelte-icons/fa/FaRegFile.svelte';
 	import OutlineFolderIcon from 'svelte-icons/fa/FaRegFolder.svelte';
+	import Trash from 'svelte-icons/io/IoMdTrash.svelte';
 	import ExplorerInput from './ExplorerInput.svelte';
 	import FaDownload from 'svelte-icons/fa/FaDownload.svelte';
 	import File from './File.svelte';
@@ -22,7 +23,7 @@
 	import { openTab, renameTab } from '../../utils/tabs/tabs';
 	import Icon from '../common/Icon.svelte';
 	import Droppable from '../common/Droppable.svelte';
-	import { initialising } from 'src/utils/exercise/exercise';
+	import { initialising, reset } from 'src/utils/exercise/exercise';
 	import CircularProgressIndicator from '../loaders/CircularProgressIndicator.svelte';
 
 	let creating = false;
@@ -74,6 +75,10 @@
 	function handleExport() {
 		exportFilesystem();
 	}
+
+	function handleReset() {
+		reset();
+	}
 </script>
 
 <div class="flex flex-col h-full">
@@ -92,6 +97,9 @@
 		<Icon on:click={() => handleExport()} testId="export" button={true} label="Download">
 			<FaDownload />
 		</Icon>
+		<Icon on:click={() => handleReset()} testId="export" button={true} label="Restart">
+			<Trash />
+		</Icon>
 	</div>
 	{#if $initialising}
 		<div class="h-full flex items-center justify-center">
@@ -101,9 +109,9 @@
 		<div class="w-full">
 			{#each Object.entries($filesystem).sort(compareFile) as [path, object]}
 				{#if object.type === 'file'}
-					<File {path} />
+					<File {path} modifiable={object.modifiable} />
 				{:else}
-					<Folder {path} children={object.children} />
+					<Folder {path} children={object.children} modifiable={object.modifiable} />
 				{/if}
 			{/each}
 			{#if creating}

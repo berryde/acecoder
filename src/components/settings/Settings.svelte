@@ -1,19 +1,10 @@
 <script lang="ts">
-	import { formatOnSave, darkMode } from '../../utils/settings/settings';
-
-	/**
-	 * Update the setting for format on save.
-	 */
-	function toggleFormatOnSave() {
-		formatOnSave.update((fos) => !fos);
-	}
-
-	/**
-	 * Update the setting for dark mode.
-	 */
-	function toggleDarkMode() {
-		darkMode.update((dark) => !dark);
-	}
+	import {
+		toggleFormatOnSave,
+		toggleDarkMode,
+		darkMode,
+		formatOnSave
+	} from '../../utils/settings/settings';
 </script>
 
 <div class="flex flex-col px-3">

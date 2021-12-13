@@ -68,6 +68,11 @@
 	let collapsed = false;
 
 	/**
+	 * Whether this folder can be deleted and renamed.
+	 */
+	export let modifiable: boolean;
+
+	/**
 	 * Shows/hides the input to rename this folder.
 	 * @param renaming Whether this folder is currently being renamed.
 	 */
@@ -196,17 +201,10 @@
 						</div>
 						<p class="truncate">{name}</p>
 						<div
-							class="flex flex-row flex-grow items-center justify-end pr-2 space-x-1 {!hovering &&
-								'hidden'}"
+							class="flex flex-row flex-grow items-center justify-end pr-2 space-x-1 transition-opacity {!hovering
+								? 'opacity-0'
+								: 'opacity-100'}"
 						>
-							<Icon
-								on:click={() => setRenaming(true)}
-								testId="rename-folder"
-								button={true}
-								label="Rename"
-							>
-								<Pen />
-							</Icon>
 							<Icon
 								on:click={() => setCreating(true, true)}
 								testId="create-child-file"
@@ -223,9 +221,19 @@
 							>
 								<Folder />
 							</Icon>
-							<Icon on:click={handleDelete} testId="delete-folder" button={true} label="Delete">
-								<Trash />
-							</Icon>
+							{#if modifiable}
+								<Icon
+									on:click={() => setRenaming(true)}
+									testId="rename-folder"
+									button={true}
+									label="Rename"
+								>
+									<Pen />
+								</Icon>
+								<Icon on:click={handleDelete} testId="delete-folder" button={true} label="Delete">
+									<Trash />
+								</Icon>
+							{/if}
 						</div>
 					</div>
 				</Hoverable>
@@ -236,9 +244,14 @@
 			<div>
 				{#each Object.entries(children).sort(compareFile) as [name, object]}
 					{#if object.type === 'file'}
-						<File path={path + '/' + name} depth={depth + 1} />
+						<File path={path + '/' + name} depth={depth + 1} modifiable={object.modifiable} />
 					{:else}
-						<svelte:self children={object.children} path={path + '/' + name} depth={depth + 1} />
+						<svelte:self
+							children={object.children}
+							path={path + '/' + name}
+							depth={depth + 1}
+							modifiable={object.modifiable}
+						/>
 					{/if}
 				{/each}
 			</div>

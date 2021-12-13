@@ -9,14 +9,14 @@
 	<p class="uppercase text-xs">Account</p>
 	<p class="leading-5">Hi, {getName()}</p>
 	<p class="leading-5">
-		If you are having trouble logging in, <a class="text-blue-600" href="/account-recovery"
+		If you are having trouble logging in, <a class="text-blue-700" href="/account-recovery"
 			>reset your password</a
 		>.
 	</p>
 
 	<p class="uppercase text-xs mt-3">Contact</p>
 	<p class="leading-5">
-		To contact the developers, please <a class="text-blue-600" href="mailto: deb1g19@soton.ac.uk"
+		To contact the developers, please <a class="text-blue-700" href="mailto: deb1g19@soton.ac.uk"
 			>send us an email</a
 		> and we will try our best to get back to you.
 	</p>

@@ -22,6 +22,8 @@
 	 */
 	export let path: string;
 
+	export let modifiable: boolean;
+
 	/**
 	 * The depth of this file in the file tree.
 	 */
@@ -122,22 +124,25 @@
 				</Icon>
 
 				<p class="truncate">{name}</p>
-				<div
-					class="flex flex-row dark:text-dark-text justify-end items-center flex-grow pr-2 space-x-1 {!hovering &&
-						'hidden'}"
-				>
-					<Icon
-						on:click={() => setRenaming(true)}
-						testId="rename-file"
-						button={true}
-						label="Rename"
+				{#if modifiable}
+					<div
+						class="flex flex-row dark:text-dark-text justify-end items-center flex-grow pr-2 space-x-1 transition-opacity {!hovering
+							? 'opacity-0'
+							: 'opacity-100'}"
 					>
-						<Pen />
-					</Icon>
-					<Icon on:click={handleDelete} testId="delete-file" button={true} label="Delete">
-						<Trash />
-					</Icon>
-				</div>
+						<Icon
+							on:click={() => setRenaming(true)}
+							testId="rename-file"
+							button={true}
+							label="Rename"
+						>
+							<Pen />
+						</Icon>
+						<Icon on:click={handleDelete} testId="delete-file" button={true} label="Delete">
+							<Trash />
+						</Icon>
+					</div>
+				{/if}
 			</div>
 		</Hoverable>
 	</Draggable>
