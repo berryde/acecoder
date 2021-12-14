@@ -8,17 +8,13 @@
 		WorkerError,
 		WorkerResponse
 	} from 'src/utils/types';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import previewTemplate from './template/template';
 	import IoIosPlay from 'svelte-icons/io/IoIosPlay.svelte';
 	import IoIosExpand from 'svelte-icons/io/IoIosExpand.svelte';
 	import Icon from '../common/Icon.svelte';
 	import { createEventDispatcher } from 'svelte';
-
-	/**
-	 * The compiled code
-	 */
-	export let compiled: WorkerResponse;
+	import { compiled } from 'src/utils/compiler/compiler';
 
 	/**
 	 * Whether the user is resizing the parent splitpane.
@@ -91,49 +87,59 @@
 		}
 	}
 
+	function onLoad() {
+		// Add the URL click interceptor
+		const message: UrlMessage = {
+			type: 'url'
+		};
+		iframe.contentWindow.postMessage(message);
+	}
+
+	function onMessage(message: MessageEvent) {
+		const msg = message.data as PreviewMessage;
+		if (msg.type == 'system') {
+			switch (msg.data) {
+				case 'loaded':
+					// The popup has loaded successfully and should be sent the project code.
+					popup.document.title = 'Preview';
+					popup.postMessage({
+						compiled: compiled,
+						type: 'reload'
+					});
+					break;
+				default:
+					popup = undefined;
+			}
+		} else {
+			addMessage(msg);
+		}
+	}
+
 	onMount(() => {
 		// Load the preview template
 		srcdoc = previewTemplate;
 
 		// Send the compiled code to the iframe once it has loaded.
-		iframe.addEventListener('load', () => {
-			// Add the URL click interceptor
-			const message: UrlMessage = {
-				type: 'url'
-			};
-			iframe.contentWindow.postMessage(message);
-			// Do an initial render
-			build(compiled);
-		});
+		iframe.addEventListener('load', onLoad);
 
 		// Handle console messages.
-		window.addEventListener('message', (message: MessageEvent) => {
-			const msg = message.data as PreviewMessage;
-			if (msg.type == 'system') {
-				switch (msg.data) {
-					case 'loaded':
-						// The popup has loaded successfully and should be sent the project code.
-						popup.document.title = 'Preview';
-						popup.postMessage({
-							compiled: compiled,
-							type: 'reload'
-						});
-						break;
-					default:
-						popup = undefined;
-				}
-			} else {
-				addMessage(msg);
-			}
-		});
+		window.addEventListener('message', onMessage);
+	});
+
+	onDestroy(() => {
+		if (iframe) {
+			iframe.removeEventListener('load', onLoad);
+			window.removeEventListener('message', onMessage);
+		}
 	});
 
 	// Update the preview whenever the compiled code changes.
-	$: build(compiled);
+
+	$: build($compiled);
 </script>
 
 <div class="flex-grow h-full w-full flex flex-col overflow-hidden bg-gray-200 dark:bg-dark-bglight">
-	<div class=" dark:text-dark-text flex flex-row justify-between w-full items-center py-2 px-5">
+	<div class="dark:text-dark-text flex flex-row justify-between w-full items-center py-2 px-5">
 		<div class="font-bold uppercase text-xs ">Preview</div>
 		<div class="flex flex-row space-x-2">
 			<Icon on:click={() => handlePopup()} button={true} label="Popout">

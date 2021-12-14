@@ -3,15 +3,18 @@
 	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
 	import EditorContainer from './EditorContainer.svelte';
 	import PreviewContainer from './PreviewContainer.svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import type { SidebarTab } from 'src/utils/types';
 	import SidebarItem from 'src/components/sidebar/SidebarItem.svelte';
 	import Admin from 'src/components/admin/Admin.svelte';
 	import IoIosBuild from 'svelte-icons/io/IoIosBuild.svelte';
-	import { initialising, loadExercise, result } from 'src/utils/exercise/exercise';
-	import { selectedTab } from 'src/utils/tabs/tabs';
-	import { save } from 'src/utils/codemirror/codemirror';
-	import { save as writeToFirebase } from 'src/utils/exercise/exercise';
+	import {
+		initialising,
+		loadExercise,
+		result,
+		submitted,
+		pending
+	} from 'src/utils/exercise/exercise';
 	import { isAdmin } from 'src/utils/auth/auth';
 	import Explorer from 'src/components/explorer/Explorer.svelte';
 	import Feedback from 'src/components/feedback/Feedback.svelte';
@@ -25,7 +28,8 @@
 	import Exercise from 'src/components/exercise/Exercise.svelte';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
 	import { loadSettings } from 'src/utils/settings/settings';
-	import ResultsPopup from 'src/components/exercise/ResultsPopup.svelte';
+	import Results from 'src/components/exercise/Results.svelte';
+	import Modal from 'src/components/common/Modal.svelte';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -110,13 +114,6 @@
 		selecting = e.detail;
 	}
 
-	function handleSave() {
-		if ($selectedTab != '') {
-			save();
-			writeToFirebase();
-		}
-	}
-
 	/**
 	 * Called when the user presses a key while using the application
 	 * @param e The event that triggered this function.
@@ -127,10 +124,6 @@
 				case 'KeyB':
 					e.preventDefault();
 					collapsed ? openSidebar() : collapseSidebar();
-					break;
-				case 'KeyS':
-					e.preventDefault();
-					handleSave();
 					break;
 			}
 		}
@@ -175,6 +168,22 @@
 			sidebarTabs = sidebarTabs;
 		}
 	});
+
+	onDestroy(() => {
+		window.removeEventListener('keydown', keydown);
+	});
+
+	let showingResults = false;
+
+	function showResults() {
+		showingResults = true;
+	}
+
+	function hideResults() {
+		showingResults = false;
+	}
+
+	$: $submitted && !$pending && $result && showResults();
 </script>
 
 {#if $initialising}
@@ -182,8 +191,10 @@
 		<OrbitProgressIndicator />
 	</div>
 {:else}
-	{#if $result}
-		<ResultsPopup />
+	{#if showingResults}
+		<Modal title="Submission Results" on:close={hideResults}>
+			<Results />
+		</Modal>
 	{/if}
 	<div class="h-screen text-light-text dark:text-dark-text dark:bg-dark-bglight flex flex-row">
 		<Sidebar

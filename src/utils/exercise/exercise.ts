@@ -1,4 +1,4 @@
-import { deleteDoc, doc, getDoc as _getDoc, onSnapshot, setDoc } from 'firebase/firestore';
+import { deleteDoc, doc, getDoc as _getDoc, setDoc } from 'firebase/firestore';
 import { writable, get } from 'svelte/store';
 import { format } from '../codemirror/codemirror';
 import { createFile, filesystem, getAllFiles, getExtension } from '../filesystem/filesystem';
@@ -6,7 +6,7 @@ import { auth, db } from '../firebase';
 import { get as httpGet } from '../network/network';
 import type { Exercise, Template, TestResult } from '../types';
 import type { DocumentData } from 'firebase/firestore';
-import { openTab, selectedTab, tabs, unsavedTabs } from '../tabs/tabs';
+import { selectedTab, tabs, unsavedTabs } from '../tabs/tabs';
 
 /**
  * The current exercise being completed
@@ -44,6 +44,11 @@ export const aborted = writable<boolean>(false);
 export const initialising = writable<boolean>(true);
 
 /**
+ * Whether the user has made a submission yet.
+ */
+export const submitted = writable<boolean>(false);
+
+/**
  * A timer callback for determining when to stop listening for submission results.
  */
 let timeout: NodeJS.Timeout;
@@ -61,10 +66,26 @@ export const loadExercise = async (): Promise<void> => {
 	const submission = (await getDoc('submissions', submissionID)) as Template;
 
 	let source: Record<string, string>;
-	if (submission) source = submission.files;
-	else {
-		const template = (await getDoc('templates', ex.template.id)) as Template;
-		source = template.files;
+	if (submission) {
+		source = submission.files;
+		// Check if the user has results for this previous submission
+		const results = (await getDoc('results', submissionID)) as TestResult;
+		if (results) {
+			result.set(results);
+		}
+	} else {
+		// Load the previous exercise if present else load the template
+		if (ex.previous) {
+			const previous = (await getDoc(
+				'submissions',
+				ex.previous.id + auth.currentUser.uid
+			)) as Template;
+			source = previous.files;
+		} else {
+			const template = (await getDoc('templates', ex.template.id)) as Template;
+			source = template.files;
+		}
+
 		// Apply the overrides if present
 		if (ex.overrides) {
 			for (const [path, value] of Object.entries(ex.overrides)) {
@@ -85,6 +106,7 @@ export const loadExercise = async (): Promise<void> => {
 
 export const reset = async (): Promise<void> => {
 	initialising.set(true);
+	submitted.set(false);
 	const submissionID = get(exerciseID) + auth.currentUser.uid;
 	const submission = doc(db, 'submissions', submissionID);
 	if (submission) {
@@ -124,12 +146,21 @@ export const save = async (): Promise<void> => {
 	await setDoc(sub, submission);
 };
 
+export const nextExercise = () => {
+	if (get(exercise).next) {
+		window.location.href = '/exercise/' + get(exercise).next.id;
+	} else {
+		window.location.href = '/';
+	}
+};
+
 /**
  * Submit the filesystem to generate a mark.
  *
  * @returns A void promise that resolves when the submission request is completed.
  */
-export const submit = async (): Promise<void> => {
+export const submit = async (): Promise<string | void> => {
+	let message: string;
 	save();
 	const id = get(exerciseID) + auth.currentUser.uid;
 	aborted.set(false);
@@ -147,15 +178,17 @@ export const submit = async (): Promise<void> => {
 	} else {
 		endpoint = 'https://submission-server-rly7tdzvgq-ew.a.run.app/submissions/' + id;
 	}
-
-	const response = await httpGet(endpoint);
 	try {
+		const response = await httpGet(endpoint);
 		result.set(response['message'] as TestResult);
-	} catch (err) {
-		console.error('Unable to parse test results');
+		submitted.set(true);
+	} catch {
+		message = 'Unable to reach the submission server. Please try again later';
 	}
+
 	pending.set(false);
 	clearTimeout(timeout);
+	return message;
 };
 
 export const restoreDefaults = (): void => {

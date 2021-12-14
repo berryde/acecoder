@@ -16,6 +16,12 @@ function generateLookup(files: File[]): { [key: string]: File } {
 	return filesystem;
 }
 
+/**
+ * Extracts the dependencies from a package json file.
+ *
+ * @param packageJSON The JSON parsed package json file.
+ * @returns The union of the dev and standard dependencies.
+ */
 function getDependencies(packageJSON: {
 	devDependencies: Record<string, string> | undefined;
 	dependencies: Record<string, string> | undefined;
@@ -30,6 +36,14 @@ function getDependencies(packageJSON: {
 	return result;
 }
 
+/**
+ * Returns some error data to the live preview iframe in the application
+ *
+ * @param message The error message
+ * @param name The title to show for this error
+ * @param pos The character position in the source file where the error occurred.
+ * @param location The file name of the source file where the error occurred.
+ */
 const throwGenericError = (message: string, name = 'Error', pos = 0, location = '') => {
 	const error: WorkerError = {
 		location: location,
@@ -89,10 +103,17 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 			);
 		}
 
+		/**
+		 * The extracted dependencies from the submitted package.json.
+		 */
 		const dependencies = getDependencies(packageJSON);
 
+		/**
+		 * The output of bundling the submitted source files to return to the application.
+		 */
 		let output: WorkerResponse;
-		// Rollup the files.
+
+		// Bundle the files using rollup.
 		try {
 			const result = await rollup.rollup({
 				input: entryPoint,
@@ -104,22 +125,29 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 					throw new Error();
 				}
 			});
-			// Generate an esm bundle from the result.
+
+			/**
+			 * An esm bundle from the generated Rollup result.
+			 */
 			const bundle = await result.generate({ format: 'esm' });
 
+			/**
+			 * The JavaScript content of the bundle
+			 */
 			const scripts = bundle.output[0] ? bundle.output[0].code : '';
 
+			/**
+			 * The CSS content of the bundle
+			 */
 			let styles = '';
 			const css = bundle.output.find((e) => e.name == 'css');
 			if (css) {
 				styles += css.source + '\n';
 			}
 
-			const sass = bundle.output.find((e) => e.name == 'sass');
-			if (sass) {
-				styles += sass.source + '\n';
-			}
-
+			/**
+			 * The public files to serve as static content.
+			 */
 			const publicResources = Object.fromEntries(
 				Object.entries(filesystem)
 					.filter((entry) => entry[0].startsWith('public'))
@@ -131,9 +159,11 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 				css: styles,
 				public: publicResources
 			};
+
 			self.postMessage(output);
 		} catch (e) {
 			let outputError: WorkerError;
+
 			if (rollupWarning) {
 				outputError = {
 					location: rollupWarning.id,

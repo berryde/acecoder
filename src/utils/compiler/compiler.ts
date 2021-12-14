@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 import type { File } from '../types';
 import type { WorkerResponse } from '../types';
+import type { RollupWarning } from 'rollup';
 
 /**
  * The most recent compilation of the application's files.
@@ -91,3 +92,27 @@ export const resolveRelativePath = (
 
 	throw 'File ' + resolved + ' does not exist';
 };
+
+/**
+ * Use a regular expression to check if the importee is a relative import.
+ *
+ * @param importee The importee to check
+ * @returns Whether this importee is a relative import
+ */
+export const isRelativeImport = (importee: string): boolean => {
+	return /(\.\/|(\.\.\/)+)[^/]*/g.test(importee);
+};
+
+/**
+ * An error thrown when an imported source file cannot be resolved.
+ *
+ * @param importee The file being imported
+ * @param importer The file doing the importing
+ * @returns An error with the provided details
+ */
+export const fileNotFoundError = (importee: string, importer: string): RollupWarning => ({
+	message: `Failed to resolve file ${importee} from ${importer}. Check that this file exists.`,
+	pos: 0,
+	id: importer,
+	name: 'FileNotFoundError'
+});

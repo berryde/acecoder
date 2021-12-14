@@ -2,7 +2,7 @@
 	/**
 	 * Svelte split pane component, inspired by https://github.com/Readiz/svelte-split-pane.
 	 */
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import Separator from './Separator.svelte';
 
 	/**
@@ -156,6 +156,12 @@
 			window.addEventListener('resize', resize);
 		}
 		separatorSize = getSeparatorSize();
+	});
+
+	onDestroy(() => {
+		window.removeEventListener('resize', resize);
+		window.removeEventListener('mousemove', mouseMove);
+		window.removeEventListener('mouseup', mouseUp);
 	});
 
 	/**

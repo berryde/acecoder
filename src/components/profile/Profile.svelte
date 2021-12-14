@@ -1,5 +1,4 @@
 <script>
-	import { goto } from '$app/navigation';
 	import { auth } from 'src/utils/firebase';
 	import { getName } from 'src/utils/auth/auth';
 	import Button from '../common/Button.svelte';
@@ -11,7 +10,7 @@
 	<p class="leading-5">
 		If you are having trouble logging in, <a class="text-blue-700" href="/account-recovery"
 			>reset your password</a
-		>.
+		>
 	</p>
 
 	<p class="uppercase text-xs mt-3">Contact</p>
@@ -24,7 +23,7 @@
 		text="Homepage"
 		classes="bg-light-bglight dark:bg-dark-bglight dark:hover:bg-opacity-50 text-light-text dark:text-dark-text h-7 mt-3"
 		on:click={() => {
-			goto('/');
+			window.location.href = '/';
 		}}
 	/>
 	<Button

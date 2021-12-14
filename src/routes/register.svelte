@@ -47,17 +47,29 @@
 	<div class="w-96 flex flex-col">
 		<h1 class="text-3xl font-bold mb-10">Create an account</h1>
 
-		<Input placeholder="Email" type="email" icon={true} classes="mb-3" bind:value={email}>
+		<Input
+			placeholder="Email"
+			type="email"
+			icon={true}
+			classes="mb-3 bg-dark-bglight"
+			bind:value={email}
+		>
 			<IoMdPerson />
 		</Input>
-		<Input placeholder="Password" type="password" icon={true} classes="mb-3" bind:value={password}>
+		<Input
+			placeholder="Password"
+			type="password"
+			icon={true}
+			classes="mb-3 bg-dark-bglight"
+			bind:value={password}
+		>
 			<IoMdLock />
 		</Input>
 		<Input
 			placeholder="Confifrm password"
 			type="password"
 			icon={true}
-			classes="mb-3"
+			classes="mb-3 bg-dark-bglight"
 			bind:value={confirmPassword}
 		>
 			<IoMdLock />

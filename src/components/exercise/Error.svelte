@@ -23,6 +23,6 @@
 	</div>
 	<pre
 		class="whitespace-pre-wrap text-xs leading-5 ">
-		{collapsed ? message.split('.')[0] : message}
+		{collapsed ? message.substring(0, Math.min(100, message.length)).split('\n')[0] : message}
 	</pre>
 </div>

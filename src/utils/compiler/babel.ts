@@ -1,12 +1,13 @@
 import type { File } from '../types';
 import type { Plugin } from 'rollup';
 import { transform } from '@babel/standalone';
-import { resolveRelativePath } from './compiler';
+import { resolveRelativePath, fileNotFoundError, isRelativeImport } from './compiler';
 const CDN_URL = 'https://cdn.skypack.dev';
 
 /**
  * A rollup plugin wrapper for babel standalone to transpile JSX and typescript in the browser.
  * @param files A map of filename to file data.
+ * @param dependencies A map of dependency name to version from the package.json
  * @returns A rollup plugin.
  */
 export default function babel(
@@ -23,27 +24,18 @@ export default function babel(
 		 * @returns The resolved filename/URL.
 		 */
 		async resolveId(importee: string, importer: string) {
-			// Check if the import refers to another source file, else it's a node module.
+			// Try to resolve this import as a source file
 			if (importee in files) {
 				return importee;
-			}
-
-			// Check if it's a relative import
-			else if (/(\.\/|(\.\.\/)+)[^/]*/g.test(importee)) {
-				// If it has a file extension
+			} else if (isRelativeImport(importee)) {
 				try {
 					return resolveRelativePath(importee, importer, files);
 				} catch (err) {
-					this.warn({
-						message: `Failed to resolve file ${importee} from ${importer}. Check that this file exists.`,
-						pos: 0,
-						id: importer,
-						name: 'FileNotFoundError'
-					});
+					this.warn(fileNotFoundError(importee, importer));
 				}
 			}
 
-			// It's a node module. Get the version from dependencies. If the requested dependency is not present, throw an error.
+			// Try to resolve this import as a node module
 			const version = dependencies[importee];
 			if (version) {
 				return {
@@ -79,8 +71,7 @@ export default function babel(
 		 * @returns Transpiled source
 		 */
 		async transform(code, id) {
-			// Babel options: https://babeljs.io/docs/en/options
-			// We only want to babel transform tsx, ts, js and jsx files.
+			// Babel transform tsx, ts, js and jsx files.
 			if (/.*\.(js|ts)x?/.test(id)) {
 				const options = {
 					filename: id,

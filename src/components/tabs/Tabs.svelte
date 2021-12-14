@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { openTab, closeTab, rearrange } from '../../utils/tabs/tabs';
+	import { openTab, closeTab, rearrange, unsavedTabs } from '../../utils/tabs/tabs';
 
 	export let tabs: string[];
 	export let selected: string;
@@ -13,6 +13,9 @@
 	import { latestError } from '../../utils/console/console';
 	import Droppable from '../common/Droppable.svelte';
 	import { tail } from '../../utils/filesystem/filesystem';
+	import Modal from '../common/Modal.svelte';
+	import Button from '../common/Button.svelte';
+	import { save } from 'src/utils/codemirror/codemirror';
 
 	/**
 	 * Called when a tab is dropped on this tab to rearrange the tabs.
@@ -25,9 +28,50 @@
 			rearrange(target, source);
 		}
 	}
+
+	let closing: string;
+	function handleClose(path: string) {
+		if ($unsavedTabs.includes(path)) {
+			closing = path;
+		} else {
+			close(path);
+		}
+	}
+
+	function close(path) {
+		closing = undefined;
+		closeTab(path);
+	}
+
+	function saveThenClose(path: string) {
+		save();
+		close(path);
+	}
 </script>
 
-<div class="flex flex-row bg-gray-200 dark:bg-dark-bgdark h-8 overflow-x-auto">
+{#if closing}
+	<Modal title="Unsaved changes" on:close={() => (closing = undefined)}>
+		<p>Are you sure you want to close {closing}? Your unsaved changes will be lost.</p>
+		<div class="flex flex-row space-x-2">
+			<Button
+				text="Don't save"
+				classes="dark:bg-dark-bgdark bg-light-bglight py-1 px-3"
+				on:click={() => close(closing)}
+			/>
+			<Button
+				text="Cancel"
+				classes="dark:bg-dark-bgdark bg-light-bglight py-1 px-3"
+				on:click={() => (closing = undefined)}
+			/>
+			<Button
+				text="Save"
+				classes="dark:bg-dark-bgdark bg-light-bglight py-1 px-3"
+				on:click={() => saveThenClose(closing)}
+			/>
+		</div>
+	</Modal>
+{/if}
+<div class="flex flex-row bg-gray-200 dark:bg-dark-bgdark justify-between w-full items-center">
 	{#each tabs as path}
 		<Draggable data={path} variant="tabs">
 			<Droppable let:dropping on:dropped={(e) => handleDropped(path, e.detail)} variant="tabs">
@@ -51,7 +95,7 @@
 								/>
 							{:else}
 								<div
-									on:click={() => closeTab(path)}
+									on:click={() => handleClose(path)}
 									class="flex flex-col justify-center h-4 w-4 rounded bg-gray-100 dark:bg-gray-700 transition-opacity {hovering
 										? 'opacity-100'
 										: 'opacity-0'}"

@@ -13,23 +13,25 @@
 
 	let worker: Worker;
 
+	function onMessage(event: MessageEvent<any>) {
+		const e = event.data.error as WorkerError;
+		if (e) {
+			addMessage({
+				data: e.message,
+				type: 'error'
+			});
+			latestError.set(e);
+		} else {
+			latestError.set(undefined);
+			compiled.set(event.data as WorkerResponse);
+		}
+	}
+
 	onMount(() => {
 		// Import the worker from the absolute path
 		worker = new Worker(new URL('/worker.js', window.location.origin));
 		// Add a listener for compiler responses.
-		worker.addEventListener('message', (event) => {
-			const e = event.data.error as WorkerError;
-			if (e) {
-				addMessage({
-					data: e.message,
-					type: 'error'
-				});
-				latestError.set(e);
-			} else {
-				latestError.set(undefined);
-				compiled.set(event.data as WorkerResponse);
-			}
-		});
+		worker.addEventListener('message', onMessage);
 
 		refresh();
 	});
@@ -42,6 +44,7 @@
 
 	onDestroy(() => {
 		if (worker) {
+			worker.removeEventListener('message', onMessage);
 			worker.terminate();
 		}
 		compiled.set(undefined);
@@ -60,7 +63,6 @@
 	>
 		<top slot="pane1" let:resizing={resizingY}>
 			<Preview
-				compiled={$compiled}
 				resizing={resizingX || resizingY || selecting}
 				error={$latestError}
 				on:refresh={() => refresh()}

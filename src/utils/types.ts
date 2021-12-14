@@ -192,7 +192,7 @@ export type Exercise = {
 	/**
 	 * A reference to the location of the template that should be loaded when the exercise is opened for the first time.
 	 */
-	template: DocumentReference;
+	template?: DocumentReference;
 	/**
 	 * The requirements for this exercise, exactly matching the tests that should be run.
 	 */
@@ -209,6 +209,14 @@ export type Exercise = {
 	 * Any files that should override the template for this project.
 	 */
 	overrides?: { [key: string]: string };
+	/**
+	 * A reference to the previous exercise. This should be provided if template is not present.
+	 */
+	previous?: DocumentReference;
+	/**
+	 * A reference to the previous exercise, if any.
+	 */
+	next?: DocumentReference;
 };
 
 /**

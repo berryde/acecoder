@@ -2,7 +2,7 @@ import 'svelte';
 import '@testing-library/jest-dom';
 import Feedback from './Feedback.svelte';
 import { render } from '@testing-library/svelte';
-import { getFirestore, collection, addDoc, Timestamp } from 'firebase/firestore';
+import { addDoc } from 'firebase/firestore';
 import { fireEvent } from '@testing-library/dom';
 
 jest.mock('firebase/firestore', () => ({

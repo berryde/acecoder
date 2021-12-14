@@ -2,7 +2,7 @@
 	import Button from 'src/components/common/Button.svelte';
 	import Progress from 'src/components/projects/Progress.svelte';
 	import Checkbox from 'src/components/exercise/Checkbox.svelte';
-	import { goto } from '$app/navigation';
+
 	import type { Project } from 'src/utils/types';
 
 	export let project: Project;
@@ -14,7 +14,7 @@
 	}
 
 	function handleClick(project: Project) {
-		goto('exercise/' + project.exercises.find((ex) => !ex.completed).id);
+		window.location.href = 'exercise/' + project.exercises.find((ex) => !ex.completed).id;
 	}
 </script>
 
@@ -26,7 +26,7 @@
 			<Progress percentage={getCompletion(project)} />
 		</div>
 	</div>
-	<p>{project.description}</p>
+	<p>{@html project.description}</p>
 	<div>
 		{#each project.exercises as exercise}
 			<div class="flex flex-row items-center space-x-2">
@@ -37,7 +37,7 @@
 	</div>
 	{#if project.exercises.filter((ex) => !ex.completed).length > 0}
 		<Button
-			text="Start"
+			text={getCompletion(project) > 0 ? 'Resume' : 'Start'}
 			classes="bg-blue-700 px-10 ml-auto w-24"
 			on:click={() => handleClick(project)}
 		/>

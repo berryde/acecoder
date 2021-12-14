@@ -13,7 +13,7 @@
 	}
 </script>
 
-<div class="flex flex-row {classes} bg-dark-bglight rounded">
+<div class="flex flex-row {classes} rounded">
 	{#if icon}
 		<div class="mx-3 h-full flex items-center">
 			<Icon size="large">
@@ -23,7 +23,7 @@
 	{/if}
 	<input
 		{placeholder}
-		class="bg-dark-bglight p-2 flex-grow focus:outline-none appearance-none rounded w-full"
+		class="bg-transparent p-2 flex-grow focus:outline-none appearance-none rounded w-full"
 		{type}
 		{value}
 		on:input={oninput}

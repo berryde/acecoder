@@ -31,10 +31,10 @@ import { EditorState } from '@codemirror/state';
 import type { Parser } from 'prettier';
 import prettier from 'prettier';
 import { get, writable } from 'svelte/store';
-import { formatOnSave } from '../settings/settings';
-import { getExtension, updateFile } from '../filesystem/filesystem';
+import { updateFile } from '../filesystem/filesystem';
 import { selectedTab } from 'src/utils/tabs/tabs';
 import { saveTab } from '../tabs/tabs';
+import { messages } from '../console/console';
 
 /**
  * Supported file extensions.
@@ -71,10 +71,17 @@ export const getLanguageSupport = (language: string): LanguageSupport => {
 
 export const format = (value: string, language: string): string => {
 	if (isSupported(language)) {
-		if (language == 'json') {
-			return JSON.stringify(JSON.parse(value), null, 2);
-		} else {
-			return prettier.format(value, getParser(language));
+		try {
+			if (language == 'json') {
+				return JSON.stringify(JSON.parse(value), null, 2);
+			} else {
+				return prettier.format(value, getParser(language));
+			}
+		} catch (err) {
+			messages.update((messages) => [
+				...messages,
+				{ data: 'Auto-formatting failed due to a syntax error.', type: 'error' }
+			]);
 		}
 	}
 	return value;
@@ -159,11 +166,8 @@ export const defaultExtensions = [
 ];
 
 export const save = (): void => {
-	let doc = get(contents);
+	const doc = get(contents);
 	const tab: string = get(selectedTab);
-	if (get(formatOnSave)) {
-		doc = format(doc, getExtension(tab));
-	}
 	saveTab(tab);
 	updateFile(tab, doc);
 };

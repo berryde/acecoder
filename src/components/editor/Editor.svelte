@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onDestroy } from 'svelte';
 	import { onMount } from 'svelte';
 	import { EditorView, keymap } from '@codemirror/view';
-	import { Compartment, EditorState } from '@codemirror/state';
+	import { Compartment, EditorSelection, EditorState } from '@codemirror/state';
 	import type { Extension } from '@codemirror/state';
 	import {
 		defaultExtensions,
@@ -15,10 +15,13 @@
 	import type { Diagnostic } from '@codemirror/lint';
 	import { linter } from '@codemirror/lint';
 	import { latestError } from '../../utils/console/console';
-	import { darkMode } from '../../utils/settings/settings';
+	import { darkMode, formatOnSave } from '../../utils/settings/settings';
 	import { oneDark } from '@codemirror/theme-one-dark';
 	import { getExtension, getFile } from 'src/utils/filesystem/filesystem';
 	import type { FSFile } from 'src/utils/types';
+	import { selectedTab, unsavedTabs } from 'src/utils/tabs/tabs';
+	import { save } from 'src/utils/codemirror/codemirror';
+	import { save as writeToFirebase } from 'src/utils/exercise/exercise';
 
 	/**
 	 * The path of the file being edited.
@@ -43,13 +46,20 @@
 	 * @param view The editor to format
 	 * @returns Whether the format was successful
 	 */
-	const formatEditor: Command = (view: EditorView): boolean => {
+	export const formatEditor: Command = (view: EditorView): boolean => {
+		let pos = 0;
+		if (view.state.selection.main) {
+			pos = view.state.selection.main.from;
+		}
+		const formatted = _format(view.state.doc.toString(), getExtension(filename));
+		pos = Math.min(pos, formatted.length);
 		view.dispatch({
 			changes: {
 				from: 0,
 				to: view.state.doc.length,
-				insert: _format(view.state.doc.toString(), getExtension(filename))
-			}
+				insert: formatted
+			},
+			selection: EditorSelection.cursor(pos)
 		});
 
 		return true;
@@ -116,12 +126,44 @@
 		return isSupported(language) ? getLanguageSupport(language) : [];
 	}
 
+	function handleSave() {
+		if ($selectedTab == filename && $unsavedTabs.includes(filename)) {
+			if ($formatOnSave) {
+				formatEditor(view);
+			}
+			save();
+			writeToFirebase();
+		}
+	}
+
 	let languageSupport = new Compartment();
 	let theme = new Compartment();
 	let view: EditorView;
 
+	/**
+	 * Called when the user presses a key while using the application
+	 * @param e The event that triggered this function.
+	 */
+	function keydown(e: KeyboardEvent) {
+		if (e.ctrlKey) {
+			switch (e.code) {
+				case 'KeyS':
+					e.preventDefault();
+					handleSave();
+					break;
+			}
+		}
+	}
+
 	onMount(() => {
+		// Add a listener for application-wide keyboard shortcuts
+		window.addEventListener('keydown', keydown);
 		setView();
+	});
+
+	onDestroy(() => {
+		window.removeEventListener('keydown', keydown);
+		window.removeEventListener('mouseup', mouseUp);
 	});
 
 	function setView() {
@@ -167,7 +209,11 @@
 	$: view && ($darkMode || !$darkMode) && updateTheme();
 </script>
 
-<div bind:this={element} class="text-sm {!visible && 'hidden'}" on:mousedown={mouseDown} />
+<div
+	bind:this={element}
+	class="text-sm {!visible && 'hidden'} overflow-y-auto"
+	on:mousedown={mouseDown}
+/>
 
 <style lang="postcss">
 	:global(.cm-editor) {

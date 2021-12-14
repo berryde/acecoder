@@ -12,7 +12,6 @@ import { browser } from '$app/env';
 import type { AuthProvider } from 'firebase/auth';
 import { auth } from '../firebase';
 import type { AuthError } from '../types';
-import { goto } from '$app/navigation';
 
 type AuthFederation = 'google' | 'github';
 
@@ -27,10 +26,10 @@ onAuthStateChanged(
 		if (browser) {
 			if (user) {
 				if (window.location.href.endsWith('login') || window.location.href.endsWith('register')) {
-					goto('/');
+					window.location.href = '/';
 				}
 			} else {
-				goto('login');
+				window.location.href = '/login';
 			}
 		}
 	},
@@ -147,6 +146,8 @@ export const getErrorMessage = (firebaseError: AuthError): AuthError => {
 				errorCode: 'Invalid email',
 				errorMessage: 'No user could be found with that email address.'
 			};
+		case 'auth/popup-closed-by-user':
+			return;
 		default:
 			return {
 				errorCode: 'Unknown error',

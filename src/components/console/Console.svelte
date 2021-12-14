@@ -66,6 +66,7 @@
 			{#each groupMessages(messages) as groupedMessage, index}
 				<div
 					class="p-2 {getMessageClass(groupedMessage.message.type)} {index > 0 &&
+						groupedMessage.message.type != 'log' &&
 						'border-t'} flex flex-row items-center"
 				>
 					<div
