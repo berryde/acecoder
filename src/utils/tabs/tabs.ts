@@ -101,15 +101,16 @@ export const closeTab = (name: string): void => {
 			} else {
 				index += 1;
 			}
+			selectedTab.set(tabs[index]);
+		} else {
+			selectedTab.set('');
 		}
-		selectedTab.set(tabs[index]);
-
-		// Discard unsaved changes
 
 		// Remove this tab
 		if (tabs.includes(name)) {
 			tabs.splice(tabs.indexOf(name), 1);
 		}
+
 		return tabs;
 	});
 	unsavedTabs.update((tabs) => {

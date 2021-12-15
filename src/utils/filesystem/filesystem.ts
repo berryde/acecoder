@@ -135,13 +135,14 @@ export const renameFile = (path: string, target: string): void => {
  */
 export const updateFile = (filepath: string, contents: string): void => {
 	const filename = tail(filepath);
+	const modifiable = (getFile(filepath) as FSFile).modifiable;
 
 	filesystem.update((state) => {
 		const dir = navigateToFile(filepath);
 		dir[filename] = {
 			type: 'file',
 			value: contents,
-			modifiable: false
+			modifiable: modifiable
 		};
 		return state;
 	});
@@ -156,7 +157,7 @@ export const updateFile = (filepath: string, contents: string): void => {
  * @param filepath The path to split
  * @returns A list of directories from the path.
  */
-const getDirectories = (path: string): string[] => {
+export const getDirectories = (path: string): string[] => {
 	if (!path.includes('/')) {
 		return [];
 	} else {

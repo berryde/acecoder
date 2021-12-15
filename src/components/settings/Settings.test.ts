@@ -1,12 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import Settings from './Settings.svelte';
-import {
-	toggleFormatOnSave,
-	toggleDarkMode,
-	darkMode,
-	formatOnSave
-} from 'src/utils/settings/settings';
+import { toggleFormatOnSave, toggleDarkMode } from 'src/utils/settings/settings';
 
 jest.mock('src/utils/settings/settings', () => ({
 	toggleFormatOnSave: jest.fn(),

@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/svelte';
-import type { WorkerResponse } from 'src/utils/types';
 import Preview from './Preview.svelte';
 import { compiled } from 'src/utils/compiler/compiler';
 

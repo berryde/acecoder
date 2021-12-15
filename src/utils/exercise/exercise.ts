@@ -146,7 +146,10 @@ export const save = async (): Promise<void> => {
 	await setDoc(sub, submission);
 };
 
-export const nextExercise = () => {
+/**
+ * Navigate to the next exercise if present, otherwise return to the homescreen.
+ */
+export const nextExercise = (): void => {
 	if (get(exercise).next) {
 		window.location.href = '/exercise/' + get(exercise).next.id;
 	} else {
