@@ -11,23 +11,40 @@
 
 	onMount(async () => {
 		loading = true;
+		let exercises = [];
+		if (import.meta.env.DEV) {
+			exercises = [
+				{
+					title: 'The Tile Component',
+					completed: await getCompletion('UyeKB6A7WDY36JbxJNfv'),
+					id: 'UyeKB6A7WDY36JbxJNfv'
+				},
+				{
+					title: 'The Grid Container',
+					completed: await getCompletion('jDEy1lLb3VHPfpg4y0Vo'),
+					id: 'jDEy1lLb3VHPfpg4y0Vo'
+				}
+			];
+		} else {
+			exercises = [
+				{
+					title: 'The Tile Component',
+					completed: await getCompletion('7NRyf5a5XOSr4PjuMG3e'),
+					id: '7NRyf5a5XOSr4PjuMG3e'
+				},
+				{
+					title: 'The Grid Container',
+					completed: await getCompletion('OB1wuEuZUz7dHgIlne8S'),
+					id: 'OB1wuEuZUz7dHgIlne8S'
+				}
+			];
+		}
 		projects = [
 			{
 				name: 'Tic-Tac-Toe',
 				description:
 					'In this project you will create a simple Tic-Tac-Toe game. You can read about the rules of the game <a class="text-blue-600 hover:underline" href="https://en.wikipedia.org/wiki/Tic-tac-toe">here</a>. This project assesses state management and logic skills.',
-				exercises: [
-					{
-						title: 'The Tile Component',
-						completed: await getCompletion('7NRyf5a5XOSr4PjuMG3e'),
-						id: '7NRyf5a5XOSr4PjuMG3e'
-					},
-					{
-						title: 'The Grid Container',
-						completed: await getCompletion('OB1wuEuZUz7dHgIlne8S'),
-						id: 'OB1wuEuZUz7dHgIlne8S'
-					}
-				]
+				exercises: exercises
 			}
 		];
 		loading = false;

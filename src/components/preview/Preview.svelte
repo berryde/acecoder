@@ -72,7 +72,7 @@
 	 * Open the preview in a new popup when the popup button is clicked.
 	 */
 	function handlePopup() {
-		if (popup) {
+		if (popup && !popup.closed) {
 			popup.focus();
 		} else {
 			popup = window.open(
@@ -103,7 +103,7 @@
 					// The popup has loaded successfully and should be sent the project code.
 					popup.document.title = 'Preview';
 					popup.postMessage({
-						compiled: compiled,
+						compiled: $compiled,
 						type: 'reload'
 					});
 					break;
