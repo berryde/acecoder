@@ -19,13 +19,13 @@
 				exercises: [
 					{
 						title: 'The Tile Component',
-						completed: await getCompletion('UyeKB6A7WDY36JbxJNfv'),
-						id: 'UyeKB6A7WDY36JbxJNfv'
+						completed: await getCompletion('7NRyf5a5XOSr4PjuMG3e'),
+						id: '7NRyf5a5XOSr4PjuMG3e'
 					},
 					{
 						title: 'The Grid Container',
-						completed: await getCompletion('jDEy1lLb3VHPfpg4y0Vo'),
-						id: 'jDEy1lLb3VHPfpg4y0Vo'
+						completed: await getCompletion('OB1wuEuZUz7dHgIlne8S'),
+						id: 'OB1wuEuZUz7dHgIlne8S'
 					}
 				]
 			}
