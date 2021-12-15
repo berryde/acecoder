@@ -5,10 +5,6 @@ import { render } from '@testing-library/svelte';
 import { exercise } from 'src/utils/exercise/exercise';
 
 describe('The Exercise component', () => {
-	it('displays a loader if the exercise is undefined', () => {
-		const { getByTestId } = render(Exercise);
-		expect(getByTestId('loader')).toBeInTheDocument();
-	});
 	it('displays the details of the current exercise', () => {
 		exercise.set({
 			description: 'This is a test exercise',

@@ -5,6 +5,14 @@ import PrivateRoute from './PrivateRoute.svelte';
 import { auth } from 'src/utils/firebase';
 import type { User } from '@firebase/auth';
 
+global.window = Object.create(window);
+const url = 'http://test.com';
+Object.defineProperty(window, 'location', {
+	value: {
+		href: url
+	}
+});
+
 jest.mock('src/utils/firebase', () => {
 	let user = {};
 	let authChanged: (user: User) => void;

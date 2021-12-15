@@ -19,7 +19,8 @@ describe('The folder component', () => {
 			props: {
 				path: 'test',
 				children: {},
-				depth: '0'
+				depth: '0',
+				modifiable: true
 			}
 		});
 
@@ -39,7 +40,8 @@ describe('The folder component', () => {
 			props: {
 				path: 'test',
 				children: {},
-				depth: '0'
+				depth: '0',
+				modifiable: true
 			}
 		});
 
@@ -66,7 +68,8 @@ describe('The folder component', () => {
 			props: {
 				path: 'test',
 				children: {},
-				depth: '0'
+				depth: '0',
+				modifiable: true
 			}
 		});
 
@@ -93,7 +96,8 @@ describe('The folder component', () => {
 			props: {
 				path: 'test',
 				children: {},
-				depth: '0'
+				depth: '0',
+				modifiable: true
 			}
 		});
 
@@ -118,7 +122,8 @@ describe('The folder component', () => {
 			props: {
 				path: 'test',
 				children: {},
-				depth: '0'
+				depth: '0',
+				modifiable: true
 			}
 		});
 
@@ -136,13 +141,14 @@ describe('The folder component', () => {
 		// Create a mock filesystem.
 		let files: Filesystem;
 		filesystem.subscribe((fs) => (files = fs));
-		createFolder('test');
+		createFolder('test', true);
 
 		render(Folder, {
 			props: {
 				path: 'test',
 				children: {},
-				depth: '0'
+				depth: '0',
+				modifiable: true
 			}
 		});
 

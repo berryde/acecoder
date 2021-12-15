@@ -181,7 +181,7 @@
 		</ExplorerInput>
 	{:else}
 		<Droppable let:dropping on:dropped={(e) => dropped(e.detail)} variant="explorer">
-			<Draggable data={path} variant="explorer">
+			<Draggable data={path} variant="explorer" enabled={modifiable}>
 				<Hoverable let:hovering>
 					<div
 						class="flex transition flex-row items-center space-x-2 dark:text-dark-text h-8 {dropping &&

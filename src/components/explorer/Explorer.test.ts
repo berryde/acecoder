@@ -5,9 +5,13 @@ import Explorer from './Explorer.svelte';
 import { filesystem, createFile, exists, getFile } from '../../utils/filesystem/filesystem';
 import { initialising } from 'src/utils/exercise/exercise';
 
-jest.mock('$app/navigation.js', () => ({
-	goto: jest.fn()
-}));
+global.window = Object.create(window);
+const url = 'http://test.com';
+Object.defineProperty(window, 'location', {
+	value: {
+		href: url
+	}
+});
 
 describe('The Explorer component', () => {
 	beforeEach(() => {

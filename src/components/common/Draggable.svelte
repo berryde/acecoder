@@ -8,12 +8,18 @@
 	 */
 	export let variant: string;
 
+	export let enabled: boolean = true;
+
 	function start(e: DragEvent) {
-		e.dataTransfer.setData('text', data);
-		e.dataTransfer.setData('variant', variant);
+		if (enabled) {
+			e.dataTransfer.setData('text', data);
+			e.dataTransfer.setData('variant', variant);
+		} else {
+			e.preventDefault();
+		}
 	}
 </script>
 
-<div draggable={true} on:dragstart={start}>
+<div draggable={enabled} on:dragstart={start}>
 	<slot />
 </div>

@@ -23,14 +23,8 @@ type AuthFederation = 'google' | 'github';
 onAuthStateChanged(
 	auth,
 	(user) => {
-		if (browser) {
-			if (user) {
-				if (window.location.href.endsWith('login') || window.location.href.endsWith('register')) {
-					window.location.href = '/';
-				}
-			} else {
-				window.location.href = '/login';
-			}
+		if (browser && !user && !window.location.href.endsWith('login')) {
+			window.location.href = '/login';
 		}
 	},
 	(err) => console.error(err.message)
@@ -46,6 +40,7 @@ onAuthStateChanged(
 export const register = async (email: string, password: string): Promise<AuthError | void> => {
 	try {
 		await createUserWithEmailAndPassword(auth, email, password);
+		window.location.href = '/';
 	} catch (error) {
 		return {
 			errorCode: error.code,
@@ -57,6 +52,7 @@ export const register = async (email: string, password: string): Promise<AuthErr
 export const signIn = async (email: string, password: string): Promise<AuthError | void> => {
 	try {
 		await signInWithEmailAndPassword(auth, email, password);
+		window.location.href = '/';
 	} catch (error) {
 		return {
 			errorCode: error.code,
@@ -80,6 +76,7 @@ export const signInWith = async (federation: AuthFederation): Promise<AuthError 
 	// Trigger the federated sign in popup.
 	try {
 		await signInWithPopup(auth, provider);
+		window.location.href = '/';
 	} catch (error) {
 		return {
 			errorCode: error.code,
@@ -91,6 +88,7 @@ export const signInWith = async (federation: AuthFederation): Promise<AuthError 
 export const signOut = async (): Promise<AuthError | void> => {
 	try {
 		await _signOut(auth);
+		window.location.href = '/login';
 	} catch (error) {
 		return {
 			errorCode: error.code,

@@ -18,7 +18,8 @@ describe('The file component', () => {
 		render(File, {
 			props: {
 				path: 'test',
-				depth: '0'
+				depth: '0',
+				modifiable: true
 			}
 		});
 
@@ -37,7 +38,8 @@ describe('The file component', () => {
 		render(File, {
 			props: {
 				path: 'test',
-				depth: '0'
+				depth: '0',
+				modifiable: true
 			}
 		});
 
@@ -65,7 +67,8 @@ describe('The file component', () => {
 		render(File, {
 			props: {
 				path: 'test',
-				depth: '0'
+				depth: '0',
+				modifiable: true
 			}
 		});
 
@@ -90,7 +93,8 @@ describe('The file component', () => {
 		render(File, {
 			props: {
 				path: 'App.jsx',
-				depth: '0'
+				depth: '0',
+				modifiable: true
 			}
 		});
 

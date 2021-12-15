@@ -13,21 +13,21 @@ describe('The exercise error component', () => {
 		});
 		expect(getByText('Something went wrong')).toBeInTheDocument();
 	});
-	it('only shows the first sentence by default', () => {
+	it('only shows the first line by default', () => {
 		const { getByText } = render(Error, {
 			props: {
-				message: 'Something went wrong. Please try again later'
+				message: 'Something went wrong.\n Please try again later'
 			}
 		});
-		expect(getByText('Something went wrong')).toBeInTheDocument();
+		expect(getByText('Something went wrong.')).toBeInTheDocument();
 	});
 	it('shows the full message on click', async () => {
 		const { getByText, findByText } = render(Error, {
 			props: {
-				message: 'Something went wrong. Please try again later'
+				message: 'Something went wrong.\n Please try again later'
 			}
 		});
-		const message = getByText('Something went wrong');
+		const message = getByText('Something went wrong.');
 		fireEvent.click(message);
 		expect(await findByText('Something went wrong. Please try again later')).toBeInTheDocument();
 	});

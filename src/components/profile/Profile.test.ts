@@ -1,13 +1,16 @@
 import '@testing-library/jest-dom';
 import Profile from './Profile.svelte';
-import { goto } from '$app/navigation.js';
 import { auth } from 'src/utils/firebase';
 import { render } from '@testing-library/svelte';
 import { fireEvent } from '@testing-library/dom';
 
-jest.mock('$app/navigation.js', () => ({
-	goto: jest.fn()
-}));
+global.window = Object.create(window);
+const url = 'http://test.com';
+Object.defineProperty(window, 'location', {
+	value: {
+		href: url
+	}
+});
 
 jest.mock('src/utils/firebase', () => ({
 	auth: {
@@ -28,7 +31,7 @@ describe('The profile component', () => {
 			const { getByText } = render(Profile);
 			const button = getByText('Homepage');
 			fireEvent.click(button);
-			expect(goto as jest.Mock).toHaveBeenCalledTimes(1);
+			expect(window.location.href).toBe('/');
 		}),
 		it("displays the current user's display name", () => {
 			const { getByText } = render(Profile);

@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { doc, getDoc } from 'firebase/firestore';
-
+	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
 	import ProjectCard from 'src/components/projects/ProjectCard.svelte';
 	import { auth, db } from 'src/utils/firebase';
 	import type { Project, TestResult } from 'src/utils/types';
 	import { onMount } from 'svelte';
 
+	let loading = true;
 	let projects: Project[] = [];
+
 	onMount(async () => {
+		loading = true;
 		projects = [
 			{
 				name: 'Tic-Tac-Toe',
@@ -27,6 +30,7 @@
 				]
 			}
 		];
+		loading = false;
 	});
 
 	async function getCompletion(id: string): Promise<boolean> {
@@ -40,10 +44,14 @@
 </script>
 
 <div class="h-screen bg-dark-bgdark text-dark-text flex justify-center items-center">
-	<div class="flex flex-col max-w-3xl space-y-6">
-		<p class="text-2xl font-bold pb-6">Projects</p>
-		{#each projects as project}
-			<ProjectCard {project} />
-		{/each}
-	</div>
+	{#if loading}
+		<OrbitProgressIndicator />
+	{:else}
+		<div class="flex flex-col max-w-3xl space-y-6">
+			<p class="text-2xl font-bold pb-6">Projects</p>
+			{#each projects as project}
+				<ProjectCard {project} />
+			{/each}
+		</div>
+	{/if}
 </div>

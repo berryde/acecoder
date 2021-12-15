@@ -107,7 +107,7 @@
 		</Icon>
 	</ExplorerInput>
 {:else}
-	<Draggable data={path} variant="explorer">
+	<Draggable data={path} variant="explorer" enabled={modifiable}>
 		<Hoverable let:hovering>
 			<div
 				class="flex transition flex-row items-center space-x-2 {$latestError &&
