@@ -2,7 +2,7 @@
 	export let percentage: number;
 </script>
 
-<div class="container bg-dark-bgdark rounded-full">
+<div class="container bg-brand-background rounded-full">
 	<div class="absolute progress rounded-full bg-blue-700" style="--percentage: {percentage}px" />
 </div>
 

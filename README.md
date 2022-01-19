@@ -4,11 +4,11 @@ An interactive platform for learning modern web development using javascript fra
 
 ## Running the project
 
-To run the project locally, install the dependencies with `yarn` and then start with `yarn run dev`.
+To run the project locally, install the dependencies with `pnpm` and then start with `pnpm run dev`.
 
 ## Storybook
 
-Storybook is used for component development independent of the application itself. To start Storybook, run `yarn run storybook`. This will start a local Storybook server.
+Storybook is used for component development independent of the application itself. To start Storybook, run `pnpm run storybook`. This will start a local Storybook server.
 
 ## Development tools
 
@@ -45,5 +45,5 @@ The admin SDK is used to securely configure the backend of the application. It s
 
 ## Firebase emulators
 
-Start the firebase emulators with `yarn run emulator`.
+Start the firebase emulators with `pnpm run emulator`.
 Ensure that the `export FIREBASE_AUTH_EMULATOR_HOST="localhost:9099"` environment variable is set so that the Admin SDK can communicate with the emulator.

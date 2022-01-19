@@ -8,27 +8,27 @@
 	<p class="uppercase text-xs">Account</p>
 	<p class="leading-5">Hi, {getName()}</p>
 	<p class="leading-5">
-		If you are having trouble logging in, <a class="text-blue-700" href="/account-recovery"
+		If you are having trouble logging in, <a class="text-brand-primary" href="/account-recovery"
 			>reset your password</a
 		>
 	</p>
 
 	<p class="uppercase text-xs mt-3">Contact</p>
 	<p class="leading-5">
-		To contact the developers, please <a class="text-blue-700" href="mailto: deb1g19@soton.ac.uk"
+		To contact the developers, please <a class="text-brand-primary" href="mailto: deb1g19@soton.ac.uk"
 			>send us an email</a
 		> and we will try our best to get back to you.
 	</p>
 	<Button
 		text="Homepage"
-		classes="bg-light-bglight dark:bg-dark-bglight dark:hover:bg-opacity-50 text-light-text dark:text-dark-text h-7 mt-3"
+		classes="bg-light-bglight bg-brand-accent hover:bg-opacity-50 text-light-text text-brand-text h-7 mt-3"
 		on:click={() => {
 			window.location.href = '/';
 		}}
 	/>
 	<Button
 		text="Sign out"
-		classes="bg-light-bglight dark:bg-dark-bglight dark:hover:bg-opacity-50 text-light-text dark:text-dark-text h-7 mt-3"
+		classes="bg-light-bglight bg-brand-accent hover:bg-opacity-50 text-light-text text-brand-text h-7 mt-3"
 		on:click={() => {
 			auth.signOut();
 		}}

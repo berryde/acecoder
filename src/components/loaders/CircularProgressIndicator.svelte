@@ -1,4 +1,4 @@
-<div class="loader h-5 w-5 dark:border-dark-text border-light-text" data-testid="loader" />
+<div class="loader h-5 w-5 border-brand-text" data-testid="loader" />
 
 <style>
 	.loader {

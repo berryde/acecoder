@@ -4,7 +4,7 @@
 	import CreateExercise from './CreateExercise.svelte';
 </script>
 
-<div class="bg-dark-bgdarktext-dark-text">
+<div class="bg-brand-backgroundtext-brand-text">
 	<Claim />
 	<Feedback />
 	<CreateExercise />

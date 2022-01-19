@@ -1,51 +1,39 @@
 <script lang="ts">
-	import type { SidebarTab } from 'src/utils/types';
-
-	import { createEventDispatcher } from 'svelte';
 	import Icon from '../common/Icon.svelte';
-
-	const dispatch = createEventDispatcher();
-
-	/**
-	 * The selected sidebar item's index.
-	 */
-	export let selected: number;
-
-	/**
-	 * Whether the sidebar is collapsed.
-	 */
-	export let collapsed: boolean;
-
-	/**
-	 * Called when the user selects a sidebar item.
-	 * @param index the index of the selected item.
-	 */
-	function select(index: number) {
-		if (!collapsed && selected == index) {
-			dispatch('collapse');
-		} else {
-			selected = index;
-			dispatch('select', selected);
-		}
-	}
-
-	export let tabs: SidebarTab[];
+	import Bookmark from 'svelte-icons/io/IoMdBookmark.svelte';
 </script>
 
-<div class="h-screen flex flex-row bg-light-bglight dark:bg-dark-bglight">
-	<div class="flex flex-col">
-		{#each tabs as tab, index}
-			<div
-				class="p-4 {!collapsed && selected == index
-					? 'border-l-2 dark:border-dark-text border-light-text'
-					: 'ml-0.5 opacity-50 hover:opacity-100 transition-opacity'}"
-				on:click={() => select(index)}
-				data-testid={tab.name}
-			>
-				<Icon size="large" button={true} label={tab.name}>
-					<svelte:component this={tab.icon} />
-				</Icon>
-			</div>
-		{/each}
+<div class="bg-brand-background h-full overflow-y-auto">
+	<div class="p-5 space-y-3">
+		<p class="uppercase text-xs">Project name</p>
+		<h1 class="text-xl font-bold">Exercise title</h1>
+		<p>
+			Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate tempora laudantium esse
+			nihil optio, unde adipisci ducimus dolorem. Asperiores officia illum harum quam amet
+			perferendis blanditiis aliquid necessitatibus quos natus!
+		</p>
+	</div>
+	<div class="flex flex-row items-center px-5 py-3 space-x-5 bg-brand-accent">
+		<Icon>
+			<Bookmark />
+		</Icon>
+		<p>Example</p>
+	</div>
+	<div class="p-5 space-y-3">
+		<p>
+			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dicta doloribus odit rem dolorem
+			tempora cumque corrupti velit dolorum ab asperiores laudantium, reiciendis modi. Rem
+			necessitatibus in obcaecati, esse nesciunt minus.
+		</p>
+		<p>
+			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dicta doloribus odit rem dolorem
+			tempora cumque corrupti velit dolorum ab asperiores laudantium, reiciendis modi. Rem
+			necessitatibus in obcaecati, esse nesciunt minus.
+		</p>
+		<p>
+			Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dicta doloribus odit rem dolorem
+			tempora cumque corrupti velit dolorum ab asperiores laudantium, reiciendis modi. Rem
+			necessitatibus in obcaecati, esse nesciunt minus.
+		</p>
 	</div>
 </div>

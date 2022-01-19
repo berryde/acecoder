@@ -33,7 +33,7 @@
 		text: `Disabled`,
 		loading: false,
 		disabled: true,
-		classes: 'bg-dark-bgdark px-5 text-white bg-opacity-50'
+		classes: 'bg-brand-background px-5 text-white bg-opacity-50'
 	}}
 />
 

@@ -33,7 +33,7 @@
 </svelte:head>
 
 <div
-	class="w-full h-screen bg-dark-bgdark flex flex-col justify-center items-center text-dark-text"
+	class="w-full h-screen bg-brand-background flex flex-col justify-center items-center text-brand-text"
 >
 	<div class="w-96 flex flex-col">
 		<h1 class="text-3xl font-bold mb-10">Account recovery</h1>

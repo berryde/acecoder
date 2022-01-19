@@ -113,7 +113,7 @@
 				class="flex transition flex-row items-center space-x-2 {$latestError &&
 				$latestError.location == path
 					? 'text-red-400'
-					: 'dark:text-dark-text'} h-8 {$selectedTab === path && 'dark:bg-gray-800 bg-gray-100 '}"
+					: 'text-brand-text'} h-8 {$selectedTab === path && 'bg-gray-800 bg-gray-100 '}"
 				style="padding-left: {(depth + 1.5) * 0.5}rem;"
 				draggable="true"
 				on:dragstart={handleDragStart}
@@ -126,7 +126,7 @@
 				<p class="truncate">{name}</p>
 				{#if modifiable}
 					<div
-						class="flex flex-row dark:text-dark-text justify-end items-center flex-grow pr-2 space-x-1 transition-opacity {!hovering
+						class="flex flex-row text-brand-text justify-end items-center flex-grow pr-2 space-x-1 transition-opacity {!hovering
 							? 'opacity-0'
 							: 'opacity-100'}"
 					>

@@ -78,7 +78,7 @@
 			{#if button}
 				<button
 					on:click={click}
-					class="{getDimensions()} flex-shrink-0 flex-grow-0 dark:text-dark-text text-light-text"
+					class="{getDimensions()} flex-shrink-0 flex-grow-0 text-brand-text text-light-text"
 					data-testid={testId}><slot /></button
 				>
 			{:else}
@@ -92,7 +92,7 @@
 				<p
 					class="relative transition-all text-center {hovering
 						? 'visible opacity-100'
-						: 'invisible opacity-0'} {getOffset()} text-xs dark:bg-dark-bgdark bg-light-bgdark px-1 py-0.5 shadow rounded "
+						: 'invisible opacity-0'} {getOffset()} text-xs bg-brand-background bg-light-bgdark px-1 py-0.5 shadow rounded "
 				>
 					{label[0].toUpperCase() + label.slice(1)}
 				</p>

@@ -94,10 +94,10 @@
 	<Modal on:close={hide} title="Create Exercise">
 		<div class="overflow-y-auto">
 			<p>Name</p>
-			<Input classes="bg-dark-bgdark" bind:value={name} />
+			<Input classes="bg-brand-background" bind:value={name} />
 			<p class="pt-3">Description</p>
 			<textarea
-				class="bg-dark-bgdark w-full h-24 rounded focus:outline-none p-2"
+				class="bg-brand-background w-full h-24 rounded focus:outline-none p-2"
 				bind:value={description}
 			/>
 			<div class="flex flex-row justify-between items-center">
@@ -105,7 +105,7 @@
 				<input type="checkbox" bind:checked={previous} />
 			</div>
 			<p class="mt-3">{previous ? 'Previous Exercise' : 'Template'}</p>
-			<Input classes="bg-dark-bgdark" bind:value={template} />
+			<Input classes="bg-brand-background" bind:value={template} />
 
 			<p class="mt-3">Requirements</p>
 			{#each requirements as requirement}
@@ -115,11 +115,11 @@
 				</div>
 			{/each}
 			<p class="text-xs uppercase mt-3">Requirement</p>
-			<Input classes="bg-dark-bgdark" bind:value={requirement} />
+			<Input classes="bg-brand-background" bind:value={requirement} />
 			<div class="flex flex-row-reverse">
 				<Button
 					text="Add requirement"
-					classes="bg-dark-bgdark hover:bg-blue-700 px-3 mt-1.5"
+					classes="bg-brand-background hover:bg-blue-700 px-3 mt-1.5"
 					on:click={() => addRequirement(requirement)}
 				/>
 			</div>
@@ -132,16 +132,16 @@
 				</div>
 			{/each}
 			<p class="text-xs uppercase mt-3">Name</p>
-			<Input classes="bg-dark-bgdark" bind:value={testName} />
+			<Input classes="bg-brand-background" bind:value={testName} />
 			<p class="text-xs uppercase pt-1">Source</p>
 			<textarea
-				class="bg-dark-bgdark w-full h-24 rounded focus:outline-none p-2"
+				class="bg-brand-background w-full h-24 rounded focus:outline-none p-2"
 				bind:value={testSource}
 			/>
 			<div class="flex flex-row-reverse">
 				<Button
 					text="Add test"
-					classes="bg-dark-bgdark hover:bg-blue-700 px-3"
+					classes="bg-brand-background hover:bg-blue-700 px-3"
 					on:click={addTest}
 				/>
 			</div>
@@ -154,13 +154,13 @@
 				</div>
 			{/each}
 			<p class="text-xs uppercase mt-3">Name</p>
-			<Input classes="bg-dark-bgdark" bind:value={overrideName} />
+			<Input classes="bg-brand-background" bind:value={overrideName} />
 			<p class="text-xs uppercase pt-1">Source</p>
-			<textarea class="bg-dark-bgdark w-full h-24" bind:value={overrideSource} />
+			<textarea class="bg-brand-background w-full h-24" bind:value={overrideSource} />
 			<div class="flex flex-row-reverse">
 				<Button
 					text="Add override"
-					classes="bg-dark-bgdark hover:bg-blue-700 px-3"
+					classes="bg-brand-background hover:bg-blue-700 px-3"
 					on:click={addOverride}
 				/>
 			</div>
@@ -175,6 +175,6 @@
 	</Modal>
 {/if}
 <div class="w-full px-3">
-	<p class="pt-3 pb-1 uppercase text-xs dark:text-dark-text text-light-text">Create Exercise</p>
-	<Button text="Create exercise" classes="bg-dark-bglight h-7" on:click={show} />
+	<p class="pt-3 pb-1 uppercase text-xs text-brand-text text-light-text">Create Exercise</p>
+	<Button text="Create exercise" classes="bg-brand-accent h-7" on:click={show} />
 </div>

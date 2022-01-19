@@ -70,8 +70,8 @@
 	<Button
 		text="Submit"
 		classes="{$result && $result.passed == $result.total
-			? 'bg-light-bglight dark:bg-dark-bglight'
-			: 'bg-blue-700'} text-light-text hover:bg-opacity-50  dark:hover:bg-opacity-50 dark:text-dark-text h-7 mt-3"
+			? 'bg-light-bglight bg-brand-accent'
+			: 'bg-blue-700'} text-light-text hover:bg-opacity-50  hover:bg-opacity-50 text-brand-text h-7 mt-3"
 		loading={$pending}
 		on:click={submit}
 	/>
@@ -83,14 +83,10 @@
 	{#if $result && $result.passed == $result.total}
 		<Button
 			text="Next exercise"
-			classes="bg-blue-700 text-light-text hover:bg-opacity-50 dark:hover:bg-opacity-50 dark:text-dark-text h-7 mt-3"
+			classes="bg-blue-700 text-light-text hover:bg-opacity-50 hover:bg-opacity-50 text-brand-text h-7 mt-3"
 			on:click={nextExercise}
 		/>
 	{/if}
 </div>
 
-<style lang="postcss">
-	:global(code) {
-		@apply font-bold;
-	}
-</style>
+

@@ -18,7 +18,7 @@
 	}
 </script>
 
-<div class="p-10 bg-dark-bglight rounded space-y-3">
+<div class="p-10 bg-brand-accent rounded space-y-3">
 	<div class="flex flex-row justify-between">
 		<p class="text-xl font-bold">{project.name}</p>
 		<div class="flex flex-col items-end">

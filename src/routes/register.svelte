@@ -42,7 +42,7 @@
 </svelte:head>
 
 <div
-	class="w-full h-screen bg-dark-bgdark flex flex-col justify-center items-center text-dark-text"
+	class="w-full h-screen bg-brand-background flex flex-col justify-center items-center text-brand-text"
 >
 	<div class="w-96 flex flex-col">
 		<h1 class="text-3xl font-bold mb-10">Create an account</h1>
@@ -51,7 +51,7 @@
 			placeholder="Email"
 			type="email"
 			icon={true}
-			classes="mb-3 bg-dark-bglight"
+			classes="mb-3 bg-brand-accent"
 			bind:value={email}
 		>
 			<IoMdPerson />
@@ -60,7 +60,7 @@
 			placeholder="Password"
 			type="password"
 			icon={true}
-			classes="mb-3 bg-dark-bglight"
+			classes="mb-3 bg-brand-accent"
 			bind:value={password}
 		>
 			<IoMdLock />
@@ -69,7 +69,7 @@
 			placeholder="Confifrm password"
 			type="password"
 			icon={true}
-			classes="mb-3 bg-dark-bglight"
+			classes="mb-3 bg-brand-accent"
 			bind:value={confirmPassword}
 		>
 			<IoMdLock />
@@ -95,7 +95,7 @@
 		<Button
 			text="Sign up with Google"
 			icon={true}
-			classes="hover:bg-opacity-50 bg-dark-bglight mb-3"
+			classes="hover:bg-opacity-50 bg-brand-accent mb-3"
 			on:click={() => {
 				signInWith('google');
 			}}><IoLogoGoogle /></Button
@@ -103,13 +103,13 @@
 		<Button
 			text="Sign up with GitHub"
 			icon={true}
-			classes="hover:bg-opacity-50 bg-dark-bglight"
+			classes="hover:bg-opacity-50 bg-brand-accent"
 			on:click={() => {
 				signInWith('github');
 			}}><IoLogoGithub /></Button
 		>
 		<span class="mt-3"
-			>Already have an account? <a href="login" class="text-blue-700">Sign in</a></span
+			>Already have an account? <a href="login" class="text-brand-primary">Sign in</a></span
 		>
 	</div>
 </div>

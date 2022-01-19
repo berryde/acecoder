@@ -10,11 +10,11 @@
 	} from 'src/utils/types';
 	import { onDestroy, onMount } from 'svelte';
 	import previewTemplate from './template/template';
-	import IoIosPlay from 'svelte-icons/io/IoIosPlay.svelte';
-	import IoIosExpand from 'svelte-icons/io/IoIosExpand.svelte';
-	import Icon from '../common/Icon.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { compiled } from 'src/utils/compiler/compiler';
+	import Icon from '../common/Icon.svelte';
+	import IoIosExpand from 'svelte-icons/io/IoIosExpand.svelte';
+	import IoIosPlay from 'svelte-icons/io/IoIosPlay.svelte';
 
 	/**
 	 * Whether the user is resizing the parent splitpane.
@@ -138,17 +138,14 @@
 	$: build($compiled);
 </script>
 
-<div class="flex-grow h-full w-full flex flex-col overflow-hidden bg-gray-200 dark:bg-dark-bglight">
-	<div class="dark:text-dark-text flex flex-row justify-between w-full items-center py-2 px-5">
-		<div class="font-bold uppercase text-xs ">Preview</div>
-		<div class="flex flex-row space-x-2">
-			<Icon on:click={() => handlePopup()} button={true} label="Popout">
-				<IoIosExpand />
-			</Icon>
-			<Icon on:click={() => handleRefresh()} button={true} label="Refresh">
-				<IoIosPlay />
-			</Icon>
-		</div>
+<div class="flex-grow h-full w-full flex flex-col overflow-hidden bg-brand-background">
+	<div class="flex w-full px-5 py-3 space-x-3 items-center">
+		<Icon on:click={() => handleRefresh()} button={true} label="Refresh">
+			<IoIosPlay />
+		</Icon>
+		<Icon on:click={() => handlePopup()} button={true} label="Popout">
+			<IoIosExpand />
+		</Icon>
 	</div>
 	<div class="flex-grow relative">
 		<Error {error} />

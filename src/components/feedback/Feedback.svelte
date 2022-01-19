@@ -26,7 +26,7 @@
 	<p class="leading-5">Submit anonymous feedback about the application to help improve it.</p>
 	<p class="mt-3 uppercase text-xs mb-1">Component</p>
 	<select
-		class="w-full bg-light-bglight dark:bg-dark-bglight px-2 h-8 focus:outline-none focus:ring-1 focus:ring-bluegray-300"
+		class="w-full bg-light-bglight bg-brand-accent px-2 h-8 focus:outline-none focus:ring-1 focus:ring-bluegray-300"
 		bind:value={component}
 		data-testid="select-component"
 	>
@@ -39,14 +39,14 @@
 	</select>
 	<p class="mt-3 uppercase text-xs mb-1">Comment</p>
 	<textarea
-		class="w-full dark:bg-dark-bglight focus:outline-none focus:ring-1 focus:ring-bluegray-300 px-3 py-1 h-1/3 resize-none"
+		class="w-full bg-brand-accent focus:outline-none focus:ring-1 focus:ring-bluegray-300 px-3 py-1 h-1/3 resize-none"
 		spellcheck={true}
 		bind:value={comment}
 		data-testid="feedback-comment"
 	/>
 	<Button
 		text="Submit"
-		classes="bg-light-bglight text-light-text hover:bg-opacity-50 dark:bg-dark-bglight dark:hover:bg-opacity-50 dark:text-dark-text h-7 mt-2"
+		classes="bg-light-bglight text-light-text hover:bg-opacity-50 bg-brand-accent hover:bg-opacity-50 text-brand-text h-7 mt-2"
 		{loading}
 		on:click={() => submitFeedback()}
 	/>

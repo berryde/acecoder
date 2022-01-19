@@ -29,10 +29,10 @@
 
 <div class="w-full px-3">
 	<div class="uppercase text-xs pb-1">Add admin claim</div>
-	<Input placeholder="User ID" bind:value={uid} classes="w-full bg-dark-bglight" />
+	<Input placeholder="User ID" bind:value={uid} classes="w-full bg-brand-accent" />
 	<Button
 		text="Add"
-		classes="bg-light-bglight text-light-text hover:bg-opacity-50 dark:bg-dark-bglight dark:hover:bg-opacity-50 dark:text-dark-text h-7 mt-2"
+		classes="bg-light-bglight text-light-text hover:bg-opacity-50 bg-brand-accent hover:bg-opacity-50 text-brand-text h-7 mt-2"
 		{loading}
 		on:click={submit}
 	/>

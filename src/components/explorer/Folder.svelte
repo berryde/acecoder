@@ -184,7 +184,7 @@
 			<Draggable data={path} variant="explorer" enabled={modifiable}>
 				<Hoverable let:hovering>
 					<div
-						class="flex transition flex-row items-center space-x-2 dark:text-dark-text h-8 {dropping &&
+						class="flex transition flex-row items-center space-x-2 text-brand-text h-8 {dropping &&
 							'bg-blue-500 bg-opacity-50'}"
 						style="padding-left: {(depth + 1.5) * 0.5}rem;"
 					>

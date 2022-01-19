@@ -3,8 +3,8 @@
 	"version": "0.0.1",
 	"license": "UNLICENSED",
 	"scripts": {
-		"dev": "yarn run build-template && rollup -c && svelte-kit dev",
-		"build": "yarn run build-template && rollup -c && svelte-kit build",
+		"dev": "pnpm run build-template && rollup -c && svelte-kit dev",
+		"build": "pnpm run build-template && rollup -c && svelte-kit build",
 		"preview": "svelte-kit preview",
 		"check": "svelte-check --tsconfig ./tsconfig.json --threshold warning",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
@@ -14,8 +14,8 @@
 		"emulator": "firebase emulators:start --import=./.firebase --export-on-exit",
 		"build-storybook": "build-storybook",
 		"build-template": "node scripts/generateTemplate.js",
-		"test": "yarn run build-template && svelte-kit build && jest src",
-		"test:watch": "yarn run test -- --watch"
+		"test": "pnpm run build-template && svelte-kit build && jest src",
+		"test:watch": "pnpm run test -- --watch"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.15.8",
@@ -86,12 +86,13 @@
 		"tailwindcss": "^2.2.16",
 		"ts-jest": "^27.0.7",
 		"tslib": "^2.3.1",
-		"typescript": "^4.4.4"
-	},
-	"type": "module",
-	"dependencies": {
+		"typescript": "^4.4.4",
 		"@babel/standalone": "^7.15.8",
 		"file-saver": "^2.0.5",
 		"jszip": "^3.7.1"
+	},
+	"type": "module",
+	"dependencies": {
+		"brace": "^0.11.1"
 	}
 }

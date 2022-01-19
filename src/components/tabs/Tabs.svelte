@@ -55,23 +55,23 @@
 		<div class="flex flex-row space-x-2">
 			<Button
 				text="Don't save"
-				classes="dark:bg-dark-bgdark bg-light-bglight py-1 px-3"
+				classes="bg-brand-background bg-light-bglight py-1 px-3"
 				on:click={() => close(closing)}
 			/>
 			<Button
 				text="Cancel"
-				classes="dark:bg-dark-bgdark bg-light-bglight py-1 px-3"
+				classes="bg-brand-background bg-light-bglight py-1 px-3"
 				on:click={() => (closing = undefined)}
 			/>
 			<Button
 				text="Save"
-				classes="dark:bg-dark-bgdark bg-light-bglight py-1 px-3"
+				classes="bg-brand-background bg-light-bglight py-1 px-3"
 				on:click={() => saveThenClose(closing)}
 			/>
 		</div>
 	</Modal>
 {/if}
-<div class="flex flex-row bg-gray-200 dark:bg-dark-bgdark justify-between w-full items-center">
+<div class="flex flex-row bg-gray-200 bg-brand-background justify-between w-full items-center">
 	{#each tabs as path}
 		<Draggable data={path} variant="tabs">
 			<Droppable let:dropping on:dropped={(e) => handleDropped(path, e.detail)} variant="tabs">
@@ -79,24 +79,24 @@
 					<div
 						class="{$latestError && $latestError.location == path
 							? 'text-red-400'
-							: ' dark:text-dark-text'} transition-colors pl-4 pr-2 py-1 selected flex flex-row space-x-1 justify-between items-center {path ==
+							: ' text-brand-text'} transition-colors pl-4 pr-2 py-1 selected flex flex-row space-x-1 justify-between items-center {path ==
 							selected &&
-							'bg-gray-100 dark:bg-dark-bglight'} hover:bg-gray-300 dark:hover:bg-gray-800 {dropping &&
+							'bg-gray-100 bg-brand-accent'} hover:bg-gray-300 hover:bg-gray-800 {dropping &&
 							'bg-blue-500'} {path == temporary && 'italic'}"
 						on:click={() => openTab(path)}
 					>
 						<p>{tabs.filter((tab) => tab == path).length == 1 ? tail(path) : path}</p>
 
-						<div class="flex flex-row items-center justify-between w-4 dark:text-dark-text">
+						<div class="flex flex-row items-center justify-between w-4 text-brand-text">
 							{#if !hovering && unsaved.includes(path)}
 								<div
-									class="transition-all bg-light-text dark:bg-dark-text rounded-full ml-1.5 h-1.5 w-1.5"
+									class="transition-all bg-light-text bg-dark-text rounded-full ml-1.5 h-1.5 w-1.5"
 									data-testid="unsaved-dot"
 								/>
 							{:else}
 								<div
 									on:click={() => handleClose(path)}
-									class="flex flex-col justify-center h-4 w-4 rounded bg-gray-100 dark:bg-gray-700 transition-opacity {hovering
+									class="flex flex-col justify-center h-4 w-4 rounded bg-gray-100 bg-gray-700 transition-opacity {hovering
 										? 'opacity-100'
 										: 'opacity-0'}"
 								>

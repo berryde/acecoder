@@ -20,7 +20,7 @@
 {#if !!user}
 	<slot />
 {:else}
-	<div class="h-screen w-screen bg-dark-bgdark flex justify-center items-center">
+	<div class="h-screen w-screen bg-brand-background flex justify-center items-center">
 		<OrbitProgressIndicator />
 	</div>
 {/if}

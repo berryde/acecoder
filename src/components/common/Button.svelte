@@ -7,30 +7,46 @@
 	export let text = '';
 	export let icon = false;
 	export let loading = false;
-	export let classes = '';
 	export let disabled = false;
+
+	type Variant = 'default' | 'outline' | 'dark';
+	export let variant: Variant = 'default';
 
 	function onclick() {
 		if (!disabled) {
 			dispatch('click');
 		}
 	}
+
+	function getStyle() {
+		switch (variant) {
+			case 'outline':
+				return 'border-brand-primary border-2 text-brand-primary hover:text-brand-text hover:bg-brand-primary ';
+			case 'dark':
+				return 'bg-brand-accent';
+			default:
+				return 'bg-brand-primary';
+		}
+	}
 </script>
 
 <div
-	class="flex flex-row transition-colors py-2 font-bold rounded justify-center items-center hover:cursor-pointer {classes}"
+	class="px-5 py-1 transition-all {getStyle()} rounded hover:cursor-pointer w-min {disabled &&
+		'opacity-50'}"
 	on:click={() => onclick()}
 >
-	{#if icon}
-		<div class="mr-3">
-			<Icon>
-				<slot />
-			</Icon>
-		</div>
-	{/if}
 	{#if loading}
 		<CircularProgressIndicator />
 	{:else}
-		<p>{text}</p>
+		<div class="flex flex-row">
+			{#if icon}
+				<div class="mr-3">
+					<Icon>
+						<slot />
+					</Icon>
+				</div>
+			{/if}
+			<p>{text}</p>
+		</div>
 	{/if}
 </div>

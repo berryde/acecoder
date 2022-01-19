@@ -60,7 +60,7 @@
 	}
 </script>
 
-<div class="h-screen bg-dark-bgdark text-dark-text flex justify-center items-center">
+<div class="h-screen bg-brand-background text-brand-text flex justify-center items-center">
 	{#if loading}
 		<OrbitProgressIndicator />
 	{:else}

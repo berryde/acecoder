@@ -21,5 +21,5 @@
 </script>
 
 <div
-	class="h-3 w-3 border-2 {classes} rounded dark:border-dark-text {color} border-light-text flex-shrink-0"
+	class="h-3 w-3 border-2 {classes} rounded border-dark-text {color} border-brand-text flex-shrink-0"
 />
