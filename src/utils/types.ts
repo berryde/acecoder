@@ -261,13 +261,12 @@ export type TestResult = {
 	timestamp: Timestamp;
 };
 
+
+export type ProjectDifficulty = 'easy' | 'medium' | 'hard';
+export type ProjectLanguage = 'react' | 'svelte';
 export type Project = {
 	name: string;
-
+	languages: ProjectLanguage[];
 	description: string;
-	exercises: {
-		title: string;
-		id: string;
-		completed: boolean;
-	}[];
+	difficulty: ProjectDifficulty;
 };

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { addMessage, latestError } from '../../utils/console/console';
-	import Preview from '../../components/preview/Preview.svelte';
+	import Preview from '../../components/profile/preview/Preview.svelte';
 	import { filesystem, getAllFiles } from '../../utils/filesystem/filesystem';
 	import type { WorkerError, WorkerResponse } from '../../utils/types';
 	import { onDestroy, onMount } from 'svelte';

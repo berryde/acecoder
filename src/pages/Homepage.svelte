@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { doc, getDoc } from 'firebase/firestore';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
+	import ProfileMenu from 'src/components/profile/ProfileMenu.svelte';
 	import ProjectCard from 'src/components/projects/ProjectCard.svelte';
 	import { auth, db } from 'src/utils/firebase';
 	import type { Project, TestResult } from 'src/utils/types';
@@ -64,8 +65,11 @@
 	{#if loading}
 		<OrbitProgressIndicator />
 	{:else}
-		<div class="flex flex-col max-w-3xl space-y-6">
-			<p class="text-2xl font-bold pb-6">Projects</p>
+		<div class="flex flex-col max-w-4xl space-y-6">
+			<div class="flex flex-row justify-between items-center">
+				<p class="text-3xl font-bold">Projects</p>
+				<ProfileMenu />
+			</div>
 			{#each projects as project}
 				<ProjectCard {project} />
 			{/each}

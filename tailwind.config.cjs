@@ -2,10 +2,10 @@ const config = {
 	mode: 'jit',
 	purge: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
-		fontFamily: {
-			sans: ['Poppins', 'system-ui', 'Helvetica', 'Arial', 'sans-serif']
-		},
 		extend: {
+			fontFamily: {
+				sans: ['Poppins', 'system-ui', 'Helvetica', 'Arial', 'sans-serif'],
+			},
 			colors: {
 				brand: {
 					editor: {

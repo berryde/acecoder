@@ -16,12 +16,12 @@
 </script>
 
 <div
-	class="rounded-full border-2 border-dark-text border-brand-text flex items-center justify-center"
+	class="rounded-full border-2 border-dark-text border-brand-text flex items-center justify-center w-8 h-8"
 >
 	{#if iconUrl}
 		<img src={iconUrl} alt="profile" class="rounded-full" on:error={() => handleImageError()} />
 	{:else}
-		<div class="w-5 h-5">
+		<div class="w-full h-full">
 			<MdAccountCircle />
 		</div>
 	{/if}

@@ -8,8 +8,10 @@
 	export let icon = false;
 	export let loading = false;
 	export let disabled = false;
+	export let expanded = false;
+	export let outline = false;
 
-	type Variant = 'default' | 'outline' | 'dark';
+	type Variant = 'default' | 'danger' | 'dark';
 	export let variant: Variant = 'default';
 
 	function onclick() {
@@ -20,25 +22,33 @@
 
 	function getStyle() {
 		switch (variant) {
-			case 'outline':
-				return 'border-brand-primary border-2 text-brand-primary hover:text-brand-text hover:bg-brand-primary ';
 			case 'dark':
-				return 'bg-brand-accent';
+				return outline
+					? 'border-brand-accent text-brand-accent hover:bg-brand-accent'
+					: 'bg-brand-accent';
+			case 'danger':
+				return outline
+					? 'border-brand-danger-light text-brand-danger-light hover:bg-brand-danger-light'
+					: 'bg-brand-danger-light';
 			default:
-				return 'bg-brand-primary';
+				return outline
+					? 'border-brand-primary text-brand-primary hover:bg-brand-primary'
+					: 'bg-brand-primary';
 		}
 	}
 </script>
 
 <div
-	class="px-5 py-1 transition-all {getStyle()} rounded hover:cursor-pointer w-min {disabled &&
-		'opacity-50'}"
+	class="px-5 py-2 transition-all {getStyle()} {expanded
+		? 'w-full'
+		: 'w-max'} rounded hover:cursor-pointer {disabled && 'opacity-50'} {outline &&
+		'border-2 hover:text-brand-text'} flex justify-center"
 	on:click={() => onclick()}
 >
 	{#if loading}
 		<CircularProgressIndicator />
 	{:else}
-		<div class="flex flex-row">
+		<div class="flex flex-row items-center">
 			{#if icon}
 				<div class="mr-3">
 					<Icon>

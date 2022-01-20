@@ -56,24 +56,12 @@
 <div
 	class="w-full h-screen bg-brand-background flex flex-col justify-center items-center text-brand-text"
 >
-	<div class="w-96 flex flex-col">
+	<div class="w-96 flex flex-col space-y-3">
 		<h1 class="text-3xl font-bold mb-10">Welcome back</h1>
-		<Input
-			placeholder="Email"
-			type="email"
-			icon={true}
-			classes="mb-3 bg-brand-accent"
-			bind:value={email}
-		>
+		<Input placeholder="Email" type="email" icon={true} bind:value={email}>
 			<IoMdPerson />
 		</Input>
-		<Input
-			placeholder="Password"
-			type="password"
-			icon={true}
-			classes="mb-3 bg-brand-accent"
-			bind:value={password}
-		>
+		<Input placeholder="Password" type="password" icon={true} bind:value={password}>
 			<IoMdLock />
 		</Input>
 
@@ -100,25 +88,28 @@
 			<p class="">or</p>
 			<hr class="border-brand-text flex-grow ml-3" />
 		</div>
-
-		<Button
-			text="Sign in with Google"
-			icon={true}
-			loading={loading && method == 'google'}
-			variant="dark"
-			on:click={() => signInWith('google')}
-		>
-			<IoLogoGoogle />
-		</Button>
-		<Button
-			text="Sign in with GitHub"
-			icon={true}
-			loading={loading && method == 'github'}
-			variant="dark"
-			on:click={() => signInWith('github')}
-		>
-			<IoLogoGithub />
-		</Button>
+		<div class="space-y-3">
+			<Button
+				text="Sign in with Google"
+				icon={true}
+				loading={loading && method == 'google'}
+				variant="dark"
+				expanded={true}
+				on:click={() => signInWith('google')}
+			>
+				<IoLogoGoogle />
+			</Button>
+			<Button
+				text="Sign in with GitHub"
+				icon={true}
+				loading={loading && method == 'github'}
+				variant="dark"
+				expanded={true}
+				on:click={() => signInWith('github')}
+			>
+				<IoLogoGithub />
+			</Button>
+		</div>
 		<span class="mt-3"
 			>Don't have an account? <a href="register" class="text-brand-primary">Sign up</a></span
 		>

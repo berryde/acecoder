@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Button from 'src/components/common/Button.svelte';
 	import Progress from 'src/components/projects/Progress.svelte';
-	import Checkbox from 'src/components/exercise/Checkbox.svelte';
+	import Checkbox from 'src/components/common/Checkbox.svelte';
 
 	import type { Project } from 'src/utils/types';
 
@@ -38,7 +38,6 @@
 	{#if project.exercises.filter((ex) => !ex.completed).length > 0}
 		<Button
 			text={getCompletion(project) > 0 ? 'Resume' : 'Start'}
-			classes="bg-blue-700 px-10 ml-auto w-24"
 			on:click={() => handleClick(project)}
 		/>
 	{/if}
