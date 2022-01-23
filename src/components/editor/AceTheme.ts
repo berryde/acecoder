@@ -2,118 +2,164 @@ import ace from 'brace';
 import { theme } from "src/utils/theme"
 
 ace['define'](
-    'ace/theme/folio',
-    ['require', 'exports', 'module', 'ace/lib/dom'],
-    (acequire: unknown, exports: { isDark: boolean, cssClass: string, cssText: string }) => {
-        exports.isDark = true;
-        exports.cssClass = 'ace-folio';
-        exports.cssText = `
-        
-        ace-folio .ace_gutter {
-        background: ${theme.background};
-        color: rgb(144,145,148)
-        }
-        .ace-folio .ace_print-margin {
-        width: 1px;
-        background: #e8e8e8
-        }
-        .ace-folio {
-        background-color: ${theme.editor.background};
-        color: ${theme.text};
-        }
-        .ace-folio .ace_cursor {
-        color: ${theme.text}
-        }
-        .ace-folio .ace_marker-layer .ace_selection {
-        background: ${theme.editor.highlight}
-        }
-        .ace-folio.ace_multiselect .ace_selection.ace_start {
-        box-shadow: 0 0 3px 0px #282a36;
-        border-radius: 2px
-        }
-        .ace-folio .ace_marker-layer .ace_step {
-        background: rgb(198, 219, 174)
-        }
-        .ace-folio .ace_marker-layer .ace_bracket {
-        margin: -1px 0 0 -1px;
-        border: 1px solid #3B3A32
-        }
-        .ace-folio .ace_marker-layer .ace_selected-word {
-        border: 1px solid ${theme.editor.highlight}
-        }
-        .ace-folio .ace_fold {
-        background-color: #50fa7b;
-        border-color: #f8f8f2
-        }
-        .ace-folio .ace_keyword {
-        color: #ff79c6
-        }
-        .ace-folio .ace_constant.ace_language {
-        color: #bd93f9
-        }
-        .ace-folio .ace_constant.ace_numeric {
-        color: #bd93f9
-        }
-        .ace-folio .ace_constant.ace_character {
-        color: #bd93f9
-        }
-        .ace-folio .ace_constant.ace_character.ace_escape {
-        color: #ff79c6
-        }
-        .ace-folio .ace_constant.ace_other {
-        color: #bd93f9
-        }
-        .ace-folio .ace_support.ace_function {
-        color: #8be9fd
-        }
-        .ace-folio .ace_support.ace_constant {
-        color: #6be5fd
-        }
-        .ace-folio .ace_support.ace_class {
-        
-        color: #66d9ef
-        }
-        .ace-folio .ace_support.ace_type {
-        color: #66d9ef
-        }
-        .ace-folio .ace_storage {
-        color: #ff79c6
-        }
-        .ace-folio .ace_storage.ace_type {
-        color: #8be9fd
-        }
-        .ace-folio .ace_invalid {
-        color: #F8F8F0;
-        background-color: #ff79c6
-        }
-        .ace-folio .ace_invalid.ace_deprecated {
-        color: #F8F8F0;
-        background-color: #bd93f9
-        }
-        .ace-folio .ace_string {
-        color: #f1fa8c
-        }
-        .ace-folio .ace_comment {
-        color: #6272a4
-        }
-        .ace-folio .ace_variable {
-        color: #50fa7b
-        }
-        .ace-folio .ace_variable.ace_parameter {
-        color: #ffb86c
-        }
-        .ace-folio .ace_entity.ace_other.ace_attribute-name {
-        color: #50fa7b
-        }
-        .ace-folio .ace_entity.ace_name.ace_function {
-        color: #50fa7b
-        }
-        .ace-folio .ace_entity.ace_name.ace_tag {
-        color: #ff79c6
-        }
+  'ace/theme/folio',
+  ['require', 'exports', 'module', 'ace/lib/dom'],
+  (acequire: unknown, exports: { isDark: boolean, cssClass: string, cssText: string }) => {
+    exports.isDark = true;
+    exports.cssClass = 'ace-one-dark';
+    exports.cssText = `.ace-one-dark .ace_gutter {
+            background: ${theme.editor.background};
+            color: #474C55;
+            padding-right: 10px;
+          }
+          
+          .ace-one-dark .ace_print-margin {
+            width: 1px;
+            background: #555651
+          }
+          
+          .ace-one-dark {
+            background-color: ${theme.editor.background};
+            color: #ABB2BF
+          }
+          
+          .ace-one-dark .ace_cursor {
+            color: #528BFF
+          }
+          
+          .ace-one-dark .ace_marker-layer .ace_selection {
+            background: ${theme.editor.highlight}
+          }
+          
+          .ace-one-dark.ace_multiselect .ace_selection.ace_start {
+            box-shadow: 0 0 3px 0px #282C34;
+          }
+          
+          .ace-one-dark .ace_marker-layer .ace_step {
+            background: rgb(102, 82, 0)
+          }
+          
+          .ace-one-dark .ace_marker-layer .ace_bracket {
+            margin: -1px 0 0 -1px;
+            border: 1px solid #ABB2BF
+          }
+          
+          .ace-one-dark .ace_marker-layer .ace_active-line {
+            background: #182238
+          }
+          
+          .ace-one-dark .ace_gutter-active-line {
+            background-color: #182238
+          }
+          
+          .ace-one-dark .ace_marker-layer .ace_selected-word {
+            border: 1px solid #49483E
+          }
+          
+          .ace-one-dark .ace_invisible {
+            color: #3B4048
+          }
+
+          .ace-one-dark .ace_entity.ace_name.ace_tag,
+          .ace-one-dark .ace_meta.ace_tag,
+          .ace-one-dark .ace_constant,
+          .ace-one-dark .ace_storage {
+            color: #E06C75
+          }
+          
+          .ace-one-dark .ace_keyword{
+            color: #C678DD
+          }
+          
+          .ace-one-dark .ace_punctuation,
+          .ace-one-dark .ace_punctuation.ace_tag {
+            color: #ABB2BF
+          }
+          
+          .ace-one-dark .ace_constant.ace_support.ace_fonts,
+          .ace-one-dark .ace_constant.ace_character,
+          .ace-one-dark .ace_constant.ace_support,
+          .ace-one-dark .ace_constant.ace_language,
+          .ace-one-dark .ace_constant.ace_numeric,
+          .ace-one-dark .ace_constant.ace_other {
+            color: #D19A66
+          }
+          
+          
+          
+          .ace-one-dark .ace_invalid {
+            color: #F8F8F0;
+            background-color: #F92672
+          }
+          
+          .ace-one-dark .ace_invalid.ace_deprecated {
+            color: #F8F8F0;
+            background-color: #AE81FF
+          }
+          
+          .ace-one-dark .ace_support.ace_type{
+              color: #ABB2BF
+          }
+          
+          .ace-one-dark .ace_constant.ace_language.ace_escape,
+          .ace-one-dark .ace_keyword.ace_operator,
+          .ace-one-dark .ace_support.ace_function {
+            color: #C678DD
+          }
+          
+          .ace-one-dark .ace_fold {
+            background-color: #A6E22E;
+            border-color: #ABB2BF
+          }
+          
+          .ace-one-dark .ace_storage.ace_type{
+              color: #E5C07B;
+          }
+          
+          
+          .ace-one-dark .ace_support.ace_class {
+            font-style: italic;
+            color: #66D9EF
+          }
+          
+          .ace-one-dark .ace_entity.ace_other,
+          .ace-one-dark .ace_entity.ace_other.ace_attribute-name,
+          .ace-one-dark .ace_variable {
+            color: #D19A66
+          }
+          
+          .ace-one-dark .ace_string,
+          .ace-one-dark .ace_list.ace_markup,
+          .ace-one-dark .ace_constant.ace_language.ace_escape .ace_string,
+          .ace-one-dark .ace_string.ace_attribute-value {
+              color: #98C379
+          }
+          
+          .ace-one-dark .ace_entity.ace_name.ace_function {
+            color: #61AFEF
+          }
+          
+          .ace-one-dark .ace_operator {
+              color: #ABB2BF;
+          }
+          
+          /*.ace-one-dark .ace_string, */
+          .ace-one-dark .ace_identifier,
+          .ace-one-dark .ace_variable.ace_parameter{
+            color: #ABB2BF
+          }
+          
+          .ace-one-dark .ace_comment {
+            color: #5C6370;
+            font-style: italic;
+          }
+          
+          .ace-one-dark .ace_indent-guide {
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWPQ0FD0ZXBzd/wPAAjVAoxeSgNeAAAAAElFTkSuQmCC) right repeat-y
+          }
 `;
 
-        const dom = ace.acequire('ace/lib/dom');
-        dom.importCssString(exports.cssText, exports.cssClass);
-    }
+    const dom = ace.acequire('ace/lib/dom');
+    dom.importCssString(exports.cssText, exports.cssClass);
+  }
 );

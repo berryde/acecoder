@@ -69,12 +69,6 @@
 			const style = document.createElement('style');
 			document.head.appendChild(style);
 
-			// Intercept console messages
-			const levels = ['log', 'warn', 'error'];
-			levels.forEach((level) => {
-				console[level] = (text) => reply(level, text);
-			});
-
 			function reply(type = 'log', data) {
 				if (popup) {
 					window.opener.postMessage({

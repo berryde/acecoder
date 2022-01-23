@@ -4,14 +4,19 @@ import { format } from '../codemirror/codemirror';
 import { createFile, filesystem, getAllFiles, getExtension } from '../filesystem/filesystem';
 import { auth, db } from '../firebase';
 import { get as httpGet } from '../network/network';
-import type { Exercise, Template, TestResult } from '../types';
+import type { Exercise, TestResult } from '../types';
 import type { DocumentData } from 'firebase/firestore';
 import { selectedTab, tabs, unsavedTabs } from '../tabs/tabs';
+import type { Project } from "src/utils/types"
 
 /**
  * The current exercise being completed
  */
 export const exercise = writable<Exercise>();
+
+export const project = writable<Project>();
+
+export const language = writable<string>();
 
 /**
  * The ID of the current exercise
@@ -23,10 +28,6 @@ export const exerciseID = writable<string>();
  */
 export const result = writable<TestResult>();
 
-/**
- * The template loaded when the exercise is first opened
- */
-export const template = writable<Template>();
 
 /**
  * Whether a submission is currently pending results
@@ -59,48 +60,14 @@ let timeout: NodeJS.Timeout;
  * @param id The exercise ID
  */
 export const loadExercise = async (): Promise<void> => {
-	const ex = (await getDoc('exercises', get(exerciseID))) as Exercise;
-
-	// Check if the user has made a previous submission
-	const submissionID = get(exerciseID) + auth.currentUser.uid;
-	const submission = (await getDoc('submissions', submissionID)) as Template;
-
-	let source: Record<string, string>;
-	if (submission) {
-		source = submission.files;
-		// Check if the user has results for this previous submission
-		const results = (await getDoc('results', submissionID)) as TestResult;
-		if (results) {
-			result.set(results);
-		}
-	} else {
-		// Load the previous exercise if present else load the template
-		if (ex.previous) {
-			const previous = (await getDoc(
-				'submissions',
-				ex.previous.id + auth.currentUser.uid
-			)) as Template;
-			source = previous.files;
-		} else {
-			const template = (await getDoc('templates', ex.template.id)) as Template;
-			source = template.files;
-		}
-
-		// Apply the overrides if present
-		if (ex.overrides) {
-			for (const [path, value] of Object.entries(ex.overrides)) {
-				source[path] = value;
-			}
-		}
-	}
+	const source = get(exercise).files[get(language)]
 
 	// Create the filesystem from the template
 	for (const [path, value] of Object.entries(source)) {
-		// Format the values as whitespace is not preserved by firebase.
-		createFile(path, format(value, getExtension(path)), false);
+
+		createFile(path, value.contents, value.editable);
 	}
 
-	exercise.set(ex);
 	initialising.set(false);
 };
 
@@ -146,16 +113,6 @@ export const save = async (): Promise<void> => {
 	await setDoc(sub, submission);
 };
 
-/**
- * Navigate to the next exercise if present, otherwise return to the homescreen.
- */
-export const nextExercise = (): void => {
-	if (get(exercise).next) {
-		window.location.href = '/exercise/' + get(exercise).next.id;
-	} else {
-		window.location.href = '/';
-	}
-};
 
 /**
  * Submit the filesystem to generate a mark.
@@ -201,7 +158,6 @@ export const restoreDefaults = (): void => {
 	exerciseID.set(undefined);
 	pending.set(false);
 	result.set(undefined);
-	template.set(undefined);
 	filesystem.set({});
 	selectedTab.set(undefined);
 	tabs.set([]);

@@ -6,6 +6,7 @@ export const selectedTab = writable<string>('');
 export const temporaryTab = writable<string>('');
 export const unsavedTabs = writable<string[]>([]);
 
+
 // If current tab is a temp tab, it should be replaced with the latest tab to be opened.
 
 /**
@@ -39,6 +40,7 @@ export const openTab = (path: string): void => {
 			}
 		}
 	});
+	// Create a session for the tab
 	// Select the newly created tab
 	selectedTab.set(path);
 };

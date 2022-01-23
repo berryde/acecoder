@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { addMessage } from 'src/utils/console/console';
 	import Error from './Error.svelte';
 	import type {
 		PreviewMessage,
@@ -12,7 +11,7 @@
 	import previewTemplate from './template/template';
 	import { createEventDispatcher } from 'svelte';
 	import { compiled } from 'src/utils/compiler/compiler';
-	import Icon from '../../common/Icon.svelte';
+	import Icon from 'src/components/common/Icon.svelte';
 	import IoIosExpand from 'svelte-icons/io/IoIosExpand.svelte';
 	import IoIosPlay from 'svelte-icons/io/IoIosPlay.svelte';
 
@@ -110,8 +109,6 @@
 				default:
 					popup = undefined;
 			}
-		} else {
-			addMessage(msg);
 		}
 	}
 

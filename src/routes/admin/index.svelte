@@ -10,23 +10,17 @@
 	import Website from 'svelte-icons/io/IoIosDesktop.svelte';
 	import Icon from 'src/components/common/Icon.svelte';
 
-	interface ProjectID extends Project {
-		id: string;
-	}
-	let projects: ProjectID[];
+	let projects: { id: string; project: Project }[];
 	let loading = true;
 	onMount(async () => {
 		loading = true;
 		const snapshot = await getDocs(collection(db, 'projects'));
-		projects = snapshot.docs.map((doc) => ({
-			id: doc.id,
-			...(doc.data() as Project)
-		})) as ProjectID[];
+		projects = snapshot.docs.map((doc) => ({ id: doc.id, project: doc.data() as Project }));
 		loading = false;
 	});
 
 	function openProject(id: string) {
-		window.location.href = 'project/edit/' + id;
+		window.location.href = 'edit/' + id;
 	}
 </script>
 
@@ -48,11 +42,11 @@
 				<Button
 					text="New project"
 					on:click={() => {
-						window.location.href = '/project/edit/new';
+						window.location.href = '/edit/new';
 					}}
 				/>
 			</div>
-			<div class="flex flex-row">
+			<div class="grid grid-cols-4 space-4">
 				{#each projects as project}
 					<div
 						class="bg-brand-accent rounded w-52 cursor-pointer"
@@ -66,7 +60,7 @@
 							</Icon>
 						</div>
 						<div class="p-3">
-							<p>{project.name}</p>
+							<p>{project.project.name}</p>
 						</div>
 					</div>
 				{/each}

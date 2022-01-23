@@ -4,29 +4,34 @@
 	import Input from 'src/components/common/Input.svelte';
 	import Checkbox from 'src/components/common/Checkbox.svelte';
 	import { db } from 'src/utils/firebase';
-	import { onMount } from 'svelte';
-	import type { Project, ProjectDifficulty, ProjectLanguage } from 'src/utils/types';
-	import { loadProject } from 'src/utils/project/project';
+	import type { Project } from 'src/utils/types';
 	import { capitalise } from 'src/utils/general';
-
-	const difficulties: ProjectDifficulty[] = ['easy', 'medium', 'hard'];
 
 	/**
 	 * Whether these settings are for the creation of a new project.
 	 */
 	export let creating = false;
+	let editing = creating;
 	/**
 	 * The ID of the project being updated.
 	 */
-	export let id: string = undefined;
-	let editing = creating;
+	export let projectID: string = undefined;
+	export let project: Project = {
+		languages: [],
+		name: '',
+		description: '',
+		icon: ''
+	};
 	let errors: string[] = [];
-	const languages: ProjectLanguage[] = ['react', 'svelte'];
+	const languages: string[] = ['react', 'svelte'];
 
-	function selectProjectLanguage(index: number) {
-		if (!project.languages.includes(languages[index])) {
-			project.languages.push(languages[index]);
+	function toggleProjectLanguage(language: string) {
+		if (project.languages.includes(language)) {
+			project.languages.splice(project.languages.indexOf(language), 1);
+		} else {
+			project.languages.push(language);
 		}
+		project = project;
 	}
 
 	function validate() {
@@ -51,9 +56,9 @@
 			try {
 				if (creating) {
 					const ref = await addDoc(collection(db, 'projects'), project);
-					window.location.href = '/projects/' + ref.id;
+					window.location.href = '/edit/' + ref.id;
 				} else {
-					await setDoc(doc(db, 'projects', id), project);
+					await setDoc(doc(db, 'projects', projectID), project);
 					toggleEdit();
 				}
 			} catch (err) {
@@ -68,21 +73,6 @@
 	function toggleEdit() {
 		editing = !editing;
 	}
-
-	let initialising = false;
-	let project: Project = {
-		difficulty: 'easy',
-		languages: [],
-		name: '',
-		description: ''
-	};
-	onMount(async () => {
-		if (!creating) {
-			initialising = true;
-			project = await loadProject(id);
-			initialising = false;
-		}
-	});
 </script>
 
 <form class="flex flex-col bg-brand-accent p-8 rounded space-y-3">
@@ -101,19 +91,14 @@
 		{/if}
 	</div>
 	<div class="space-y-1">
-		<p>Difficulty</p>
+		<p>Icon</p>
 		{#if editing}
-			<select
-				bind:value={project.difficulty}
-				class="bg-brand-background rounded p-1"
-				name="difficulty"
+			<a href="https://svelte-icons-explorer.vercel.app/" class="text-brand-primary text-xs"
+				>Browse icons</a
 			>
-				{#each difficulties as difficulty}
-					<option value={difficulty}>{capitalise(difficulty)}</option>
-				{/each}
-			</select>
+			<Input variant="dark" bind:value={project.icon} />
 		{:else}
-			<p>{capitalise(project.difficulty)}</p>
+			<code class="bg-brand-background p-1 rounded">{project.icon}</code>
 		{/if}
 	</div>
 	<div class="space-y-1">
@@ -131,12 +116,12 @@
 	<div class="space-y-1">
 		<p>Language support</p>
 		<fieldset id="language" class="flex flex-col">
-			{#each languages as language, index}
+			{#each languages as language}
 				<div class="flex flex-row items-center space-x-3">
 					<Checkbox
 						disabled={!editing}
 						value={project.languages.includes(language)}
-						on:click={() => selectProjectLanguage(index)}
+						on:click={() => toggleProjectLanguage(language)}
 					/>
 					<p>{capitalise(language)}</p>
 				</div>

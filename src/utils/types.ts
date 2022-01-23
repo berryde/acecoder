@@ -1,4 +1,4 @@
-import type { DocumentReference, Timestamp } from 'firebase/firestore';
+import type { Timestamp } from 'firebase/firestore';
 import type { SvelteComponentDev } from 'svelte/internal';
 
 /**
@@ -182,51 +182,6 @@ export type Feedback = {
 };
 
 /**
- * An exercise that the user can complete.
- */
-export type Exercise = {
-	/**
-	 * The tests that should be run for this exercise
-	 */
-	tests: { [key: string]: string };
-	/**
-	 * A reference to the location of the template that should be loaded when the exercise is opened for the first time.
-	 */
-	template?: DocumentReference;
-	/**
-	 * The requirements for this exercise, exactly matching the tests that should be run.
-	 */
-	requirements: string[];
-	/**
-	 * The name of the exercise.
-	 */
-	name: string;
-	/**
-	 * A brief description of the tasks required by the exercise.
-	 */
-	description: string;
-	/**
-	 * Any files that should override the template for this project.
-	 */
-	overrides?: { [key: string]: string };
-	/**
-	 * A reference to the previous exercise. This should be provided if template is not present.
-	 */
-	previous?: DocumentReference;
-	/**
-	 * A reference to the previous exercise, if any.
-	 */
-	next?: DocumentReference;
-};
-
-/**
- * Files to load into the application, representing a filesystem state.
- */
-export type Template = {
-	files: { [key: string]: string };
-};
-
-/**
  * Response from the submission server.
  */
 export type TestResult = {
@@ -262,11 +217,40 @@ export type TestResult = {
 };
 
 
-export type ProjectDifficulty = 'easy' | 'medium' | 'hard';
-export type ProjectLanguage = 'react' | 'svelte';
+export type ExerciseFile = {
+	contents: string;
+	editable: boolean;
+};
+
 export type Project = {
 	name: string;
-	languages: ProjectLanguage[];
+	icon: string;
 	description: string;
-	difficulty: ProjectDifficulty;
+	languages: string[];
+};
+
+export type ExerciseMetadata = {
+	name: string;
+	description: string;
+	assessed: boolean;
+};
+
+export interface Exercise extends ExerciseMetadata {
+	files: Record<string, Record<string, ExerciseFile>>;
+	chapters: ExerciseChapter[];
+}
+
+export type ExerciseChapter = {
+	/**
+	 * The text content to be displayed for this chapter.
+	 */
+	text: string;
+	/**
+	 * The name of the file containing the test that evaluates this chapter.
+	 */
+	file?: string;
+	/**
+	 * The spec name of the test that evaluates this chapter.
+	 */
+	spec?: string;
 };

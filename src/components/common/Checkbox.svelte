@@ -10,14 +10,14 @@
 
 	const dispatch = createEventDispatcher();
 
-	function getColour(value) {
+	function getColour(value: boolean | undefined) {
 		if (value != undefined) {
 			switch (variant) {
 				case 'true-false':
 					return value ? 'bg-green-500' : 'bg-red-500';
 				default:
 					return value
-						? 'bg-brand-primary hover:bg-opacity-50'
+						? 'bg-brand-primary'
 						: disabled
 						? ''
 						: 'hover:bg-brand-primary hover:bg-opacity-50';
@@ -37,7 +37,8 @@
 </script>
 
 <div
-	class="h-4 w-4 border-2 {classes} rounded border-dark-text {color} {variant == 'true-false'
+	class="transition-all h-4 w-4 border-2 {classes} rounded border-dark-text {color} {variant ==
+	'true-false'
 		? 'border-brand-text'
 		: 'border-brand-primary'} flex-shrink-0"
 	on:click={handleClick}

@@ -41,16 +41,11 @@
 			Forgotten your password or unable to login? Submit your email address below to recieve a
 			recovery link.
 		</p>
-		<Input placeholder="Email" type="email" icon={true} classes="mb-3" bind:value={email}>
+		<Input placeholder="Email" type="email" icon={true} bind:value={email}>
 			<IoMdPerson />
 		</Input>
 
-		<Button
-			text="Send recovery email"
-			on:click={() => handleReset()}
-			classes="hover:bg-blue-800 bg-blue-700"
-			{loading}
-		/>
+		<Button text="Send recovery email" on:click={() => handleReset()} {loading} />
 
 		{#if error}
 			<div class="bg-red-900 text-red-400 bg-opacity-50 p-3 mt-3 rounded">

@@ -72,7 +72,12 @@
 			Forgot your password?
 		</a>
 
-		<Button text="Sign in" on:click={() => signIn()} loading={loading && method == 'default'} />
+		<Button
+			text="Sign in"
+			on:click={() => signIn()}
+			loading={loading && method == 'default'}
+			expanded={true}
+		/>
 
 		{#if error}
 			<div class="bg-brand-danger-dark bg-opacity-50 text-brand-danger-light p-3 mt-3 rounded">
@@ -93,7 +98,7 @@
 				text="Sign in with Google"
 				icon={true}
 				loading={loading && method == 'google'}
-				variant="dark"
+				variant="accent"
 				expanded={true}
 				on:click={() => signInWith('google')}
 			>
@@ -103,7 +108,7 @@
 				text="Sign in with GitHub"
 				icon={true}
 				loading={loading && method == 'github'}
-				variant="dark"
+				variant="accent"
 				expanded={true}
 				on:click={() => signInWith('github')}
 			>

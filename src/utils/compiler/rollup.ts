@@ -69,7 +69,7 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 	if (!('public/index.html' in filesystem)) {
 		throwGenericError(
 			"The file 'public/index.html' could not be found. Make sure the file exists in order to render the application.\nFound files: " +
-				JSON.stringify(filesystem),
+			JSON.stringify(filesystem),
 			'IndexFileNotFoundError'
 		);
 	} else if (!('package.json' in filesystem)) {

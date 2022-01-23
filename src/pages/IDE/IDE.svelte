@@ -3,17 +3,9 @@
 	import EditorContainer from './EditorContainer.svelte';
 	import PreviewContainer from './PreviewContainer.svelte';
 	import { onMount } from 'svelte';
-	import {
-		initialising,
-		loadExercise,
-		result,
-		submitted,
-		pending
-	} from 'src/utils/exercise/exercise';
+	import { initialising, loadExercise } from 'src/utils/exercise/exercise';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
 	import { loadSettings } from 'src/utils/settings/settings';
-	import Results from 'src/components/exercise/Results.svelte';
-	import Modal from 'src/components/common/Modal.svelte';
 	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
 	import Navbar from 'src/components/navbar/Navbar.svelte';
 	import Button from 'src/components/common/Button.svelte';
@@ -37,18 +29,6 @@
 		loadExercise();
 		loadSettings();
 	});
-
-	let showingResults = false;
-
-	function showResults() {
-		showingResults = true;
-	}
-
-	function hideResults() {
-		showingResults = false;
-	}
-
-	$: $submitted && !$pending && $result && showResults();
 </script>
 
 {#if $initialising}
@@ -56,11 +36,6 @@
 		<OrbitProgressIndicator />
 	</div>
 {:else}
-	{#if showingResults}
-		<Modal title="Submission Results" on:close={hideResults}>
-			<Results />
-		</Modal>
-	{/if}
 	<div class="h-screen max-h-screen text-brand-text bg-brand-accent flex flex-col">
 		<Navbar />
 		<SplitPane pane1Size={33} pane2Size={67}>

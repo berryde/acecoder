@@ -4,18 +4,26 @@
 	import ProfileImage from 'src/components/profile/ProfileImage.svelte';
 	import { page } from '$app/stores';
 	import Button from 'src/components/common/Button.svelte';
+	import { onMount } from 'svelte';
+	import type { Project } from 'src/utils/types';
+	import { getProject } from 'src/utils/project/project';
+
+	let project: Project;
+	onMount(async () => {
+		project = await getProject($page.params.projectID);
+	});
 </script>
 
-<PrivateRoute restricted={true}>
+<PrivateRoute restricted={true} loading={!project}>
 	<div
-		class="w-screen h-screen bg-brand-editor-background flex justify-center items-center text-brand-text"
+		class="w-screen min-h-screen bg-brand-editor-background flex justify-center items-center text-brand-text"
 	>
 		<div class="flex-grow lg:max-w-7xl h-full p-20 space-y-8">
 			<div class="flex flex-row items-center justify-between">
 				<p class="text-3xl font-bold">Project editor</p>
 				<ProfileImage />
 			</div>
-			<ProjectSettings id={$page.params.slug} />
+			<ProjectSettings {project} projectID={$page.params.projectID} />
 			<div class="flex flex-col bg-brand-accent p-8 rounded space-y-3">
 				<div>
 					<p class="text-xl font-bold">Exercises</p>
@@ -25,7 +33,7 @@
 					<Button
 						text="New exercise"
 						on:click={() => {
-							window.location.href = '/exercise/new/' + $page.params.slug;
+							window.location.href = '/edit/' + $page.params.projectID + '/new';
 						}}
 					/>
 				</div>

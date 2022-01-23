@@ -5,7 +5,7 @@
 	/**
 	 * The icon size to display.
 	 */
-	export let size: 'small' | 'medium' | 'large' = 'medium';
+	export let size: 'small' | 'medium' | 'large' | 'xl' = 'medium';
 
 	/**
 	 * Whether this icon is also a button.
@@ -38,6 +38,8 @@
 				return 'h-3 w-3';
 			case 'large':
 				return 'h-6 w-6';
+			case 'xl':
+				return 'h-8 w-8';
 			case 'medium':
 			default:
 				return 'h-4 w-4';

@@ -14,7 +14,7 @@
 	/**
 	 * Whether the user has the admin claim.
 	 */
-	let admin;
+	let admin: boolean;
 	let user: User;
 
 	onMount(() => {

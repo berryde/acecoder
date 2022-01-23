@@ -47,35 +47,23 @@
 	<div class="w-96 flex flex-col">
 		<h1 class="text-3xl font-bold mb-10">Create an account</h1>
 
-		<Input
-			placeholder="Email"
-			type="email"
-			icon={true}
-			classes="mb-3 bg-brand-accent"
-			bind:value={email}
-		>
+		<Input placeholder="Email" type="email" icon={true} variant="dark" bind:value={email}>
 			<IoMdPerson />
 		</Input>
-		<Input
-			placeholder="Password"
-			type="password"
-			icon={true}
-			classes="mb-3 bg-brand-accent"
-			bind:value={password}
-		>
+		<Input placeholder="Password" type="password" icon={true} variant="dark" bind:value={password}>
 			<IoMdLock />
 		</Input>
 		<Input
 			placeholder="Confifrm password"
 			type="password"
 			icon={true}
-			classes="mb-3 bg-brand-accent"
+			variant="dark"
 			bind:value={confirmPassword}
 		>
 			<IoMdLock />
 		</Input>
 
-		<Button text="Sign up" on:click={() => submit()} classes="hover:bg-blue-800 bg-blue-700" />
+		<Button text="Sign up" on:click={() => submit()} />
 
 		{#if error}
 			<div class="bg-red-900 text-red-400 bg-opacity-50 p-3 mt-3 rounded">
@@ -95,7 +83,7 @@
 		<Button
 			text="Sign up with Google"
 			icon={true}
-			classes="hover:bg-opacity-50 bg-brand-accent mb-3"
+			variant="accent"
 			on:click={() => {
 				signInWith('google');
 			}}><IoLogoGoogle /></Button
@@ -103,7 +91,7 @@
 		<Button
 			text="Sign up with GitHub"
 			icon={true}
-			classes="hover:bg-opacity-50 bg-brand-accent"
+			variant="accent"
 			on:click={() => {
 				signInWith('github');
 			}}><IoLogoGithub /></Button

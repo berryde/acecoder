@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { addMessage, latestError } from '../../utils/console/console';
-	import Preview from '../../components/profile/preview/Preview.svelte';
+	import Preview from '../../components/preview/Preview.svelte';
 	import { filesystem, getAllFiles } from '../../utils/filesystem/filesystem';
 	import type { WorkerError, WorkerResponse } from '../../utils/types';
 	import { onDestroy, onMount } from 'svelte';
@@ -15,13 +14,8 @@
 	function onMessage(event: MessageEvent<any>) {
 		const e = event.data.error as WorkerError;
 		if (e) {
-			addMessage({
-				data: e.message,
-				type: 'error'
-			});
-			latestError.set(e);
+			console.error(e.message);
 		} else {
-			latestError.set(undefined);
 			compiled.set(event.data as WorkerResponse);
 		}
 	}
@@ -52,4 +46,4 @@
 	$: $filesystem && refresh();
 </script>
 
-<Preview resizing={resizingX || selecting} error={$latestError} on:refresh={() => refresh()} />
+<Preview resizing={resizingX || selecting} on:refresh={() => refresh()} />

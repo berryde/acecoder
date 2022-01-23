@@ -11,7 +11,7 @@
 	export let expanded = false;
 	export let outline = false;
 
-	type Variant = 'default' | 'danger' | 'dark';
+	type Variant = 'default' | 'danger' | 'dark' | 'accent';
 	export let variant: Variant = 'default';
 
 	function onclick() {
@@ -23,6 +23,10 @@
 	function getStyle() {
 		switch (variant) {
 			case 'dark':
+				return outline
+					? 'border-brand-background text-brand-background hover:bg-brand-background'
+					: 'bg-brand-background';
+			case 'accent':
 				return outline
 					? 'border-brand-accent text-brand-accent hover:bg-brand-accent'
 					: 'bg-brand-accent';
@@ -46,7 +50,9 @@
 	on:click={() => onclick()}
 >
 	{#if loading}
-		<CircularProgressIndicator />
+		<div class="h-full">
+			<CircularProgressIndicator />
+		</div>
 	{:else}
 		<div class="flex flex-row items-center">
 			{#if icon}
@@ -56,7 +62,7 @@
 					</Icon>
 				</div>
 			{/if}
-			<p>{text}</p>
+			<p class="select-none">{text}</p>
 		</div>
 	{/if}
 </div>
