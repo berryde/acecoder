@@ -3,7 +3,7 @@ import { get, writable } from 'svelte/store';
 // open editors
 export const tabs = writable<string[]>([]);
 export const selectedTab = writable<string>('');
-export const temporaryTab = writable<string>('');
+
 export const unsavedTabs = writable<string[]>([]);
 
 
@@ -15,32 +15,14 @@ export const unsavedTabs = writable<string[]>([]);
  */
 export const openTab = (path: string): void => {
 	tabs.update((tabs) => {
-		const temporary = get(temporaryTab);
-		const selected = get(selectedTab);
-
 		if (tabs.includes(path)) {
-			if (temporary == path) {
-				temporaryTab.set('');
-			}
 			return tabs;
 		} else {
-			let index: number;
-			if (temporary != '') {
-				// Replace the temporary tab with this one
-				index = tabs.indexOf(temporary);
-				temporaryTab.set(path);
-				tabs[index] = path;
-				return tabs;
-			} else {
-				// Insert the tab to the right of the selected tab
-				index = tabs.indexOf(selected);
-				temporaryTab.set(path);
-				tabs.splice(index + 1, 0, path);
-				return tabs;
-			}
+			// Insert the tab to the right of the selected tab
+			tabs.splice(tabs.indexOf(get(selectedTab)) + 1, 0, path);
+			return tabs;
 		}
 	});
-	// Create a session for the tab
 	// Select the newly created tab
 	selectedTab.set(path);
 };
@@ -86,9 +68,6 @@ export const renameTab = (oldName: string, newName: string): void => {
  * @param name The name of the tab to close.
  */
 export const closeTab = (name: string): void => {
-	// Clear the temporary tab
-	temporaryTab.update((tab) => (tab == name ? '' : tab));
-
 	tabs.update((tabs) => {
 		// Update the selected tab
 		let index = tabs.indexOf(name);

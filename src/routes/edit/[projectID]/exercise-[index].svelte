@@ -17,12 +17,18 @@
 	let loading = true;
 
 	onMount(async () => {
-		const metadata = await getExercise($page.params.projectID, $page.params.exerciseID);
-		const files = await getAllExerciseFiles($page.params.exerciseID);
-		const chapters = await getExerciseChapters($page.params.exerciseID);
-		exercise = { ...metadata, files: files, chapters: chapters };
-		project = await getProject($page.params.projectID);
-		loading = false;
+		try {
+			const exerciseID = `${$page.params.projectID}${$page.params.index}`;
+			const metadata = await getExercise($page.params.projectID, exerciseID);
+			const files = await getAllExerciseFiles(exerciseID);
+			const chapters = await getExerciseChapters(exerciseID);
+			exercise = { ...metadata, files: files, chapters: chapters };
+			project = await getProject($page.params.projectID);
+			loading = false;
+		} catch (err) {
+			console.error(err);
+			window.location.href = '/error/404';
+		}
 	});
 </script>
 
@@ -37,7 +43,7 @@
 			</div>
 			<ExerciseSettings
 				projectID={$page.params.projectID}
-				exerciseID={$page.params.exerciseID}
+				exerciseID={$page.params.projectID + $page.params.index}
 				{exercise}
 				{project}
 			/>

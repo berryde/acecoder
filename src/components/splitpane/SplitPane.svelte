@@ -82,7 +82,7 @@
 		delta.x = Math.min(Math.max(delta.x, -mouseData.pane1Size), mouseData.pane2Size);
 
 		const left = ((mouseData.pane1Size + delta.x) / width) * 100;
-		const right = 100 - left - separatorSize;
+		const right = 100 - left;
 		pane1Size = left;
 		pane2Size = right;
 		pane1.style.width = left + '%';
@@ -142,7 +142,6 @@
 		if (window) {
 			window.addEventListener('resize', resize);
 		}
-		separatorSize = getSeparatorSize();
 	});
 
 	onDestroy(() => {
@@ -160,19 +159,11 @@
 		if (separator) separator.removeAttribute('style');
 	}
 
-	function getSeparatorSize() {
-		if (separator) {
-			return (separator.clientWidth / width) * 100;
-		}
-		return 0;
-	}
-
 	$: pane1Size && resetSize();
 	$: pane2Size && resetSize();
 	$: minPane1Size && resetSize();
 
 	let width: number;
-	let separatorSize: number;
 </script>
 
 <div

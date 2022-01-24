@@ -1,11 +1,11 @@
 import { get } from 'svelte/store';
-import { closeTab, openTab, renameTab, selectedTab, tabs, temporaryTab, unsavedTabs } from './tabs';
+import { closeTab, openTab, renameTab, selectedTab, tabs, unsavedTabs } from './tabs';
 
 describe('The tabs library', () => {
 	beforeEach(() => {
 		tabs.set([]);
 		selectedTab.set('');
-		temporaryTab.set('');
+
 		unsavedTabs.set([]);
 	}),
 		it('can open a tab', () => {

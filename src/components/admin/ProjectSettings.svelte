@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+	import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 	import Button from 'src/components/common/Button.svelte';
 	import Input from 'src/components/common/Input.svelte';
 	import Checkbox from 'src/components/common/Checkbox.svelte';
@@ -20,6 +20,7 @@
 		languages: [],
 		name: '',
 		description: '',
+		exerciseCount: 0,
 		icon: ''
 	};
 	let errors: string[] = [];
@@ -58,7 +59,7 @@
 					const ref = await addDoc(collection(db, 'projects'), project);
 					window.location.href = '/edit/' + ref.id;
 				} else {
-					await setDoc(doc(db, 'projects', projectID), project);
+					await updateDoc(doc(db, 'projects', projectID), project);
 					toggleEdit();
 				}
 			} catch (err) {

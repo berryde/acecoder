@@ -68,9 +68,6 @@ specifiers:
   typescript: ^4.4.4
   webpack: ^5.67.0
 
-dependencies:
-  brace: 0.11.1
-
 devDependencies:
   '@babel/core': 7.16.7
   '@babel/preset-typescript': 7.16.7_@babel+core@7.16.7
@@ -109,6 +106,7 @@ devDependencies:
   babel-jest: 27.4.6_@babel+core@7.16.7
   babel-loader: 8.2.3_15abcf48bdaa8457019961a15b19d564
   babel-plugin-transform-vite-meta-env: 1.0.3
+  brace: 0.11.1
   canvas-confetti: 1.4.0
   cssnano: 5.0.15_postcss@8.4.5
   encoding: 0.1.13
@@ -5333,7 +5331,7 @@ packages:
 
   /brace/0.11.1:
     resolution: {integrity: sha1-SJb8ydVE7vRfS7dmDbMg07N5/lg=}
-    dev: false
+    dev: true
 
   /braces/2.3.2:
     resolution: {integrity: sha512-aNdbnj9P8PjdXU4ybaWLK2IF3jc/EoDYbC7AazW6to3TRsfXxscC9UXOB5iDiEQrkyIbWp2SLQda4+QAa7nc3w==}

@@ -3,12 +3,13 @@
 	import EditorContainer from './EditorContainer.svelte';
 	import PreviewContainer from './PreviewContainer.svelte';
 	import { onMount } from 'svelte';
-	import { initialising, loadExercise } from 'src/utils/exercise/exercise';
+	import { initialising, loadExercise, project } from 'src/utils/exercise/exercise';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
 	import { loadSettings } from 'src/utils/settings/settings';
 	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
 	import Navbar from 'src/components/navbar/Navbar.svelte';
 	import Button from 'src/components/common/Button.svelte';
+	import { page } from '$app/stores';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -23,12 +24,28 @@
 	function toggleSelecting(e: CustomEvent<boolean>) {
 		selecting = e.detail;
 	}
+	let index: number;
 
 	// Add a listener for key combinations
 	onMount(async () => {
+		index = parseInt($page.params.index) + 1;
 		loadExercise();
 		loadSettings();
 	});
+
+	function handleNext() {
+		if (index == $project.exerciseCount) {
+			window.location.href = `/project/${$page.params.projectID}`;
+		} else {
+			window.location.href = `/project/${$page.params.projectID}/exercise-${$page.params.index}`;
+		}
+	}
+
+	function handlePrevious() {
+		if (index > 1) {
+			window.location.href = `/project/${$page.params.projectID}/exercise-${index - 1}`;
+		}
+	}
 </script>
 
 {#if $initialising}
@@ -43,7 +60,7 @@
 				<Sidebar />
 			</div>
 			<div slot="pane2" class="h-full flex flex-col">
-				<SplitPane let:resizing={resizingX}>
+				<SplitPane let:resizing={resizingX} minPane2Size={'10rem'}>
 					<div slot="pane1" class="h-full">
 						<EditorContainer on:drag={toggleSelecting} />
 					</div>
@@ -54,9 +71,14 @@
 			</div>
 		</SplitPane>
 		<div class="px-5 py-3 flex flex-row w-full justify-between bg-brand-background items-center">
-			<div />
-			<p>1/5</p>
-			<Button text="Next" />
+			<div>
+				{#if $page.params.index !== '0'}
+					<Button text="Previous" />
+				{/if}
+			</div>
+
+			<p>{index}/{$project.exerciseCount}</p>
+			<Button text={index == $project.exerciseCount ? 'Finish' : 'Next'} on:click={handleNext} />
 		</div>
 	</div>
 {/if}

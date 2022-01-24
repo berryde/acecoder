@@ -10,7 +10,6 @@ import { updateFile } from '../filesystem/filesystem';
 import { selectedTab } from 'src/utils/tabs/tabs';
 import { saveTab } from '../tabs/tabs';
 
-
 /**
  * Supported file extensions.
  */
@@ -18,11 +17,8 @@ export const supportedExtensions = ['jsx', 'css', 'js', 'ts', 'html', 'tsx', 'js
 
 export const contents = writable<string>('');
 
-
-
 export const format = (value: string, language: string): string => {
 	if (isSupported(language)) {
-		console.log("Formatting", language)
 		try {
 			if (language == 'json') {
 				return JSON.stringify(JSON.parse(value), null, 2);

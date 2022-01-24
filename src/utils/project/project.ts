@@ -7,7 +7,7 @@ export const getExerciseChapters = async (exerciseID: string): Promise<ExerciseC
     if (snapshot.exists) {
         return Object.values(snapshot.data())
     } else {
-        throw (`Exercise ${exerciseID} does not exist`);
+        throw (`Could not get exercise chapters: exercise ${exerciseID} does not exist`);
     }
 }
 
@@ -20,7 +20,7 @@ export const getAllExerciseFiles = async (exerciseID: string): Promise<Record<st
         })
         return result
     } else {
-        throw (`Exercise ${exerciseID} does not exist`);
+        throw (`Could not get all exercise files: exercise ${exerciseID} does not exist`);
     }
 }
 
@@ -29,7 +29,7 @@ export const getExerciseFiles = async (exerciseID: string, language: string): Pr
     if (snapshot.exists) {
         return snapshot.data()
     } else {
-        throw (`Exercise ${exerciseID} does not exist`);
+        throw (`Could not get exercise files: exercise ${exerciseID} does not exist`);
     }
 }
 
@@ -45,13 +45,13 @@ export const getExercise = async (projectID: string, exerciseID: string): Promis
 export const getExercises = async (projectID: string): Promise<Record<string, ExerciseMetadata>> => {
     const snapshot = await getDocs(collection(db, 'projects', projectID, 'exercises'));
     const result: Record<string, ExerciseMetadata> = {}
-    if (!snapshot.empty) {
+    try {
         snapshot.forEach((doc) => {
             result[doc.id] = doc.data() as ExerciseMetadata
         })
         return result
-    } else {
-        throw (`Project ${projectID} has no exercises`);
+    } catch (err) {
+        throw (`Unable to fetch exercises for project ${projectID}`);
     }
 }
 

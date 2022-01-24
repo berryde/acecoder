@@ -32,7 +32,11 @@
 				{#each Object.entries(exercises) as [exerciseID, exercise]}
 					<div class="flex fkex-row items-center space-x-5">
 						<Checkbox />
-						<a href="/project/{$page.params.projectID}/{exerciseID}">{exercise.name}</a>
+						<a
+							href="/project/{$page.params.projectID}/exercise-{exerciseID.slice(
+								$page.params.projectID.length
+							)}">{exercise.name}</a
+						>
 					</div>
 				{/each}
 			</div>

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import IDE from 'src/pages/IDE/IDE.svelte';
 	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
-
 	import {
 		getExercise,
 		getExerciseChapters,
@@ -16,17 +15,16 @@
 	let loading = true;
 	onMount(async () => {
 		const _language = 'react';
-		const metadata = await getExercise($page.params.projectID, $page.params.exerciseID);
-		const files = await getExerciseFiles($page.params.exerciseID, _language);
-		const chapters = await getExerciseChapters($page.params.exerciseID);
+		const exerciseID = `${$page.params.projectID}${$page.params.index}`;
+		const metadata = await getExercise($page.params.projectID, exerciseID);
+		const files = await getExerciseFiles(exerciseID, _language);
+		const chapters = await getExerciseChapters(exerciseID);
 		exercise.set({ ...metadata, files: { [_language]: files }, chapters: chapters });
 		project.set(await getProject($page.params.projectID));
 		language.set('react');
-
 		const editable = Object.keys(files).filter((filename) => files[filename].editable);
 		tabs.set(editable);
 		selectedTab.set(editable[0]);
-
 		loading = false;
 	});
 </script>

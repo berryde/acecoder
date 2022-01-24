@@ -1,7 +1,6 @@
 import { deleteDoc, doc, getDoc as _getDoc, setDoc } from 'firebase/firestore';
 import { writable, get } from 'svelte/store';
-import { format } from '../codemirror/codemirror';
-import { createFile, filesystem, getAllFiles, getExtension } from '../filesystem/filesystem';
+import { createFile, filesystem, getAllFiles } from '../filesystem/filesystem';
 import { auth, db } from '../firebase';
 import { get as httpGet } from '../network/network';
 import type { Exercise, TestResult } from '../types';
@@ -13,15 +12,12 @@ import type { Project } from "src/utils/types"
  * The current exercise being completed
  */
 export const exercise = writable<Exercise>();
-
+/**
+ * Metadata about the current project
+ */
 export const project = writable<Project>();
 
 export const language = writable<string>();
-
-/**
- * The ID of the current exercise
- */
-export const exerciseID = writable<string>();
 
 /**
  * The result of the latest submission

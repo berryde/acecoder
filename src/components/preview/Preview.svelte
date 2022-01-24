@@ -136,7 +136,7 @@
 </script>
 
 <div class="flex-grow h-full w-full flex flex-col overflow-hidden bg-brand-background">
-	<div class="flex w-full px-5 py-3 space-x-3 items-center">
+	<div class="flex w-full justify-end px-5 py-3 space-x-3 items-center h-10">
 		<Icon on:click={() => handleRefresh()} button={true} label="Refresh">
 			<IoIosPlay />
 		</Icon>

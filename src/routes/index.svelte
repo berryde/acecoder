@@ -36,7 +36,6 @@
 			});
 		});
 		projects = projects;
-		console.log(projects);
 	}
 
 	onMount(() => {

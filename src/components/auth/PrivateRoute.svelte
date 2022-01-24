@@ -4,7 +4,6 @@
 	import { auth } from 'src/utils/firebase';
 	import { onMount } from 'svelte';
 	import OrbitProgressIndicator from '../loaders/OrbitProgressIndicator.svelte';
-	import GenericError from './GenericError.svelte';
 
 	/**
 	 * Whether this is an admin only route.
@@ -31,11 +30,15 @@
 			}
 		});
 	});
+
+	function throwError(code: number) {
+		window.location.href = `/error/${code}`;
+	}
+
+	$: restricted && admin === false && throwError(403);
 </script>
 
-{#if restricted && admin == false && !loading}
-	<GenericError status={403} />
-{:else if !!user && !loading}
+{#if !!user && !loading}
 	<slot />
 {:else}
 	<div class="h-screen w-screen bg-brand-background flex justify-center items-center">

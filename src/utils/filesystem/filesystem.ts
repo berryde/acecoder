@@ -299,6 +299,7 @@ export const extractZip = async (file: Blob): Promise<Record<string, string>> =>
 		await zip.files[filename].async('string').then((data) => {
 			if (!filename.endsWith("/")) result[filename] = data
 		})
+
 	}
 	return result
 }
