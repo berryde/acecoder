@@ -92,6 +92,7 @@
 			case 'ts':
 				await import('brace/mode/typescript');
 				return 'ace/mode/typescript';
+			case 'svelte':
 			case 'html':
 				await import('brace/mode/html');
 				return 'ace/mode/html';
@@ -109,6 +110,9 @@
 			if (!($selectedTab in sessions)) {
 				const session = new ace.EditSession((getFile($selectedTab) as FSFile).value);
 				session.setMode(await importMode($selectedTab));
+				if (getExtension($selectedTab) == 'svelte') {
+					session.setUseWorker(false);
+				}
 				session.setUseWrapMode(true);
 				sessions[$selectedTab] = session;
 			}

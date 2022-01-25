@@ -9,7 +9,7 @@
 		<p class="uppercase text-xs">{$project.name}</p>
 		<h1 class="text-xl font-bold">{$exercise.name}</h1>
 		<p>
-			{$exercise.description}
+			{@html $exercise.description}
 		</p>
 	</div>
 	<div class="flex flex-row items-center px-5 py-3 space-x-5 bg-brand-accent">

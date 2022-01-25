@@ -1,38 +1,45 @@
 <script lang="ts">
 	import IDE from 'src/pages/IDE/IDE.svelte';
 	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
-	import {
-		getExercise,
-		getExerciseChapters,
-		getExerciseFiles,
-		getProject
-	} from 'src/utils/project/project';
+	import { getExercise, getProject, getProjectSettings } from 'src/utils/project/project';
 	import { exercise, language, project } from 'src/utils/exercise/exercise';
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
 	import { selectedTab, tabs } from 'src/utils/tabs/tabs';
 
 	let loading = true;
-	onMount(async () => {
-		const _language = 'react';
-		const exerciseID = `${$page.params.projectID}${$page.params.index}`;
-		const metadata = await getExercise($page.params.projectID, exerciseID);
-		const files = await getExerciseFiles(exerciseID, _language);
-		const chapters = await getExerciseChapters(exerciseID);
-		exercise.set({ ...metadata, files: { [_language]: files }, chapters: chapters });
-		project.set(await getProject($page.params.projectID));
-		language.set('react');
-		const editable = Object.keys(files).filter((filename) => files[filename].editable);
-		tabs.set(editable);
-		selectedTab.set(editable[0]);
-		loading = false;
-	});
+
+	async function loadExercise() {
+		// Check if the user has unlocked this exercise
+		const settings = await getProjectSettings($page.params.projectID);
+		if (settings.progress < parseInt($page.params.index)) {
+			window.location.href = '/error/404';
+		} else {
+			try {
+				exercise.set(
+					await getExercise($page.params.projectID, $page.params.index, [settings.language])
+				);
+				project.set(await getProject($page.params.projectID));
+				language.set(Object.keys($exercise.files)[0]);
+				console.log($exercise.files[$language]);
+				const editable = Object.keys($exercise.files[$language]).filter(
+					(filename) => $exercise.files[$language][filename].editable
+				);
+				console.log(editable);
+				tabs.set(editable);
+				selectedTab.set(editable[0]);
+				loading = false;
+			} catch (err) {
+				console.error(err);
+				//window.location.href = '/error/404';
+			}
+		}
+	}
 </script>
 
 <svelte:head>
 	<title>Exercise</title>
 </svelte:head>
 
-<PrivateRoute {loading}>
+<PrivateRoute {loading} on:authenticated={loadExercise}>
 	<IDE />
 </PrivateRoute>

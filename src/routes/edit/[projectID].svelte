@@ -6,7 +6,7 @@
 	import Button from 'src/components/common/Button.svelte';
 	import { onMount } from 'svelte';
 	import type { ExerciseMetadata, Project } from 'src/utils/types';
-	import { getExercises, getProject } from 'src/utils/project/project';
+	import { getAllExerciseMetadata, getProject } from 'src/utils/project/project';
 
 	let project: Project;
 	let loading = true;
@@ -14,7 +14,7 @@
 	onMount(async () => {
 		try {
 			project = await getProject($page.params.projectID);
-			exercises = await getExercises($page.params.projectID);
+			exercises = await getAllExerciseMetadata($page.params.projectID);
 			loading = false;
 		} catch (err) {
 			window.location.href = '/error/404';
@@ -32,7 +32,7 @@
 	<div
 		class="w-screen min-h-screen bg-brand-editor-background flex justify-center items-center text-brand-text"
 	>
-		<div class="flex-grow lg:max-w-7xl h-full p-20 space-y-8">
+		<div class="flex-grow lg:max-w-5xl h-full p-20 space-y-8">
 			<div class="flex flex-row items-center justify-between">
 				<p class="text-3xl font-bold">Project editor</p>
 				<ProfileImage />

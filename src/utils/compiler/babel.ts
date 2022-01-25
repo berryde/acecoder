@@ -60,7 +60,9 @@ export default function babel(
 		 */
 		async load(id) {
 			// Check if the import refers to another source file, else it's a node module.
-			return files[id].code;
+			if (/.*\.(j|t)sx?/.test(id)) {
+				return files[id].code;
+			}
 		},
 
 		/**
@@ -72,7 +74,7 @@ export default function babel(
 		 */
 		async transform(code, id) {
 			// Babel transform tsx, ts, js and jsx files.
-			if (/.*\.(js|ts)x?/.test(id)) {
+			if (/.*\.(j|t)x?/.test(id)) {
 				const options = {
 					filename: id,
 					presets: ['react', 'typescript']

@@ -53,7 +53,7 @@
 					bind:value={exercise.description}
 				/>
 			{:else}
-				<p>{exercise.description}</p>
+				<p>{@html exercise.description}</p>
 			{/if}
 		</div>
 	</div>

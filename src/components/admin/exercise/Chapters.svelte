@@ -41,7 +41,7 @@
 					{#if editing}
 						<textarea class="bg-brand-accent p-2 w-full rounded h-40" bind:value={chapter.text} />
 					{:else}
-						<p>{chapter.text}</p>
+						<p>{@html chapter.text}</p>
 					{/if}
 				</div>
 

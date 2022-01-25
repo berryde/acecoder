@@ -67,46 +67,15 @@ export const loadExercise = async (): Promise<void> => {
 	initialising.set(false);
 };
 
-export const reset = async (): Promise<void> => {
+export const reset = async (projectID: string, exerciseID: string): Promise<void> => {
 	initialising.set(true);
 	submitted.set(false);
-	const submissionID = get(exerciseID) + auth.currentUser.uid;
-	const submission = doc(db, 'submissions', submissionID);
+	const submission = doc(db, 'projects', projectID, 'exercises', exerciseID, 'submissions', auth.currentUser.uid);
 	if (submission) {
 		await deleteDoc(submission);
 	}
 	filesystem.set({});
 	loadExercise();
-};
-
-/**
- * A wrapper method for firestore document retrieval.
- *
- * @param collection The collection to get the doc from
- * @param id The id of the doc in the collection
- * @returns The id of the doc if it exists, otherwise undefined
- */
-export const getDoc = async (collection: string, id: string): Promise<DocumentData> => {
-	try {
-		const ref = doc(db, collection, id);
-		const snapshot = await _getDoc(ref);
-		return snapshot.data();
-	} catch (err) {
-		return;
-	}
-};
-
-export const save = async (): Promise<void> => {
-	const files = getAllFiles('', get(filesystem));
-	const submission = {
-		files: {},
-		exercise: doc(db, 'exercises', get(exerciseID))
-	};
-	files.forEach((file) => (submission.files[file.name] = file.code));
-
-	const id = get(exerciseID) + auth.currentUser.uid;
-	const sub = doc(db, 'submissions', id);
-	await setDoc(sub, submission);
 };
 
 
@@ -115,32 +84,36 @@ export const save = async (): Promise<void> => {
  *
  * @returns A void promise that resolves when the submission request is completed.
  */
-export const submit = async (): Promise<string | void> => {
+export const submit = async (projectID: string, exerciseID: string): Promise<string | void> => {
+	const files = getAllFiles('', get(filesystem));
+	const submission = {};
+	files.forEach((file) => (submission[file.name] = file.code));
+	await setDoc(doc(db, 'projects', projectID, 'exercises', exerciseID, 'submissions', auth.currentUser.uid), submission);
+
 	let message: string;
-	save();
-	const id = get(exerciseID) + auth.currentUser.uid;
 	aborted.set(false);
 	pending.set(true);
-
 	// Give up after 120 seconds.
 	timeout = setTimeout(() => {
 		pending.set(false);
 		aborted.set(true);
 	}, 120000);
 
-	let endpoint: string;
-	if (import.meta.env.DEV) {
-		endpoint = 'http://localhost:9080/submissions/' + id;
-	} else {
-		endpoint = 'https://submission-server-rly7tdzvgq-ew.a.run.app/submissions/' + id;
-	}
-	try {
-		const response = await httpGet(endpoint);
-		result.set(response['message'] as TestResult);
-		submitted.set(true);
-	} catch {
-		message = 'Unable to reach the submission server. Please try again later';
-	}
+
+	//TODO: Post projectID, exerciseID and UID to the server.
+	// let endpoint: string;
+	// if (import.meta.env.DEV) {
+	// 	endpoint = 'http://localhost:9080/submissions/' + id;
+	// } else {
+	// 	endpoint = 'https://submission-server-rly7tdzvgq-ew.a.run.app/submissions/' + id;
+	// }
+	// try {
+	// 	const response = await httpGet(endpoint);
+	// 	result.set(response['message'] as TestResult);
+	// 	submitted.set(true);
+	// } catch {
+	// 	message = 'Unable to reach the submission server. Please try again later';
+	// }
 
 	pending.set(false);
 	clearTimeout(timeout);
@@ -151,7 +124,6 @@ export const restoreDefaults = (): void => {
 	initialising.set(true);
 	exercise.set(undefined);
 	aborted.set(false);
-	exerciseID.set(undefined);
 	pending.set(false);
 	result.set(undefined);
 	filesystem.set({});

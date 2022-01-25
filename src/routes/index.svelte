@@ -51,7 +51,7 @@
 	<div
 		class="w-screen min-h-screen bg-brand-editor-background flex justify-center text-brand-text overflow-y-auto"
 	>
-		<div class="flex-grow lg:max-w-7xl h-full p-20 space-y-8">
+		<div class="flex-grow lg:max-w-5xl h-full p-20 space-y-8">
 			<div class="flex flex-row justify-between items-center">
 				<p class="text-3xl font-bold">{greeting}, {getName()}</p>
 				<ProfileMenu />

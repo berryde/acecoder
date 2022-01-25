@@ -2,7 +2,8 @@
 	import type { User } from 'firebase/auth';
 	import { isAdmin } from 'src/utils/auth/auth';
 	import { auth } from 'src/utils/firebase';
-	import { onMount } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
+
 	import OrbitProgressIndicator from '../loaders/OrbitProgressIndicator.svelte';
 
 	/**
@@ -16,6 +17,8 @@
 	let admin: boolean;
 	let user: User;
 
+	const dispatch = createEventDispatcher();
+
 	onMount(() => {
 		user = auth.currentUser;
 		auth.onAuthStateChanged(async (_user) => {
@@ -28,6 +31,7 @@
 					admin = await isAdmin();
 				}
 			}
+			dispatch('authenticated');
 		});
 	});
 

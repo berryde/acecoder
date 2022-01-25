@@ -234,11 +234,11 @@ export type ExerciseMetadata = {
 	name: string;
 	description: string;
 	assessed: boolean;
+	chapters: ExerciseChapter[];
 };
 
 export interface Exercise extends ExerciseMetadata {
 	files: Record<string, Record<string, ExerciseFile>>;
-	chapters: ExerciseChapter[];
 }
 
 export type ExerciseChapter = {
@@ -255,3 +255,8 @@ export type ExerciseChapter = {
 	 */
 	spec?: string;
 };
+
+export type ProjectSettings = {
+	progress: number
+	language: string
+}

@@ -92,22 +92,24 @@
 				{/if}
 				{#if editing}
 					<div class="flex flex-row space-x-3">
-						<label for="file-upload" class="cursor-pointer text-brand-primary">Upload files</label>
+						<label for="file-upload-{language}" class="cursor-pointer text-brand-primary"
+							>Upload files</label
+						>
 						<p class="font-mono">
 							{uploads[language] && exercise.files[language] && uploads[language].length > 0
 								? uploads[language][0].name
 								: ''}
 						</p>
+						<input
+							type="file"
+							id="file-upload-{language}"
+							class="hidden"
+							bind:files={uploads[language]}
+							accept=".zip"
+							on:change={() => handleUpload(language)}
+						/>
 					</div>
 				{/if}
-				<input
-					type="file"
-					id="file-upload"
-					class="hidden"
-					bind:files={uploads['react']}
-					accept=".zip"
-					on:change={() => handleUpload(language)}
-				/>
 			</div>
 		{/each}
 	</div>

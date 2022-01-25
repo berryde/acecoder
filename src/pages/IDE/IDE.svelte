@@ -73,7 +73,7 @@
 		<div class="px-5 py-3 flex flex-row w-full justify-between bg-brand-background items-center">
 			<div>
 				{#if $page.params.index !== '0'}
-					<Button text="Previous" />
+					<Button text="Previous" on:click={handlePrevious} />
 				{/if}
 			</div>
 

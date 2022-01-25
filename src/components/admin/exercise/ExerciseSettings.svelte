@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from '../../common/Button.svelte';
-	import type { Exercise, ExerciseChapter, ExerciseMetadata, Project } from 'src/utils/types';
+	import type { Exercise, ExerciseMetadata, Project } from 'src/utils/types';
 	import { doc, increment, runTransaction } from 'firebase/firestore';
 	import { db } from 'src/utils/firebase';
 	import Chapters from './Chapters.svelte';
@@ -14,7 +14,7 @@
 	export let projectID: string;
 	export let project: Project;
 	/**
-	 * The ID of the exercise to update. This is always {projectID}{i}
+	 * The ID of the exercise to update.
 	 */
 	export let exerciseID: string = undefined;
 	export let exercise: Exercise = {
@@ -80,23 +80,19 @@
 				const metadata: ExerciseMetadata = {
 					name: exercise.name,
 					description: exercise.description,
-					assessed: exercise.assessed
+					assessed: exercise.assessed,
+					chapters: exercise.chapters
 				};
-				const chapters: Record<string, ExerciseChapter> = {};
-				for (let i = 0; i < exercise.chapters.length; i++) {
-					chapters[`chapter${i}`] = exercise.chapters[i];
-				}
 
 				// Use a batch write to create the exercise.
-
 				await runTransaction(db, async (transaction) => {
-					// Fetch the project to determine the new documentID to use
-					const project: Project = (
-						await transaction.get(doc(db, 'projects', projectID))
-					).data() as Project;
-
+					// Create or update the exercise metadata.
 					if (creating) {
-						exerciseID = `${projectID}${project.exerciseCount}`;
+						// Fetch the project to determine the new documentID to use
+						const project: Project = (
+							await transaction.get(doc(db, 'projects', projectID))
+						).data() as Project;
+						exerciseID = project.exerciseCount.toString();
 						transaction.set(doc(db, 'projects', projectID, 'exercises', exerciseID), metadata);
 						transaction.update(doc(db, 'projects', projectID), {
 							exerciseCount: increment(1)
@@ -105,22 +101,17 @@
 						transaction.update(doc(db, 'projects', projectID, 'exercises', exerciseID), metadata);
 					}
 
-					// Create the chapters
-					transaction.set(doc(db, 'exercise_chapters', exerciseID), chapters);
-
 					// Create the files for each language.
 					for (let language of Object.keys(exercise.files)) {
 						transaction.set(
-							doc(db, 'exercise_files', exerciseID, 'languages', language),
+							doc(db, 'projects', projectID, 'exercises', exerciseID, 'files', language),
 							exercise.files[language]
 						);
 					}
 				});
 
 				if (creating) {
-					window.location.href = `/edit/${projectID}/exercise-${exerciseID.slice(
-						projectID.length
-					)}`;
+					window.location.href = `/edit/${projectID}/exercise-${exerciseID}`;
 				} else {
 					toggleEdit();
 				}

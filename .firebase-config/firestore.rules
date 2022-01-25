@@ -2,60 +2,38 @@ rules_version = '2';
 service cloud.firestore {
 
   match /databases/{database}/documents {
-    match /submissions/{submissionId} {
-      // Users should only be allowed to access their own submissions
-      allow read, write: if
-          request.auth != null &&
-          submissionId.matches('.*' + request.auth.uid)
-    }
-    match /results/{submissionId} {
-      // Users should only be allowed to access their own results
-      allow read: if
-          request.auth != null &&
-          submissionId.matches('.*' + request.auth.uid);
-    }
-    match /settings/{userId} {
+    // Users should only be able to view and change their own settings
+    match /settings/{uid} {
       allow write: if
-        request.auth != null && userId == request.auth.uid
+        request.auth != null && uid == request.auth.uid
       allow read: if
-        request.auth != null && userId == request.auth.uid
+        request.auth != null && uid == request.auth.uid
     }
-    match /projects/{projectId} {
-      allow read: if
-        request.auth != null
-      allow write: if
-        request.auth != null && request.auth.token.admin == true;
+    match /projects {
+      // Allow all nested documents to be read by authenticated users and written by admins.
+      match /{document=**} {
+        allow read: if
+          request.auth != null
+        allow write: if
+          request.auth != null && request.auth.token.admin == true;
+      }
+      match /{pid}/exercises/{eid} {
+        // Users should only be able to read their own results.
+        match /results/{uid} {
+          allow read: if
+            request.auth != null && request.auth.uid == uid
+        }
+        // Users should only be able to load and change their own submissions.
+        match /submissions/{uid} {
+          allow read, write: if
+            request.auth != null && request.auth.uid == uid
+        }
+      }
+      // Allow user settings to be read and updated by that user.
+      match /{pid}/settings/{uid} {
+        allow read, write: if
+          request.auth != null && request.auth.uid == uid
+      }
     }
-    match /projects/{projectId}/exercises {
-      allow read: if
-        request.auth != null
-      allow write: if
-        request.auth != null && request.auth.token.admin == true;
-    }
-    match /projects/{projectId}/exercises/{exerciseId} {
-      allow read: if
-        request.auth != null
-      allow write: if
-        request.auth != null && request.auth.token.admin == true;
-    }
-    match /exercise_files/{exerciseId} {
-      allow read: if
-        request.auth != null
-      allow write: if
-        request.auth != null && request.auth.token.admin == true;
-    }
-    match /exercise_files/{exerciseId}/languages/{language} {
-      allow read: if
-        request.auth != null
-      allow write: if
-        request.auth != null && request.auth.token.admin == true;
-    }
-    match /exercise_chapters/{exerciseId} {
-      allow read: if
-        request.auth != null
-      allow write: if
-        request.auth != null && request.auth.token.admin == true;
-    }
-     
   }
 }

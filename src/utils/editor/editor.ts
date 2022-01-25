@@ -13,7 +13,7 @@ import { saveTab } from '../tabs/tabs';
 /**
  * Supported file extensions.
  */
-export const supportedExtensions = ['jsx', 'css', 'js', 'ts', 'html', 'tsx', 'json'];
+export const supportedExtensions = ['jsx', 'css', 'js', 'ts', 'html', 'tsx', 'json', 'svelte'];
 
 export const contents = writable<string>('');
 
