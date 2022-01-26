@@ -7,6 +7,8 @@
 	import { capitalise } from 'src/utils/general';
 
 	import type { Exercise, ExerciseFile, Project } from 'src/utils/types';
+	import Modal from 'src/components/common/Modal.svelte';
+	import Button from 'src/components/common/Button.svelte';
 
 	export let exercise: Exercise;
 	export let project: Project;
@@ -31,6 +33,32 @@
 	function toggleEditable(language: string, filename: string) {
 		exercise.files[language][filename].editable = !exercise.files[language][filename].editable;
 		exercise = exercise;
+	}
+
+	let showingModal = false;
+	let modalLanguage: string;
+	let modalFilename: string;
+	let modalText: string;
+
+	function openModal(language: string, filename: string) {
+		modalText = exercise.files[language][filename].contents;
+		modalLanguage = language;
+		modalFilename = filename;
+		showingModal = true;
+	}
+
+	function saveModal() {
+		exercise.files[modalLanguage][modalFilename].contents = modalText;
+	}
+
+	function closeModal(save: boolean) {
+		if (save) {
+			saveModal();
+		}
+		modalText = '';
+		modalLanguage = '';
+		modalFilename = '';
+		showingModal = false;
 	}
 </script>
 
@@ -61,7 +89,23 @@
 							</div>
 							<p>Filename</p>
 						</div>
-
+						{#if showingModal}
+							<Modal title="File editor" on:close={() => closeModal(false)}>
+								<textarea
+									class="bg-brand-background rounded p-2 file-editor"
+									bind:value={modalText}
+								/>
+								<div class="flex space-x-5 justify-end">
+									<Button
+										text="Cancel"
+										variant="danger"
+										outline={true}
+										on:click={() => closeModal(false)}
+									/>
+									<Button text="Apply" on:click={() => closeModal(true)} />
+								</div>
+							</Modal>
+						{/if}
 						<div class="font-mono">
 							{#each Object.entries(exercise.files[language]) as [name, file]}
 								<Hoverable let:hovering>
@@ -73,7 +117,9 @@
 												on:click={() => toggleEditable(language, name)}
 											/>
 										</div>
-										<p class="mr-5">{name}</p>
+										<p class="mr-5 cursor-pointer" on:click={() => openModal(language, name)}>
+											{name}
+										</p>
 										<div
 											class="{hovering && editing
 												? 'visible opacity-100 cursor-pointer'
@@ -118,5 +164,9 @@
 <style lang="postcss">
 	code {
 		@apply bg-brand-background px-2 py-1 text-yellow-400 rounded;
+	}
+	.file-editor {
+		width: 60vw;
+		height: 50vh;
 	}
 </style>

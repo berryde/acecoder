@@ -1,40 +1,8 @@
 import type { File, WorkerError, WorkerResponse } from '../types';
 import * as rollup from 'rollup/dist/es/rollup.browser.js';
 import type { RollupWarning } from 'rollup';
-import babel from './babel';
-import cssCompiler from './css';
+import { generateLookup, getDependencies, getPlugins } from './compiler';
 
-/**
- * Recreates the in memory filesystem with the given files
- * @param files The files for the filesystem.
- */
-function generateLookup(files: File[]): { [key: string]: File } {
-	const filesystem = {};
-	files.forEach((file) => {
-		filesystem[file.name] = file;
-	});
-	return filesystem;
-}
-
-/**
- * Extracts the dependencies from a package json file.
- *
- * @param packageJSON The JSON parsed package json file.
- * @returns The union of the dev and standard dependencies.
- */
-function getDependencies(packageJSON: {
-	devDependencies: Record<string, string> | undefined;
-	dependencies: Record<string, string> | undefined;
-}): Record<string, string> {
-	let result = {};
-	if (packageJSON.devDependencies) {
-		result = { ...packageJSON.devDependencies };
-	}
-	if (packageJSON.dependencies) {
-		result = { ...packageJSON.dependencies };
-	}
-	return result;
-}
 
 /**
  * Returns some error data to the live preview iframe in the application
@@ -60,9 +28,9 @@ const throwGenericError = (message: string, name = 'Error', pos = 0, location = 
 	self.postMessage(output);
 };
 
-self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<void> => {
+self.addEventListener('message', async (event: MessageEvent<{ language: string, files: File[] }>): Promise<void> => {
 	// Recreate the filesystem in memory.
-	const filesystem = generateLookup(event.data);
+	const filesystem = generateLookup(event.data.files);
 	let rollupWarning: RollupWarning;
 
 	// If there is no package.json, attempt to serve a static page.
@@ -117,7 +85,7 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 		try {
 			const result = await rollup.rollup({
 				input: entryPoint,
-				plugins: [cssCompiler(filesystem), babel(filesystem, dependencies)],
+				plugins: getPlugins(event.data.language, filesystem, dependencies),
 				inlineDynamicImports: true,
 				onwarn(warning: RollupWarning) {
 					// The warning will be a stack trace from babel. Passing it into a new error loses information so it is stored in a variable.
@@ -127,7 +95,7 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 			});
 
 			/**
-			 * An esm bundle from the generated Rollup result.
+			 * An ESM bundle from the generated Rollup result.
 			 */
 			const bundle = await result.generate({ format: 'esm' });
 
@@ -163,7 +131,6 @@ self.addEventListener('message', async (event: MessageEvent<File[]>): Promise<vo
 			self.postMessage(output);
 		} catch (e) {
 			let outputError: WorkerError;
-
 			if (rollupWarning) {
 				outputError = {
 					location: rollupWarning.id,

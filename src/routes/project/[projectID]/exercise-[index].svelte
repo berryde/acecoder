@@ -20,11 +20,9 @@
 				);
 				project.set(await getProject($page.params.projectID));
 				language.set(Object.keys($exercise.files)[0]);
-				console.log($exercise.files[$language]);
 				const editable = Object.keys($exercise.files[$language]).filter(
 					(filename) => $exercise.files[$language][filename].editable
 				);
-				console.log(editable);
 				tabs.set(editable);
 				selectedTab.set(editable[0]);
 				loading = false;

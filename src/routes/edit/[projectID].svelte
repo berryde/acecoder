@@ -21,10 +21,8 @@
 		}
 	});
 
-	function handleClick(exerciseID: string) {
-		window.location.href = `/edit/${$page.params.projectID}/exercise-${exerciseID.slice(
-			$page.params.projectID.length
-		)}`;
+	function handleClick(index: string) {
+		window.location.href = `/edit/${$page.params.projectID}/exercise-${index}`;
 	}
 </script>
 

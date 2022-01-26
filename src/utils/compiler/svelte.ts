@@ -1,16 +1,16 @@
 import type { Plugin } from 'rollup';
 import type { File } from '../types';
-import { resolveRelativePath, fileNotFoundError, isRelativeImport } from './compiler';
-import { compile } from "svelte/compiler"
+import { resolveRelativePath, fileNotFoundError, isRelativeImport, CDN_URL } from './compiler';
 
 /**
- * A browser port of rollup-plugin-import-css.
+ * A browser-based rollup plugin for compiling svelte.
  * @returns A rollup plugin providing CSS support.
  */
-export default function svelteCompiler(files: { [key: string]: File }): Plugin {
-	const styles = {};
+export default function svelteCompiler(files: { [key: string]: File }, dependencies: Record<string, string>): Plugin {
+	// Import the svelte compiler from a CDN so that the worker can access it.
+	importScripts(`https://cdn.jsdelivr.net/npm/svelte/compiler.js`);
 	return {
-		name: 'svelte-compiler',
+		name: 'folio-svelte',
 		/**
 		 * Determine absolute path from relative paths for in memory files.
 		 * @param importee The file being imported
@@ -18,6 +18,12 @@ export default function svelteCompiler(files: { [key: string]: File }): Plugin {
 		 * @returns
 		 */
 		async resolveId(importee, importer) {
+			// Handle svelte imports
+			if (importee === "svelte" || importee.startsWith("svelte/")) return {
+				id: `${CDN_URL}/${importee}`,
+				external: true
+			};
+
 			// Check if the import refers to another source file
 			if (importee in files) {
 				return importee;
@@ -31,68 +37,50 @@ export default function svelteCompiler(files: { [key: string]: File }): Plugin {
 					this.warn(fileNotFoundError(importee, importer));
 				}
 			}
+
+			// Try to resolve this import as a node module
+			const version = dependencies[importee];
+			if (version) {
+				return {
+					id: `${CDN_URL}/${importee}@${version}`,
+					external: true
+				};
+			} else {
+				this.warn({
+					message: `Failed to resolve dependency ${importee} from ${importer}. Check that this dependency is present in your package.json file.`,
+					pos: 0,
+					id: importer,
+					name: 'DependencyError'
+				});
+			}
 		},
 
 		/**
-		 * Load a CSS file from our in-memory file system.
+		 * Load files from our in-memory file system.
 		 * @param id
 		 * @returns
 		 */
 		async load(id) {
-			if (/.*\.svelte/.test(id)) {
+			if (id in files) {
 				return files[id].code;
 			}
 		},
 
 		/**
-		 * Custom transform to handle CSS files.
-		 * @param code The input CSS code
-		 * @param id The filename
-		 * @returns Minified CSS as a string in JS.
+		 * Custom transform to compile svelte files.
+		 * @param code The input svelte files.
+		 * @param id The filename.
+		 * @returns The processed svelte code.
 		 */
 		async transform(code, id) {
 			if (/.*\.svelte/.test(id)) {
 				try {
-					const { js, css } = compile(
-						code,
-						{
-							dev: false,
-							css: false
-						}
-					);
-					return {
-						code: js
-					}
+					//@ts-ignore
+					return svelte.compile(code).js.code;
 				} catch (err) {
 					throw ("Unable to compile svelte code.")
 				}
 			}
-		},
-
-		/**
-		 * Concatenates all minified CSS into a single file.
-		 */
-		async generateBundle() {
-			const css = Object.entries(styles)
-				.map((entry) => entry[1])
-				.join('\n');
-			this.emitFile({ type: 'asset', fileName: `styles.css`, source: css, name: 'css' });
 		}
 	};
 }
-
-/**
- * Minifies CSS to reduce bundle size.
- * Adapted from https://github.com/jleeson/rollup-plugin-import-css/blob/master/src/index.js.
- * @param content The CSS to minify
- * @returns Minified CSS
- */
-const minify = (css: string) => {
-	css = css.replace(/\/\*(?:(?!\*\/)[\s\S])*\*\/|[\r\n\t]+/g, '');
-	css = css.replace(/ {2,}/g, ' ');
-	css = css.replace(/ ([{:}]) /g, '$1');
-	css = css.replace(/([{:}]) /g, '$1');
-	css = css.replace(/([;,]) /g, '$1');
-	css = css.replace(/ !/g, '!');
-	return css;
-};

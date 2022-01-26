@@ -1,21 +1,21 @@
 import type { File } from '../types';
 import type { Plugin } from 'rollup';
 import { transform } from '@babel/standalone';
-import { resolveRelativePath, fileNotFoundError, isRelativeImport } from './compiler';
-const CDN_URL = 'https://cdn.skypack.dev';
+import { CDN_URL, resolveRelativePath, fileNotFoundError, isRelativeImport } from './compiler';
+
 
 /**
- * A rollup plugin wrapper for babel standalone to transpile JSX and typescript in the browser.
+ * A rollup plugin wrapper for babel standalone to transpile JSX and typescript in the browser, specifically for React.
  * @param files A map of filename to file data.
  * @param dependencies A map of dependency name to version from the package.json
  * @returns A rollup plugin.
  */
-export default function babel(
+export default function reactCompiler(
 	files: { [key: string]: File },
 	dependencies: Record<string, string>
 ): Plugin {
 	return {
-		name: 'babel-standalone',
+		name: 'folio-react',
 		/**
 		 * Resolves the filename or URL for an imported resource.
 		 *

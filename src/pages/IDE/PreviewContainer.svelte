@@ -5,6 +5,7 @@
 	import { onDestroy, onMount } from 'svelte';
 
 	import { compiled } from 'src/utils/compiler/compiler';
+	import { language } from 'src/utils/exercise/exercise';
 
 	export let resizingX = false;
 	export let selecting = false;
@@ -31,7 +32,10 @@
 
 	function refresh() {
 		if (worker) {
-			worker.postMessage(getAllFiles('', $filesystem));
+			worker.postMessage({
+				language: $language,
+				files: getAllFiles('', $filesystem)
+			});
 		}
 	}
 
