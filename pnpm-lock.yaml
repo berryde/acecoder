@@ -35,6 +35,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^4.31.1
   '@typescript-eslint/parser': ^4.31.1
   autoprefixer: ^10.3.7
+  axios: ^0.25.0
   babel-jest: ^27.3.1
   babel-loader: ^8.2.3
   babel-plugin-transform-vite-meta-env: ^1.0.3
@@ -92,7 +93,7 @@ devDependencies:
   '@rollup/plugin-replace': 3.0.1_rollup@2.66.0
   '@rollup/plugin-typescript': 8.3.0_289dda0f859951c8037c862f70771a06
   '@sveltejs/adapter-netlify': 1.0.0-next.39
-  '@sveltejs/kit': 1.0.0-next.240_svelte@3.46.2
+  '@sveltejs/kit': 1.0.0-next.251_svelte@3.46.2
   '@testing-library/jest-dom': 5.16.1
   '@testing-library/svelte': 3.0.3_svelte@3.46.2
   '@tsconfig/svelte': 2.0.1
@@ -103,6 +104,7 @@ devDependencies:
   '@typescript-eslint/eslint-plugin': 4.33.0_3289a875d95a672b97ebf589745c66ef
   '@typescript-eslint/parser': 4.33.0_eslint@7.32.0+typescript@4.5.4
   autoprefixer: 10.4.2_postcss@8.4.5
+  axios: 0.25.0
   babel-jest: 27.4.6_@babel+core@7.16.7
   babel-loader: 8.2.3_15abcf48bdaa8457019961a15b19d564
   babel-plugin-transform-vite-meta-env: 1.0.3
@@ -3909,8 +3911,8 @@ packages:
       tiny-glob: 0.2.9
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.240_svelte@3.46.2:
-    resolution: {integrity: sha512-cHdxdSKAdCuty2lYlRHXE4rJZuKd4wur9U63JtPwysTaReMEJl+s9J/LVvyBzaLW/13x8vm/kKqx+DDcI0udlA==}
+  /@sveltejs/kit/1.0.0-next.251_svelte@3.46.2:
+    resolution: {integrity: sha512-7GtUrUHqOa7ISo86PlICcMKcfGodOZwP9p7hXnN4t1yMWIQD2eKZlJffvnwx1X+NMcJ8hLChgcjGYjc1xZABhQ==}
     engines: {node: '>=14.13'}
     hasBin: true
     peerDependencies:
@@ -5026,6 +5028,14 @@ packages:
       picocolors: 1.0.0
       postcss: 8.4.5
       postcss-value-parser: 4.2.0
+    dev: true
+
+  /axios/0.25.0:
+    resolution: {integrity: sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==}
+    dependencies:
+      follow-redirects: 1.14.7_debug@4.3.3
+    transitivePeerDependencies:
+      - debug
     dev: true
 
   /babel-jest/27.4.6_@babel+core@7.16.7:

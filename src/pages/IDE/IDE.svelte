@@ -3,13 +3,21 @@
 	import EditorContainer from './EditorContainer.svelte';
 	import PreviewContainer from './PreviewContainer.svelte';
 	import { onMount } from 'svelte';
-	import { initialising, loadExercise, project } from 'src/utils/exercise/exercise';
+	import {
+		chapter,
+		exercise,
+		initialising,
+		loadExercise,
+		project,
+		submit
+	} from 'src/utils/exercise/exercise';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
 	import { loadSettings } from 'src/utils/settings/settings';
 	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
 	import Navbar from 'src/components/navbar/Navbar.svelte';
 	import Button from 'src/components/common/Button.svelte';
 	import { page } from '$app/stores';
+	import { incrementProgress } from 'src/utils/project/project';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -28,23 +36,33 @@
 
 	// Add a listener for key combinations
 	onMount(async () => {
-		index = parseInt($page.params.index) + 1;
+		index = parseInt($page.params.index);
 		loadExercise();
 		loadSettings();
 	});
 
-	function handleNext() {
-		if (index == $project.exerciseCount) {
-			window.location.href = `/project/${$page.params.projectID}`;
-		} else {
-			window.location.href = `/project/${$page.params.projectID}/exercise-${$page.params.index}`;
+	async function handleNext() {
+		if (!$exercise.assessed) {
+			await incrementProgress($page.params.projectID);
 		}
+		window.location.href = `/project/${$page.params.projectID}/exercise-${index + 1}`;
+	}
+
+	function handleFinish() {
+		window.location.href = `/project/${$page.params.projectID}`;
 	}
 
 	function handlePrevious() {
-		if (index > 1) {
+		if (index > 0) {
 			window.location.href = `/project/${$page.params.projectID}/exercise-${index - 1}`;
 		}
+	}
+
+	let loading = false;
+	async function handleSubmit() {
+		loading = true;
+		await submit($page.params.projectID, $page.params.index);
+		loading = false;
 	}
 </script>
 
@@ -55,12 +73,12 @@
 {:else}
 	<div class="h-screen max-h-screen text-brand-text bg-brand-accent flex flex-col">
 		<Navbar />
-		<SplitPane pane1Size={33} pane2Size={67}>
+		<SplitPane pane1Size={25} pane2Size={75}>
 			<div slot="pane1" class="h-full">
 				<Sidebar />
 			</div>
 			<div slot="pane2" class="h-full flex flex-col">
-				<SplitPane let:resizing={resizingX} minPane2Size={'10rem'}>
+				<SplitPane let:resizing={resizingX} minPane2Size={'10rem'} pane1Size={66} pane2Size={34}>
 					<div slot="pane1" class="h-full">
 						<EditorContainer on:drag={toggleSelecting} />
 					</div>
@@ -73,12 +91,18 @@
 		<div class="px-5 py-3 flex flex-row w-full justify-between bg-brand-background items-center">
 			<div>
 				{#if $page.params.index !== '0'}
-					<Button text="Previous" on:click={handlePrevious} />
+					<Button text="Previous" on:click={handlePrevious} outline={true} />
 				{/if}
 			</div>
 
-			<p>{index}/{$project.exerciseCount}</p>
-			<Button text={index == $project.exerciseCount ? 'Finish' : 'Next'} on:click={handleNext} />
+			<p>{index + 1}/{$project.exerciseCount}</p>
+			{#if $exercise.assessed && $chapter == $exercise.chapters.length}
+				<Button text="Submit" on:click={handleSubmit} {loading} />
+			{:else if index + 1 == $project.exerciseCount}
+				<Button text="Finish" on:click={handleFinish} />
+			{:else}
+				<Button text="Next" on:click={handleNext} />
+			{/if}
 		</div>
 	</div>
 {/if}

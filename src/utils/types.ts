@@ -1,5 +1,4 @@
 import type { Timestamp } from 'firebase/firestore';
-import type { SvelteComponentDev } from 'svelte/internal';
 
 /**
  * A project file.
@@ -146,76 +145,33 @@ export type AuthError = {
 };
 
 /**
- * A single sidebar tab.
+ * Data to send to the submission server in order to generate a result.
  */
-export type SidebarTab = {
-	/**
-	 * The name of this tab.
-	 */
-	name: string;
-	/**
-	 * The sidebar icon to show for this tab.
-	 */
-	icon: typeof SvelteComponentDev;
-	/**
-	 * The component to render when the tab is opened.
-	 */
-	component: typeof SvelteComponentDev;
-};
-
-/**
- * A feedback submission for evaluation.
- */
-export type Feedback = {
-	/**
-	 * When this feedback was posted.
-	 */
-	posted: string;
-	/**
-	 * The feedback comment.
-	 */
-	comment: string;
-	/**
-	 * The component this feedback is about.
-	 */
-	component: string;
-};
+export type ServerRequest = {
+	projectID: string,
+	exerciseID: string,
+	userID: string
+}
 
 /**
  * Response from the submission server.
  */
-export type TestResult = {
+export type ServerResponse = Record<number, {
 	/**
-	 * The number of tests that passed.
+	 * Whether this test passed.
 	 */
-	passed: number;
+	passed: boolean;
 	/**
-	 * The total number of tests.
+	 * The name of this test.
 	 */
-	total: number;
-	/**
-	 * The test results
-	 */
-	results: {
-		/**
-		 * The error message, if any, for this test.
-		 */
-		message: string;
-		/**
-		 * Whether this test passed.
-		 */
-		passed: boolean;
-		/**
-		 * The name of this test.
-		 */
-		name: string;
-	}[];
-	/**
-	 * The timestamp of the result.
-	 */
-	timestamp: Timestamp;
-};
+	spec: string;
+}>
 
+
+export type ServerError = {
+	status: 403 | 404 | 500
+	message: string
+}
 
 export type ExerciseFile = {
 	contents: string;

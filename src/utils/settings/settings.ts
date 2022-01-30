@@ -21,6 +21,7 @@ export const toggleDarkMode = (): void => {
 	updateSettings();
 };
 
+
 export const loadSettings = async (): Promise<void> => {
 	const docRef = doc(db, 'settings', auth.currentUser.uid);
 	const docSnap = await getDoc(docRef);

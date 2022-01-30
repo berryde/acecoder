@@ -1,6 +1,7 @@
-import { collection, doc, getDoc, getDocs, runTransaction } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, increment, runTransaction, updateDoc } from "firebase/firestore";
+import { result } from "../exercise/exercise";
 import { auth, db } from "../firebase";
-import type { Project, Exercise, ExerciseMetadata, ExerciseFile, ProjectSettings } from "../types";
+import type { Project, Exercise, ExerciseMetadata, ExerciseFile, ProjectSettings, ServerResponse } from "../types";
 
 /**
  * Gets exercise metadata and files as an atomic transaction. If a list of languages is provided, the files for each language are provided.
@@ -23,7 +24,19 @@ export const getExercise = async (projectID: string, index: string, languages?: 
             } else {
                 // Determine the language based on the user's settings
                 const language = (await transaction.get(doc(db, 'projects', projectID, 'settings', auth.currentUser.uid))).data()['language']
-                files = (await transaction.get(doc(db, 'projects', projectID, 'exercises', index, 'files', language))).data()
+                files = { [language]: (await transaction.get(doc(db, 'projects', projectID, 'exercises', index, 'files', language))).data() }
+
+                // Check if the user has made a submission and download it if so
+                const submission = await transaction.get(doc(db, 'projects', projectID, 'exercises', index, 'submissions', auth.currentUser.uid))
+                if (submission.exists()) {
+                    const submissionFiles = submission.data() as Record<string, string>
+                    Object.keys(submissionFiles).forEach((name) => {
+                        files[language][name] = {
+                            contents: submissionFiles[name],
+                            editable: true
+                        }
+                    })
+                }
             }
             return {
                 ...metadata,
@@ -38,6 +51,13 @@ export const getExercise = async (projectID: string, index: string, languages?: 
     }
 }
 
+export const getResults = async (projectID: string, exerciseID: string): Promise<void> => {
+    const snapshot = await getDoc(doc(db, 'projects', projectID, 'exercises', exerciseID, 'results', auth.currentUser.uid))
+    if (snapshot.exists()) {
+        result.set(snapshot.data() as ServerResponse)
+    }
+}
+
 /**
  * Retrieves the metadata for an exercise without fetching the files unnecessarily.
  * 
@@ -47,7 +67,7 @@ export const getExercise = async (projectID: string, index: string, languages?: 
  */
 export const getExerciseMetadata = async (projectID: string, index?: string): Promise<ExerciseMetadata> => {
     const snapshot = await getDoc(doc(db, 'projects', projectID, 'exercises', index));
-    if (snapshot.exists) {
+    if (snapshot.exists()) {
         return snapshot.data() as ExerciseMetadata
     } else {
         throw (`Exercise ${index} in project ${projectID} does not exist`);
@@ -82,6 +102,12 @@ export const getProjectSettings = async (projectID: string): Promise<ProjectSett
         throw (`User settings on project ${projectID} do not exist for this user`)
     }
 
+}
+
+export const incrementProgress = async (projectID: string): Promise<void> => {
+    await updateDoc(doc(db, 'projects', projectID, 'settings', auth.currentUser.uid), {
+        progress: increment(1)
+    })
 }
 
 /**

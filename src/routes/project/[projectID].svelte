@@ -66,19 +66,17 @@
 					<p class="text-lg font-bold">Project outline</p>
 					{#each Object.entries(exercises) as [index, exercise]}
 						<div class="flex fkex-row items-center space-x-5">
-							<Checkbox value={settings && settings.progress > parseInt(index)} disabled={true} />
+							<Checkbox value={settings.progress > parseInt(index)} disabled={true} />
 							<p
 								on:click={() => handleClick(index)}
-								class={parseInt(index) == 0 || settings.progress >= parseInt(index)
-									? 'cursor-pointer underline'
-									: 'cursor-default'}
+								class={settings.progress >= parseInt(index) ? 'cursor-pointer' : 'cursor-default'}
 							>
 								{exercise.name}
 							</p>
 						</div>
 					{/each}
 				</div>
-				{#if !settings || settings.progress == 0}
+				{#if settings.progress == 0}
 					<div>
 						<p class="text-lg font-bold">Project settings</p>
 						<p>
@@ -99,7 +97,10 @@
 					</div>
 				{/if}
 				<div class="flex justify-end">
-					<Button text="Start" on:click={() => handleClick(0)} />
+					<Button
+						text={settings.progress == 0 ? 'Start' : 'Resume'}
+						on:click={() => handleClick(settings.progress)}
+					/>
 				</div>
 			</div>
 		</div>
