@@ -1,4 +1,3 @@
-
 import parserBabel from 'prettier/parser-babel.js';
 import parserTypescript from 'prettier/parser-typescript.js';
 import parserHtml from 'prettier/parser-html.js';
@@ -26,7 +25,7 @@ export const format = (value: string, language: string): string => {
 				return prettier.format(value, getParser(language));
 			}
 		} catch (err) {
-			console.error('Auto-formatting failed due to a syntax error.')
+			console.error('Auto-formatting failed due to a syntax error.');
 		}
 	}
 	return value;
@@ -76,7 +75,6 @@ export const isSupported = (language: string): boolean => {
 	const result = supportedExtensions.includes(language);
 	return result;
 };
-
 
 export const save = (): void => {
 	const doc = get(contents);

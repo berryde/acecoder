@@ -120,7 +120,6 @@ export const fileNotFoundError = (importee: string, importer: string): RollupWar
 	name: 'FileNotFoundError'
 });
 
-
 /**
  * Recreates the in memory filesystem with the given files
  * @param files The files for the filesystem.
@@ -131,7 +130,7 @@ export const generateLookup = (files: File[]): { [key: string]: File } => {
 		filesystem[file.name] = file;
 	});
 	return filesystem;
-}
+};
 
 /**
  * Extracts the dependencies from a package json file.
@@ -151,16 +150,19 @@ export const getDependencies = (packageJSON: {
 		result = { ...packageJSON.dependencies };
 	}
 	return result;
-}
+};
 
-export const getPlugins = (framework: string, files: { [key: string]: File },
-	dependencies: Record<string, string>): Plugin[] => {
+export const getPlugins = (
+	framework: string,
+	files: { [key: string]: File },
+	dependencies: Record<string, string>
+): Plugin[] => {
 	switch (framework) {
 		case 'svelte':
-			return [svelteCompiler(files, dependencies)]
+			return [svelteCompiler(files, dependencies)];
 		case 'react':
-			return [cssCompiler(files), reactCompiler(files, dependencies)]
+			return [cssCompiler(files), reactCompiler(files, dependencies)];
 		default:
-			return []
+			return [];
 	}
-}
+};

@@ -14,7 +14,7 @@
 		"emulator": "firebase emulators:start --import=./.firebase --export-on-exit",
 		"build-storybook": "build-storybook",
 		"build-template": "node scripts/generateTemplate.js",
-		"test": "pnpm run build-template && svelte-kit build && jest src",
+		"test": "pnpm run build-template && svelte-kit build && jest --experimental-vm-modules src",
 		"test:watch": "pnpm run test -- --watch"
 	},
 	"devDependencies": {

@@ -1,13 +1,13 @@
 import ace from 'brace';
-import { theme } from "src/utils/theme"
+import { theme } from 'src/utils/theme';
 
 ace['define'](
-  'ace/theme/folio',
-  ['require', 'exports', 'module', 'ace/lib/dom'],
-  (acequire: unknown, exports: { isDark: boolean, cssClass: string, cssText: string }) => {
-    exports.isDark = true;
-    exports.cssClass = 'ace-one-dark';
-    exports.cssText = `.ace-one-dark .ace_gutter {
+	'ace/theme/folio',
+	['require', 'exports', 'module', 'ace/lib/dom'],
+	(acequire: unknown, exports: { isDark: boolean; cssClass: string; cssText: string }) => {
+		exports.isDark = true;
+		exports.cssClass = 'ace-one-dark';
+		exports.cssText = `.ace-one-dark .ace_gutter {
             background: ${theme.editor.background};
             color: #474C55;
             padding-right: 10px;
@@ -164,7 +164,7 @@ ace['define'](
           }
 `;
 
-    const dom = ace.acequire('ace/lib/dom');
-    dom.importCssString(exports.cssText, exports.cssClass);
-  }
+		const dom = ace.acequire('ace/lib/dom');
+		dom.importCssString(exports.cssText, exports.cssClass);
+	}
 );

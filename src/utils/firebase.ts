@@ -59,9 +59,9 @@ const incrementProgress = async (projectID: string, exerciseID: string): Promise
 		functions,
 		'incrementProgress'
 	)({
-		"projectID": projectID,
-		"exerciseID": exerciseID,
+		projectID: projectID,
+		exerciseID: exerciseID
 	});
-}
+};
 
 export { app, db, auth, setClaim, incrementProgress };

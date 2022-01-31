@@ -1,5 +1,3 @@
-import type { Timestamp } from 'firebase/firestore';
-
 /**
  * A project file.
  */
@@ -148,30 +146,32 @@ export type AuthError = {
  * Data to send to the submission server in order to generate a result.
  */
 export type ServerRequest = {
-	projectID: string,
-	exerciseID: string,
-	userID: string
-}
+	projectID: string;
+	exerciseID: string;
+	userID: string;
+};
 
 /**
  * Response from the submission server.
  */
-export type ServerResponse = Record<number, {
-	/**
-	 * Whether this test passed.
-	 */
-	passed: boolean;
-	/**
-	 * The name of this test.
-	 */
-	spec: string;
-}>
-
+export type ServerResponse = Record<
+	number,
+	{
+		/**
+		 * Whether this test passed.
+		 */
+		passed: boolean;
+		/**
+		 * The name of this test.
+		 */
+		spec: string;
+	}
+>;
 
 export type ServerError = {
-	status: 403 | 404 | 500
-	message: string
-}
+	status: 403 | 404 | 500;
+	message: string;
+};
 
 export type ExerciseFile = {
 	contents: string;
@@ -210,6 +210,6 @@ export type ExerciseChapter = {
 };
 
 export type ProjectSettings = {
-	progress: number
-	language: string
-}
+	progress: number;
+	language: string;
+};

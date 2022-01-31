@@ -3,7 +3,6 @@ import * as rollup from 'rollup/dist/es/rollup.browser.js';
 import type { RollupWarning } from 'rollup';
 import { generateLookup, getDependencies, getPlugins } from './compiler';
 
-
 /**
  * Returns some error data to the live preview iframe in the application
  *
@@ -28,140 +27,143 @@ const throwGenericError = (message: string, name = 'Error', pos = 0, location = 
 	self.postMessage(output);
 };
 
-self.addEventListener('message', async (event: MessageEvent<{ language: string, files: File[] }>): Promise<void> => {
-	// Recreate the filesystem in memory.
-	const filesystem = generateLookup(event.data.files);
-	let rollupWarning: RollupWarning;
+self.addEventListener(
+	'message',
+	async (event: MessageEvent<{ language: string; files: File[] }>): Promise<void> => {
+		// Recreate the filesystem in memory.
+		const filesystem = generateLookup(event.data.files);
+		let rollupWarning: RollupWarning;
 
-	// If there is no package.json, attempt to serve a static page.
-	if (!('public/index.html' in filesystem)) {
-		throwGenericError(
-			"The file 'public/index.html' could not be found. Make sure the file exists in order to render the application.\nFound files: " +
-			JSON.stringify(filesystem),
-			'IndexFileNotFoundError'
-		);
-	} else if (!('package.json' in filesystem)) {
-		const html = filesystem['public/index.html'].code;
-		self.postMessage({
-			js: '',
-			css: '',
-			public: {
-				'public/index.html': html
-			}
-		});
-	} else {
-		// Read the package JSON file.
-		const packageJSON = JSON.parse(filesystem['package.json'].code);
-
-		// Determine the entry point.
-		const entryPoint = packageJSON['main'];
-		if (!entryPoint) {
+		// If there is no package.json, attempt to serve a static page.
+		if (!('public/index.html' in filesystem)) {
 			throwGenericError(
-				"No entry point was specified in the application's package.json file. Ensure there is an entry 'main' pointing to your entry point.",
-				'EntryPointMissingError',
-				0,
-				'package.json'
+				"The file 'public/index.html' could not be found. Make sure the file exists in order to render the application.\nFound files: " +
+					JSON.stringify(filesystem),
+				'IndexFileNotFoundError'
 			);
-		} else if (!(entryPoint in filesystem)) {
-			throwGenericError(
-				"The specified entry point '" + entryPoint + "' could not be found in the file system.",
-				'EntryPointNotFoundError',
-				0,
-				'package.json'
-			);
-		}
-
-		/**
-		 * The extracted dependencies from the submitted package.json.
-		 */
-		const dependencies = getDependencies(packageJSON);
-
-		/**
-		 * The output of bundling the submitted source files to return to the application.
-		 */
-		let output: WorkerResponse;
-
-		// Bundle the files using rollup.
-		try {
-			const result = await rollup.rollup({
-				input: entryPoint,
-				plugins: getPlugins(event.data.language, filesystem, dependencies),
-				inlineDynamicImports: true,
-				onwarn(warning: RollupWarning) {
-					// The warning will be a stack trace from babel. Passing it into a new error loses information so it is stored in a variable.
-					rollupWarning = warning;
-					throw new Error();
+		} else if (!('package.json' in filesystem)) {
+			const html = filesystem['public/index.html'].code;
+			self.postMessage({
+				js: '',
+				css: '',
+				public: {
+					'public/index.html': html
 				}
 			});
+		} else {
+			// Read the package JSON file.
+			const packageJSON = JSON.parse(filesystem['package.json'].code);
 
-			/**
-			 * An ESM bundle from the generated Rollup result.
-			 */
-			const bundle = await result.generate({ format: 'esm' });
-
-			/**
-			 * The JavaScript content of the bundle
-			 */
-			const scripts = bundle.output[0] ? bundle.output[0].code : '';
-
-			/**
-			 * The CSS content of the bundle
-			 */
-			let styles = '';
-			const css = bundle.output.find((e) => e.name == 'css');
-			if (css) {
-				styles += css.source + '\n';
+			// Determine the entry point.
+			const entryPoint = packageJSON['main'];
+			if (!entryPoint) {
+				throwGenericError(
+					"No entry point was specified in the application's package.json file. Ensure there is an entry 'main' pointing to your entry point.",
+					'EntryPointMissingError',
+					0,
+					'package.json'
+				);
+			} else if (!(entryPoint in filesystem)) {
+				throwGenericError(
+					"The specified entry point '" + entryPoint + "' could not be found in the file system.",
+					'EntryPointNotFoundError',
+					0,
+					'package.json'
+				);
 			}
 
 			/**
-			 * The public files to serve as static content.
+			 * The extracted dependencies from the submitted package.json.
 			 */
-			const publicResources = Object.fromEntries(
-				Object.entries(filesystem)
-					.filter((entry) => entry[0].startsWith('public'))
-					.map(([path, value]) => [path, value.code])
-			);
+			const dependencies = getDependencies(packageJSON);
 
-			output = {
-				js: scripts,
-				css: styles,
-				public: publicResources
-			};
+			/**
+			 * The output of bundling the submitted source files to return to the application.
+			 */
+			let output: WorkerResponse;
 
-			self.postMessage(output);
-		} catch (e) {
-			let outputError: WorkerError;
-			if (rollupWarning) {
-				outputError = {
-					location: rollupWarning.id,
-					message: rollupWarning.message,
-					name: rollupWarning.name,
-					pos: rollupWarning.pos
-				};
-			} else {
-				const error = e as Error;
-				// Remove the 'no FS in browser' warning from rollup when a file isn't found
-				if (
-					error.message.endsWith(
-						'Make sure you supply a plugin with custom resolveId and load hooks to Rollup.'
-					)
-				) {
-					error.message.substring(0, error.message.length - 169);
+			// Bundle the files using rollup.
+			try {
+				const result = await rollup.rollup({
+					input: entryPoint,
+					plugins: getPlugins(event.data.language, filesystem, dependencies),
+					inlineDynamicImports: true,
+					onwarn(warning: RollupWarning) {
+						// The warning will be a stack trace from babel. Passing it into a new error loses information so it is stored in a variable.
+						rollupWarning = warning;
+						throw new Error();
+					}
+				});
+
+				/**
+				 * An ESM bundle from the generated Rollup result.
+				 */
+				const bundle = await result.generate({ format: 'esm' });
+
+				/**
+				 * The JavaScript content of the bundle
+				 */
+				const scripts = bundle.output[0] ? bundle.output[0].code : '';
+
+				/**
+				 * The CSS content of the bundle
+				 */
+				let styles = '';
+				const css = bundle.output.find((e) => e.name == 'css');
+				if (css) {
+					styles += css.source + '\n';
 				}
-				outputError = {
-					location: entryPoint,
-					message: error.message,
-					name: error.name,
-					pos: 0
-				};
-			}
 
-			throwGenericError(
-				outputError.message,
-				outputError.name,
-				outputError.pos,
-				outputError.location
-			);
+				/**
+				 * The public files to serve as static content.
+				 */
+				const publicResources = Object.fromEntries(
+					Object.entries(filesystem)
+						.filter((entry) => entry[0].startsWith('public'))
+						.map(([path, value]) => [path, value.code])
+				);
+
+				output = {
+					js: scripts,
+					css: styles,
+					public: publicResources
+				};
+
+				self.postMessage(output);
+			} catch (e) {
+				let outputError: WorkerError;
+				if (rollupWarning) {
+					outputError = {
+						location: rollupWarning.id,
+						message: rollupWarning.message,
+						name: rollupWarning.name,
+						pos: rollupWarning.pos
+					};
+				} else {
+					const error = e as Error;
+					// Remove the 'no FS in browser' warning from rollup when a file isn't found
+					if (
+						error.message.endsWith(
+							'Make sure you supply a plugin with custom resolveId and load hooks to Rollup.'
+						)
+					) {
+						error.message.substring(0, error.message.length - 169);
+					}
+					outputError = {
+						location: entryPoint,
+						message: error.message,
+						name: error.name,
+						pos: 0
+					};
+				}
+
+				throwGenericError(
+					outputError.message,
+					outputError.name,
+					outputError.pos,
+					outputError.location
+				);
+			}
 		}
 	}
-});
+);

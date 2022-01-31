@@ -6,7 +6,10 @@ import { resolveRelativePath, fileNotFoundError, isRelativeImport, CDN_URL } fro
  * A browser-based rollup plugin for compiling svelte.
  * @returns A rollup plugin providing CSS support.
  */
-export default function svelteCompiler(files: { [key: string]: File }, dependencies: Record<string, string>): Plugin {
+export default function svelteCompiler(
+	files: { [key: string]: File },
+	dependencies: Record<string, string>
+): Plugin {
 	// Import the svelte compiler from a CDN so that the worker can access it.
 	importScripts(`https://cdn.jsdelivr.net/npm/svelte/compiler.js`);
 	return {
@@ -19,10 +22,11 @@ export default function svelteCompiler(files: { [key: string]: File }, dependenc
 		 */
 		async resolveId(importee, importer) {
 			// Handle svelte imports
-			if (importee === "svelte" || importee.startsWith("svelte/")) return {
-				id: `${CDN_URL}/${importee}`,
-				external: true
-			};
+			if (importee === 'svelte' || importee.startsWith('svelte/'))
+				return {
+					id: `${CDN_URL}/${importee}`,
+					external: true
+				};
 
 			// Check if the import refers to another source file
 			if (importee in files) {
@@ -75,10 +79,11 @@ export default function svelteCompiler(files: { [key: string]: File }, dependenc
 		async transform(code, id) {
 			if (/.*\.svelte/.test(id)) {
 				try {
-					//@ts-ignore
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
 					return svelte.compile(code).js.code;
 				} catch (err) {
-					throw ("Unable to compile svelte code.")
+					throw 'Unable to compile svelte code.';
 				}
 			}
 		}

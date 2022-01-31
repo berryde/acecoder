@@ -8,7 +8,7 @@
 		display: block;
 		margin: 15px auto;
 		position: relative;
-		color: #F0F0F0;
+		color: #f0f0f0;
 		box-sizing: border-box;
 		animation: rotation 1.5s linear infinite;
 	}
@@ -22,12 +22,12 @@
 		top: 50%;
 		left: 50%;
 		transform: scale(0.5) translate(0, 0);
-		background-color: #F0F0F0;
+		background-color: #f0f0f0;
 		border-radius: 50%;
 		animation: loader 1.5s infinite ease-in-out;
 	}
 	.loader::before {
-		background-color: #2563EB;
+		background-color: #2563eb;
 		transform: scale(0.5) translate(-24px, -24px);
 	}
 

@@ -6,7 +6,6 @@ export const selectedTab = writable<string>('');
 
 export const unsavedTabs = writable<string[]>([]);
 
-
 // If current tab is a temp tab, it should be replaced with the latest tab to be opened.
 
 /**

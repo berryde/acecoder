@@ -3,7 +3,6 @@ import type { Plugin } from 'rollup';
 import { transform } from '@babel/standalone';
 import { CDN_URL, resolveRelativePath, fileNotFoundError, isRelativeImport } from './compiler';
 
-
 /**
  * A rollup plugin wrapper for babel standalone to transpile JSX and typescript in the browser, specifically for React.
  * @param files A map of filename to file data.
