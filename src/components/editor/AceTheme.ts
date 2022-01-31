@@ -20,7 +20,7 @@ ace['define'](
           
           .ace-one-dark {
             background-color: ${theme.editor.background};
-            color: #ABB2BF
+            color: #bec5d1
           }
           
           .ace-one-dark .ace_cursor {
@@ -41,7 +41,7 @@ ace['define'](
           
           .ace-one-dark .ace_marker-layer .ace_bracket {
             margin: -1px 0 0 -1px;
-            border: 1px solid #ABB2BF
+            border: 1px solid #bec5d1
           }
           
           .ace-one-dark .ace_marker-layer .ace_active-line {
@@ -73,7 +73,7 @@ ace['define'](
           
           .ace-one-dark .ace_punctuation,
           .ace-one-dark .ace_punctuation.ace_tag {
-            color: #ABB2BF
+            color: #bec5d1
           }
           
           .ace-one-dark .ace_constant.ace_support.ace_fonts,
@@ -84,8 +84,6 @@ ace['define'](
           .ace-one-dark .ace_constant.ace_other {
             color: #D19A66
           }
-          
-          
           
           .ace-one-dark .ace_invalid {
             color: #F8F8F0;
@@ -98,7 +96,7 @@ ace['define'](
           }
           
           .ace-one-dark .ace_support.ace_type{
-              color: #ABB2BF
+              color: #bec5d1
           }
           
           .ace-one-dark .ace_constant.ace_language.ace_escape,
@@ -109,7 +107,7 @@ ace['define'](
           
           .ace-one-dark .ace_fold {
             background-color: #A6E22E;
-            border-color: #ABB2BF
+            border-color: #bec5d1
           }
           
           .ace-one-dark .ace_storage.ace_type{
@@ -128,25 +126,32 @@ ace['define'](
             color: #D19A66
           }
           
-          .ace-one-dark .ace_string,
           .ace-one-dark .ace_list.ace_markup,
           .ace-one-dark .ace_constant.ace_language.ace_escape .ace_string,
           .ace-one-dark .ace_string.ace_attribute-value {
               color: #98C379
           }
+
+          .ace-one-dark .ace_string {
+            color: #bec5d1;
+          }
           
           .ace-one-dark .ace_entity.ace_name.ace_function {
             color: #61AFEF
           }
+
+          .ace-one-dark .ace_search {
+            background-color: ${theme.accent}
+          }
           
           .ace-one-dark .ace_operator {
-              color: #ABB2BF;
+              color: #bec5d1;
           }
           
           /*.ace-one-dark .ace_string, */
           .ace-one-dark .ace_identifier,
           .ace-one-dark .ace_variable.ace_parameter{
-            color: #ABB2BF
+            color: #bec5d1
           }
           
           .ace-one-dark .ace_comment {

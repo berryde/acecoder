@@ -67,6 +67,7 @@
 	onMount(async () => {
 		// Brace is imported dynamically since it requires the `window` object to exist.
 		ace = await import('brace');
+		await import('brace/ext/searchbox');
 		configureEditor();
 		window.addEventListener('keydown', keydownListener);
 	});
@@ -110,6 +111,7 @@
 			if (!($selectedTab in sessions)) {
 				const session = new ace.EditSession((getFile($selectedTab) as FSFile).value);
 				session.setMode(await importMode($selectedTab));
+				session.setUndoManager(new ace.UndoManager());
 				if (getExtension($selectedTab) == 'svelte') {
 					session.setUseWorker(false);
 				}

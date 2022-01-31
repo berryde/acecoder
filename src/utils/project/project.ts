@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, increment, runTransaction, updateDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, runTransaction } from "firebase/firestore";
 import { result } from "../exercise/exercise";
 import { auth, db } from "../firebase";
 import type { Project, Exercise, ExerciseMetadata, ExerciseFile, ProjectSettings, ServerResponse } from "../types";
@@ -25,6 +25,20 @@ export const getExercise = async (projectID: string, index: string, languages?: 
                 // Determine the language based on the user's settings
                 const language = (await transaction.get(doc(db, 'projects', projectID, 'settings', auth.currentUser.uid))).data()['language']
                 files = { [language]: (await transaction.get(doc(db, 'projects', projectID, 'exercises', index, 'files', language))).data() }
+
+                // Check if the exercise inherits from a previous exercise and download that submission if so.
+                if (metadata.previous) {
+                    const previous = await transaction.get(doc(db, 'projects', projectID, 'exercises', metadata.previous.toString(), 'submissions', auth.currentUser.uid))
+                    if (previous.exists()) {
+                        const previousFiles = previous.data() as Record<string, string>
+                        Object.keys(previousFiles).forEach((name) => {
+                            files[language][name] = {
+                                contents: previousFiles[name],
+                                editable: true
+                            }
+                        })
+                    }
+                }
 
                 // Check if the user has made a submission and download it if so
                 const submission = await transaction.get(doc(db, 'projects', projectID, 'exercises', index, 'submissions', auth.currentUser.uid))
@@ -102,12 +116,6 @@ export const getProjectSettings = async (projectID: string): Promise<ProjectSett
         throw (`User settings on project ${projectID} do not exist for this user`)
     }
 
-}
-
-export const incrementProgress = async (projectID: string): Promise<void> => {
-    await updateDoc(doc(db, 'projects', projectID, 'settings', auth.currentUser.uid), {
-        progress: increment(1)
-    })
 }
 
 /**

@@ -1,8 +1,8 @@
-import { deleteDoc, doc, getDoc as _getDoc, setDoc } from 'firebase/firestore';
+import { deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { writable, get } from 'svelte/store';
 import { createFile, filesystem, getAllFiles } from '../filesystem/filesystem';
 import { auth, db } from '../firebase';
-import type { Exercise, ServerError, ServerRequest, ServerResponse } from '../types';
+import type { Exercise, ServerRequest, ServerResponse } from '../types';
 import { selectedTab, tabs, unsavedTabs } from '../tabs/tabs';
 import type { Project } from "src/utils/types"
 import axios from 'axios'
@@ -105,13 +105,18 @@ export const submit = async (projectID: string, exerciseID: string): Promise<Ser
 		projectID: projectID,
 		userID: auth.currentUser.uid
 	}
-	const response = await (await axios.post(endpoint, request, {
+	const response = await axios.post(endpoint, request, {
 		headers: {
 			authorization: `Bearer ${await auth.currentUser.getIdToken()}`
 		}
-	}))
+	})
 	if (response.status == 200) {
 		const data = response.data as ServerResponse
+
+		if (data[get(chapter)]) {
+			chapter.update((chapter) => chapter + 1);
+		}
+
 		result.set(data)
 		return data
 	} else {

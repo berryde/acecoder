@@ -5,9 +5,15 @@
 	import Checkbox from '../common/Checkbox.svelte';
 
 	function updateChapter() {
-		if ($result[$_chapter]) {
-			console.log('Incrementing chapter');
-			_chapter.update((chapter) => chapter + 1);
+		let progress = 0;
+		for (let i = 0; i < Object.keys($result).length; i++) {
+			console.log($result[i]);
+			if ($result[i].passed) {
+				progress = i;
+			}
+		}
+		if (progress != 0) {
+			_chapter.set(progress);
 		}
 	}
 
@@ -36,10 +42,8 @@
 				>
 					<Checkbox
 						disabled={true}
-						variant={index > $_chapter ? 'text' : 'default'}
-						value={$result && (index < $_chapter || $_chapter == $exercise.chapters.length)
-							? $result[index].passed
-							: undefined}
+						variant={index <= $_chapter ? 'default' : 'text'}
+						value={$result && index <= $_chapter ? $result[index].passed : undefined}
 					/>
 					<p>{@html chapter.text}</p>
 				</div>

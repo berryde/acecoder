@@ -11,7 +11,7 @@
 	export let expanded = false;
 	export let outline = false;
 
-	type Variant = 'default' | 'danger' | 'dark' | 'accent';
+	type Variant = 'default' | 'danger' | 'dark' | 'accent' | 'success';
 	export let variant: Variant = 'default';
 
 	function onclick() {
@@ -34,6 +34,10 @@
 				return outline
 					? 'border-brand-danger-light text-brand-danger-light hover:bg-brand-danger-light'
 					: 'bg-brand-danger-light';
+			case 'success':
+				return outline
+					? 'border-brand-success text-brand-success hover:bg-brand-success'
+					: 'bg-brand-success';
 			default:
 				return outline
 					? 'border-brand-primary text-brand-primary hover:bg-brand-primary'

@@ -17,7 +17,7 @@
 	import Navbar from 'src/components/navbar/Navbar.svelte';
 	import Button from 'src/components/common/Button.svelte';
 	import { page } from '$app/stores';
-	import { incrementProgress } from 'src/utils/project/project';
+	import { incrementProgress } from 'src/utils/firebase';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -43,7 +43,7 @@
 
 	async function handleNext() {
 		if (!$exercise.assessed) {
-			await incrementProgress($page.params.projectID);
+			await incrementProgress($page.params.projectID, $page.params.index);
 		}
 		window.location.href = `/project/${$page.params.projectID}/exercise-${index + 1}`;
 	}
@@ -89,20 +89,25 @@
 			</div>
 		</SplitPane>
 		<div class="px-5 py-3 flex flex-row w-full justify-between bg-brand-background items-center">
-			<div>
+			<div class="flex-grow w-full">
 				{#if $page.params.index !== '0'}
 					<Button text="Previous" on:click={handlePrevious} outline={true} />
 				{/if}
 			</div>
 
-			<p>{index + 1}/{$project.exerciseCount}</p>
-			{#if $exercise.assessed && $chapter == $exercise.chapters.length}
-				<Button text="Submit" on:click={handleSubmit} {loading} />
-			{:else if index + 1 == $project.exerciseCount}
-				<Button text="Finish" on:click={handleFinish} />
-			{:else}
-				<Button text="Next" on:click={handleNext} />
-			{/if}
+			<p>{index}/{$project.exerciseCount - 1}</p>
+			<div class="flex space-x-5 flex-grow justify-end w-full">
+				{#if $exercise.assessed && $chapter < $exercise.chapters.length - 1}
+					<Button text="Submit" on:click={handleSubmit} {loading} />
+				{:else if index + 1 == $project.exerciseCount}
+					<Button text="Finish" on:click={handleFinish} />
+				{:else}
+					{#if $exercise.assessed}
+						<Button text="Re-submit" on:click={handleSubmit} outline={true} {loading} />
+					{/if}
+					<Button text="Next" on:click={handleNext} />
+				{/if}
+			</div>
 		</div>
 	</div>
 {/if}

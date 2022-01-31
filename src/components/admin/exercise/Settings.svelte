@@ -6,6 +6,7 @@
 
 	export let exercise: Exercise;
 	export let editing: boolean;
+	let inherits = !!exercise.previous;
 
 	const dispatch = createEventDispatcher();
 
@@ -56,5 +57,27 @@
 				<p>{@html exercise.description}</p>
 			{/if}
 		</div>
+		<div>
+			<p class="font-bold">Previous exercise</p>
+			<div class="flex flex-row items-center space-x-3">
+				<p>This exercise inherits from a previous exercise</p>
+				<Checkbox
+					bind:value={inherits}
+					variant="true-false"
+					disabled={!editing}
+					on:click={() => (inherits = !inherits)}
+				/>
+			</div>
+		</div>
+		{#if inherits}
+			<div>
+				<p class="font-bold">Previous exercise index</p>
+				{#if editing}
+					<Input variant="dark" bind:value={exercise.previous} />
+				{:else}
+					<p>{exercise.previous}</p>
+				{/if}
+			</div>
+		{/if}
 	</div>
 </div>

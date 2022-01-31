@@ -4,13 +4,13 @@ const config = {
 	theme: {
 		extend: {
 			fontFamily: {
-				sans: ['Poppins', 'system-ui', 'Helvetica', 'Arial', 'sans-serif'],
+				sans: ['Poppins', 'system-ui', 'Helvetica', 'Arial', 'sans-serif']
 			},
 			colors: {
 				brand: {
 					editor: {
 						background: '#08122A',
-						highlight: '#314694',
+						highlight: '#314694'
 					},
 					background: '#0B1633',
 					accent: '#18203D',
@@ -19,8 +19,8 @@ const config = {
 						light: '#DA4141',
 						dark: '#7f1d1d'
 					},
-					success: '#22C55E',
-					text: '#F0F0F0',
+					success: '#16a34a',
+					text: '#F0F0F0'
 				}
 			}
 		}

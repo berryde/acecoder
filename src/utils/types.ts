@@ -190,6 +190,7 @@ export type ExerciseMetadata = {
 	name: string;
 	description: string;
 	assessed: boolean;
+	previous?: number;
 	chapters: ExerciseChapter[];
 };
 
@@ -202,10 +203,6 @@ export type ExerciseChapter = {
 	 * The text content to be displayed for this chapter.
 	 */
 	text: string;
-	/**
-	 * The name of the file containing the test that evaluates this chapter.
-	 */
-	file?: string;
 	/**
 	 * The spec name of the test that evaluates this chapter.
 	 */

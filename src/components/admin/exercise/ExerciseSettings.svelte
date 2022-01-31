@@ -56,9 +56,6 @@
 					output.push(name + ' is missing text.');
 				}
 				if (exercise.assessed) {
-					if (chapter.file.length == 0) {
-						output.push(name + ' is missing the test file name.');
-					}
 					if (chapter.spec.length == 0) {
 						output.push(name + ' is missing the test spec name.');
 					}
@@ -81,7 +78,8 @@
 					name: exercise.name,
 					description: exercise.description,
 					assessed: exercise.assessed,
-					chapters: exercise.chapters
+					chapters: exercise.chapters,
+					previous: exercise.previous
 				};
 
 				// Use a batch write to create the exercise.

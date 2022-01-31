@@ -14,7 +14,6 @@
 	function addChapter() {
 		if (exercise.assessed) {
 			exercise.chapters.push({
-				file: '',
 				spec: '',
 				text: ''
 			});
@@ -46,14 +45,6 @@
 				</div>
 
 				{#if exercise.assessed}
-					<div>
-						<p>Test file</p>
-						<p class="text-xs">
-							The name of the file containg the test to run, a Javascript/Typescript file with the
-							same name across all versions of the exercise.
-						</p>
-						<Input bind:value={chapter.file} />
-					</div>
 					<div>
 						<p>Test spec name</p>
 						<p class="text-xs">The name of the specific test case within the test file.</p>
