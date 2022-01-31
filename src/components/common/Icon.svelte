@@ -16,6 +16,8 @@
 
 	export let label: string = undefined;
 
+	export let card: boolean = false;
+
 	/**
 	 * The test-id of this icon, so that it can be identified programatically in tests.
 	 */
@@ -53,22 +55,22 @@
 		if (labelPosition == 'above') {
 			switch (size) {
 				case 'small':
-					return '-top-3';
+					return '-top-4';
 				case 'large':
-					return '-top-8';
+					return '-top-9';
 				case 'medium':
 				default:
-					return '-top-5';
+					return '-top-6';
 			}
 		} else {
 			switch (size) {
 				case 'small':
-					return 'top-3';
+					return 'top-4';
 				case 'large':
-					return 'top-8';
+					return 'top-9';
 				case 'medium':
 				default:
-					return 'top-5';
+					return 'top-6';
 			}
 		}
 	}
@@ -76,7 +78,10 @@
 
 <Hoverable let:hovering>
 	<div class="flex flex-col items-center">
-		<div class="flex flex-col justify-center items-center">
+		<div
+			class="flex flex-col justify-center items-center {card &&
+				'bg-brand-editor-background rounded-lg p-1'}"
+		>
 			{#if button}
 				<button
 					on:click={click}
@@ -94,7 +99,7 @@
 				<p
 					class="relative transition-all text-center {hovering
 						? 'visible opacity-100'
-						: 'invisible opacity-0'} {getOffset()} text-xs bg-brand-background bg-light-bgdark px-1 py-0.5 shadow rounded "
+						: 'invisible opacity-0'} {getOffset()} text-xs bg-brand-editor-background bg-light-bgdark px-1 py-0.5 shadow rounded "
 				>
 					{label[0].toUpperCase() + label.slice(1)}
 				</p>

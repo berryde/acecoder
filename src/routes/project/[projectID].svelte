@@ -65,11 +65,18 @@
 				<div>
 					<p class="text-lg font-bold">Project outline</p>
 					{#each Object.entries(exercises) as [index, exercise]}
-						<div class="flex fkex-row items-center space-x-5">
-							<Checkbox value={settings.progress > parseInt(index)} disabled={true} />
+						<div
+							class="flex items-center space-x-5 {settings.progress < parseInt(index) &&
+								'opacity-50'}"
+						>
+							<Checkbox
+								value={settings.progress > parseInt(index)}
+								disabled={true}
+								variant={settings.progress >= parseInt(index) ? 'default' : 'text'}
+							/>
 							<p
 								on:click={() => handleClick(index)}
-								class={settings.progress >= parseInt(index) ? 'cursor-pointer' : 'cursor-default'}
+								class={settings.progress >= parseInt(index) ? 'cursor-pointer ' : 'cursor-default'}
 							>
 								{exercise.name}
 							</p>

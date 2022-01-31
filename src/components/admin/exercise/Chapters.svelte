@@ -50,6 +50,14 @@
 						<p class="text-xs">The name of the specific test case within the test file.</p>
 						<Input bind:value={chapter.spec} />
 					</div>
+					<div>
+						<p class="font-bold">Hint</p>
+						{#if editing}
+							<textarea class="bg-brand-accent p-2 w-full rounded h-40" bind:value={chapter.hint} />
+						{:else}
+							<p>{@html chapter.hint}</p>
+						{/if}
+					</div>
 				{/if}
 				{#if editing}
 					<div class="flex justify-end w-full">

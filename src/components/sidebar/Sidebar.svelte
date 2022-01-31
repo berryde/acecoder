@@ -3,30 +3,48 @@
 	import Bookmark from 'svelte-icons/io/IoMdBookmark.svelte';
 	import { chapter as _chapter, exercise, project, result } from 'src/utils/exercise/exercise';
 	import Checkbox from '../common/Checkbox.svelte';
+	import Refresh from 'svelte-icons/io/IoMdRefresh.svelte';
+	import Wand from 'svelte-icons/io/IoIosColorWand.svelte';
+	import { onMount } from 'svelte';
 
 	function updateChapter() {
-		let progress = 0;
-		for (let i = 0; i < Object.keys($result).length; i++) {
-			console.log($result[i]);
-			if ($result[i].passed) {
-				progress = i;
-			}
-		}
-		if (progress != 0) {
-			_chapter.set(progress);
+		submissionAttempt += 1;
+		if ($_chapter < $exercise.chapters.length && $result[$_chapter].passed) {
+			_chapter.update((c) => c + 1);
+			submissionAttempt = 0;
 		}
 	}
 
+	let submissionAttempt = 0;
 	$: $result && updateChapter();
+
+	onMount(() => {
+		if ($result) {
+			const index = Object.values($result).findIndex((res) => !res.passed);
+			if (index == -1) {
+				_chapter.set($exercise.chapters.length);
+			} else {
+				_chapter.set(index);
+			}
+		}
+	});
 </script>
 
-<div class="bg-brand-background h-full overflow-y-auto">
+<div class="bg-brand-background h-full overflow-y-auto sidebar">
 	<div class="p-5 space-y-3">
 		<p class="uppercase text-xs">{$project.name}</p>
 		<h1 class="text-xl font-bold">{$exercise.name}</h1>
-		<p>
+		<p id="description">
 			{@html $exercise.description}
 		</p>
+	</div>
+	<div class="flex flex-row px-5 py-3 pt-0 space-x-3 items-center h-10 justify-end">
+		<Icon label="Restart" button={true} card={true}>
+			<Refresh />
+		</Icon>
+		<Icon label="Format" button={true} card={true}>
+			<Wand />
+		</Icon>
 	</div>
 	<div class="flex flex-row items-center px-5 py-3 space-x-5 bg-brand-accent">
 		<Icon>
@@ -34,11 +52,12 @@
 		</Icon>
 		<p>{$exercise.assessed ? 'Tasks' : 'Example'}</p>
 	</div>
-	<div class="p-5 space-y-3">
+	<div class="space-y-3">
 		{#each $exercise.chapters as chapter, index}
 			{#if $exercise.assessed}
 				<div
-					class="transition-opacity flex items-center space-x-5 {index > $_chapter && 'opacity-40'}"
+					class="transition-opacity p-3 flex items-center space-x-5 {index > $_chapter &&
+						'opacity-40'}"
 				>
 					<Checkbox
 						disabled={true}
@@ -47,9 +66,28 @@
 					/>
 					<p>{@html chapter.text}</p>
 				</div>
+				{#if $result && !$result[index].passed && chapter.hint && index == $_chapter && submissionAttempt > 0}
+					<div class="bg-brand-danger-dark bg-opacity-50 p-3 text-brand-danger-light">
+						<p class="hint">{@html chapter.hint}</p>
+					</div>
+				{/if}
 			{:else}
-				<p>{@html chapter.text}</p>
+				<div class="p-3">
+					<p>{@html chapter.text}</p>
+				</div>
 			{/if}
 		{/each}
 	</div>
 </div>
+
+<style lang="postcss">
+	:global(#description a) {
+		@apply text-brand-primary underline;
+	}
+	:global(.hint a) {
+		@apply underline;
+	}
+	:global(.sidebar code) {
+		@apply px-1 py-0.5 text-yellow-400 bg-brand-editor-background rounded;
+	}
+</style>

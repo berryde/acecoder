@@ -51,7 +51,7 @@ export const getExercise = async (
 					).data()
 				};
 
-				// Check if the exercise inherits from a previous exercise and download that submission if so.
+				// Check if the exercise inherits from any previous exercises and download those submissions if so.
 				if (metadata.previous) {
 					const previous = await transaction.get(
 						doc(
@@ -75,7 +75,7 @@ export const getExercise = async (
 					}
 				}
 
-				// Check if the user has made a submission and download it if so
+				// Check if the user has made a submission and download it if so. These files shouldn't be editable
 				const submission = await transaction.get(
 					doc(db, 'projects', projectID, 'exercises', index, 'submissions', auth.currentUser.uid)
 				);

@@ -117,11 +117,6 @@ export const submit = async (projectID: string, exerciseID: string): Promise<Ser
 	});
 	if (response.status == 200) {
 		const data = response.data as ServerResponse;
-
-		if (data[get(chapter)]) {
-			chapter.update((chapter) => chapter + 1);
-		}
-
 		result.set(data);
 		return data;
 	} else {

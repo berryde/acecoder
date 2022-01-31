@@ -207,6 +207,10 @@ export type ExerciseChapter = {
 	 * The spec name of the test that evaluates this chapter.
 	 */
 	spec?: string;
+	/**
+	 * A hint to show if the test fails.
+	 */
+	hint?: string;
 };
 
 export type ProjectSettings = {

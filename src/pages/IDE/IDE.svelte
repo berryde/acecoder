@@ -9,6 +9,7 @@
 		initialising,
 		loadExercise,
 		project,
+		result,
 		submit
 	} from 'src/utils/exercise/exercise';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
@@ -62,6 +63,9 @@
 	async function handleSubmit() {
 		loading = true;
 		await submit($page.params.projectID, $page.params.index);
+		if (Object.values($result).every((res) => res.passed)) {
+			await incrementProgress($page.params.projectID, $page.params.index);
+		}
 		loading = false;
 	}
 </script>
@@ -97,7 +101,7 @@
 
 			<p>{index}/{$project.exerciseCount - 1}</p>
 			<div class="flex space-x-5 flex-grow justify-end w-full">
-				{#if $exercise.assessed && $chapter < $exercise.chapters.length - 1}
+				{#if $exercise.assessed && $chapter < $exercise.chapters.length}
 					<Button text="Submit" on:click={handleSubmit} {loading} />
 				{:else if index + 1 == $project.exerciseCount}
 					<Button text="Finish" on:click={handleFinish} />

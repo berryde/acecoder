@@ -78,9 +78,11 @@
 					name: exercise.name,
 					description: exercise.description,
 					assessed: exercise.assessed,
-					chapters: exercise.chapters,
-					previous: exercise.previous
+					chapters: exercise.chapters
 				};
+				if (exercise.previous) {
+					metadata.previous = exercise.previous;
+				}
 
 				// Use a batch write to create the exercise.
 				await runTransaction(db, async (transaction) => {
@@ -96,7 +98,7 @@
 							exerciseCount: increment(1)
 						});
 					} else {
-						transaction.update(doc(db, 'projects', projectID, 'exercises', exerciseID), metadata);
+						transaction.set(doc(db, 'projects', projectID, 'exercises', exerciseID), metadata);
 					}
 
 					// Create the files for each language.

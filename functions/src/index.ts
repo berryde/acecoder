@@ -36,12 +36,29 @@ exports.incrementProgress = functions.region('europe-west2').https.onCall(async 
 					if (!settingsSnapshot.exists) {
 						throw ("No settings could be found for that user")
 					}
-					const settings = settingsSnapshot.data() as { language: string, progress: number }
+					const settings = settingsSnapshot.data() as { language: string, progress: string }
 
-					if (settings.progress == parseInt(data.exerciseID)) {
-						console.log(`Incrementing progress from ${settings.progress} for user ${context.auth.uid}`)
+					const exerciseSnapshot = await transaction.get(store.collection("projects").doc(data.projectID).collection('exercises').doc(data.exerciseID))
+					if (!exerciseSnapshot.exists) {
+						throw ("That exercise does not exist")
+					}
+					const exercise = exerciseSnapshot.data() as { assessed: boolean }
+
+					// Fetch the user's results
+					let hasPassed = true
+					if (exercise.assessed) {
+						const resultsSnapshot = await transaction.get(store.collection("projects").doc(data.projectID).collection('exercises').doc(data.exerciseID).collection('results').doc(context.auth.uid))
+						if (!resultsSnapshot.exists) {
+							throw ("No results could be found for that user")
+						}
+						const results = resultsSnapshot.data() as Record<number, { passed: boolean }>
+						hasPassed = Object.values(results).every(result => result.passed)
+					}
+
+					if (hasPassed && settings.progress == data.exerciseID) {
+						console.log(`Incrementing progress from ${settings.progress} for user ${context.auth.uid} to ${settings.progress + 1}`)
 						transaction.update(store.collection('projects').doc(data.projectID).collection('settings').doc(context.auth.uid), {
-							'progress': settings.progress + 1
+							'progress': (parseInt(settings.progress) + 1).toString()
 						})
 					}
 				}

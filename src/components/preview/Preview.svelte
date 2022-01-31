@@ -137,10 +137,10 @@
 
 <div class="flex-grow h-full w-full flex flex-col overflow-hidden bg-brand-background">
 	<div class="flex w-full justify-end px-5 py-3 space-x-3 items-center h-10">
-		<Icon on:click={() => handleRefresh()} button={true} label="Refresh">
+		<Icon on:click={() => handleRefresh()} button={true} label="Refresh" card={true}>
 			<IoIosPlay />
 		</Icon>
-		<Icon on:click={() => handlePopup()} button={true} label="Popout">
+		<Icon on:click={() => handlePopup()} button={true} label="Popout" card={true}>
 			<IoIosExpand />
 		</Icon>
 	</div>

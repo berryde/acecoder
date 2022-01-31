@@ -8,6 +8,17 @@
 	export let editing: boolean;
 	let inherits = !!exercise.previous;
 
+	// function updatePrevious() {
+	// 	try {
+	// 		exercise.previous = previous
+	// 			.split(',')
+	// 			.filter((s) => /[0-9]/.test(s))
+	// 			.map((s) => parseInt(s));
+	// 	} catch (err) {
+	// 		console.error('Invalid input for previous exercises. This should be a comma separated list.');
+	// 	}
+	// }
+
 	const dispatch = createEventDispatcher();
 
 	function toggleEdit() {
