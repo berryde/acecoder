@@ -23,6 +23,7 @@ specifiers:
   axios: ^0.25.0
   babel-jest: ^27.3.1
   babel-loader: ^8.2.3
+  babel-plugin-transform-dynamic-import: ^2.1.0
   babel-plugin-transform-vite-meta-env: ^1.0.3
   brace: ^0.11.1
   canvas-confetti: ^1.4.0
@@ -54,6 +55,9 @@ specifiers:
   typescript: ^4.4.4
   webpack: ^5.67.0
 
+dependencies:
+  babel-plugin-transform-dynamic-import: 2.1.0_@babel+core@7.16.7
+
 devDependencies:
   '@babel/core': 7.16.7
   '@babel/preset-typescript': 7.16.7_@babel+core@7.16.7
@@ -63,7 +67,7 @@ devDependencies:
   '@rollup/plugin-replace': 3.0.1_rollup@2.66.0
   '@rollup/plugin-typescript': 8.3.0_289dda0f859951c8037c862f70771a06
   '@sveltejs/adapter-netlify': 1.0.0-next.39
-  '@sveltejs/kit': 1.0.0-next.251_svelte@3.46.2
+  '@sveltejs/kit': 1.0.0-next.252_svelte@3.46.2
   '@testing-library/jest-dom': 5.16.1
   '@testing-library/svelte': 3.0.3_svelte@3.46.2
   '@tsconfig/svelte': 2.0.1
@@ -387,7 +391,6 @@ packages:
   /@babel/helper-plugin-utils/7.16.7:
     resolution: {integrity: sha512-Qg3Nk7ZxpgMrsox6HreY1ZNKdBq7K72tDSliA6dCl5f007jR4ne8iD5UzuNnCJH2xBf2BEEVGr+/OL6Gdp7RxA==}
     engines: {node: '>=6.9.0'}
-    dev: true
 
   /@babel/helper-remap-async-to-generator/7.16.8:
     resolution: {integrity: sha512-fm0gH7Flb8H51LqJHy3HJ3wnE1+qtYR2A99K06ahwrawLdOFsCEWjZOrYricXJHoPSudNKxrMBUPEIPxiIIvBw==}
@@ -847,7 +850,6 @@ packages:
     dependencies:
       '@babel/core': 7.16.7_supports-color@8.1.1
       '@babel/helper-plugin-utils': 7.16.7
-    dev: true
 
   /@babel/plugin-syntax-export-namespace-from/7.8.3_@babel+core@7.16.7:
     resolution: {integrity: sha512-MXf5laXo6c1IbEbegDmzGPwGNTsHZmEy6QGznu5Sh2UCWvueywb2ee+CCE4zQiZstxU9BMoQO9i6zUFSY0Kj0Q==}
@@ -3638,8 +3640,8 @@ packages:
       tiny-glob: 0.2.9
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.251_svelte@3.46.2:
-    resolution: {integrity: sha512-7GtUrUHqOa7ISo86PlICcMKcfGodOZwP9p7hXnN4t1yMWIQD2eKZlJffvnwx1X+NMcJ8hLChgcjGYjc1xZABhQ==}
+  /@sveltejs/kit/1.0.0-next.252_svelte@3.46.2:
+    resolution: {integrity: sha512-cUreghq9H4WZyqwR/whBP1w+IQbR/VYKCmOduBYykj1lSeVZrUIlX+usxpNTtOCmekP7RPGDhQHfYyb58FbD3g==}
     engines: {node: '>=14.13'}
     hasBin: true
     peerDependencies:
@@ -4899,6 +4901,14 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /babel-plugin-transform-dynamic-import/2.1.0_@babel+core@7.16.7:
+    resolution: {integrity: sha512-ja4NWc37+7bV6/uJKCERJEGHEyK1DXgXp8teHvjKC4Jsj3Ib484dJdamFIBtSb40JFniyWZo6ML46usVvfdsSg==}
+    dependencies:
+      '@babel/plugin-syntax-dynamic-import': 7.8.3_@babel+core@7.16.7
+    transitivePeerDependencies:
+      - '@babel/core'
+    dev: false
 
   /babel-plugin-transform-vite-meta-env/1.0.3:
     resolution: {integrity: sha512-eyfuDEXrMu667TQpmctHeTlJrZA6jXYHyEJFjcM0yEa60LS/LXlOg2PBbMb8DVS+V9CnTj/j9itdlDVMcY2zEg==}
