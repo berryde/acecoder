@@ -10,6 +10,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Error</title>
+</svelte:head>
+
 <script lang="ts">
 	export let status: number = 404;
 	export let message: string = '';

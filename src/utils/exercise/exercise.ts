@@ -1,4 +1,4 @@
-import { deleteDoc, doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { writable, get } from 'svelte/store';
 import { createFile, filesystem, getAllFiles } from '../filesystem/filesystem';
 import { auth, db } from '../firebase';
@@ -24,24 +24,9 @@ export const language = writable<string>();
 export const result = writable<ServerResponse>();
 
 /**
- * Whether a submission is currently pending results
- */
-export const pending = writable<boolean>(false);
-
-/**
- * Whether a submission has failed and should be aborted
- */
-export const aborted = writable<boolean>(false);
-
-/**
  * Whether the exercise is currently being loaded for the first time
  */
 export const initialising = writable<boolean>(true);
-
-/**
- * Whether the user has made a submission yet.
- */
-export const submitted = writable<boolean>(false);
 
 /**
  * Load the exercise with the given ID into the application.
@@ -59,21 +44,8 @@ export const loadExercise = async (): Promise<void> => {
 	initialising.set(false);
 };
 
-export const reset = async (projectID: string, exerciseID: string): Promise<void> => {
+export const reset = async (): Promise<void> => {
 	initialising.set(true);
-	submitted.set(false);
-	const submission = doc(
-		db,
-		'projects',
-		projectID,
-		'exercises',
-		exerciseID,
-		'submissions',
-		auth.currentUser.uid
-	);
-	if (submission) {
-		await deleteDoc(submission);
-	}
 	filesystem.set({});
 	loadExercise();
 };
@@ -94,9 +66,11 @@ export const submit = async (projectID: string, exerciseID: string): Promise<Ser
 			submission[file.name] = file.code;
 		}
 	});
+	const existing = (await getDoc(doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid))).data() as Record<string, string>
+	const updated = { ...existing, ...submission }
 	await setDoc(
-		doc(db, 'projects', projectID, 'exercises', exerciseID, 'submissions', auth.currentUser.uid),
-		submission
+		doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid),
+		updated
 	);
 
 	let endpoint: string;
@@ -127,8 +101,6 @@ export const submit = async (projectID: string, exerciseID: string): Promise<Ser
 export const restoreDefaults = (): void => {
 	initialising.set(true);
 	exercise.set(undefined);
-	aborted.set(false);
-	pending.set(false);
 	result.set(undefined);
 	filesystem.set({});
 	selectedTab.set(undefined);

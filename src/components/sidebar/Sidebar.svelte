@@ -1,7 +1,14 @@
 <script lang="ts">
 	import Icon from '../common/Icon.svelte';
 	import Bookmark from 'svelte-icons/io/IoMdBookmark.svelte';
-	import { chapter as _chapter, exercise, project, result } from 'src/utils/exercise/exercise';
+	import Book from 'svelte-icons/io/IoIosJournal.svelte';
+	import {
+		chapter as _chapter,
+		exercise,
+		project,
+		reset,
+		result
+	} from 'src/utils/exercise/exercise';
 	import Checkbox from '../common/Checkbox.svelte';
 	import Refresh from 'svelte-icons/io/IoMdRefresh.svelte';
 	import Wand from 'svelte-icons/io/IoIosColorWand.svelte';
@@ -26,6 +33,7 @@
 			} else {
 				_chapter.set(index);
 			}
+			submissionAttempt = 0;
 		}
 	});
 </script>
@@ -39,7 +47,7 @@
 		</p>
 	</div>
 	<div class="flex flex-row px-5 py-3 pt-0 space-x-3 items-center h-10 justify-end">
-		<Icon label="Restart" button={true} card={true}>
+		<Icon label="Reset" button={true} card={true} on:click={() => reset()}>
 			<Refresh />
 		</Icon>
 		<Icon label="Format" button={true} card={true}>
@@ -47,10 +55,17 @@
 		</Icon>
 	</div>
 	<div class="flex flex-row items-center px-5 py-3 space-x-5 bg-brand-accent">
-		<Icon>
-			<Bookmark />
-		</Icon>
-		<p>{$exercise.assessed ? 'Tasks' : 'Example'}</p>
+		{#if $exercise.assessed}
+			<Icon>
+				<Bookmark />
+			</Icon>
+			<p>Tasks</p>
+		{:else}
+			<Icon>
+				<Book />
+			</Icon>
+			<p>Notes</p>
+		{/if}
 	</div>
 	<div class="space-y-3">
 		{#each $exercise.chapters as chapter, index}
@@ -67,12 +82,12 @@
 					<p>{@html chapter.text}</p>
 				</div>
 				{#if $result && !$result[index].passed && chapter.hint && index == $_chapter && submissionAttempt > 0}
-					<div class="bg-brand-danger-dark bg-opacity-50 p-3 text-brand-danger-light">
+					<div class="bg-brand-danger-dark bg-opacity-50 p-5 text-brand-danger-light">
 						<p class="hint">{@html chapter.hint}</p>
 					</div>
 				{/if}
 			{:else}
-				<div class="p-3">
+				<div class="p-5">
 					<p>{@html chapter.text}</p>
 				</div>
 			{/if}

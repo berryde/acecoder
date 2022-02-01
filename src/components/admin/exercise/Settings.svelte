@@ -6,18 +6,6 @@
 
 	export let exercise: Exercise;
 	export let editing: boolean;
-	let inherits = !!exercise.previous;
-
-	// function updatePrevious() {
-	// 	try {
-	// 		exercise.previous = previous
-	// 			.split(',')
-	// 			.filter((s) => /[0-9]/.test(s))
-	// 			.map((s) => parseInt(s));
-	// 	} catch (err) {
-	// 		console.error('Invalid input for previous exercises. This should be a comma separated list.');
-	// 	}
-	// }
 
 	const dispatch = createEventDispatcher();
 
@@ -72,23 +60,8 @@
 			<p class="font-bold">Previous exercise</p>
 			<div class="flex flex-row items-center space-x-3">
 				<p>This exercise inherits from a previous exercise</p>
-				<Checkbox
-					bind:value={inherits}
-					variant="true-false"
-					disabled={!editing}
-					on:click={() => (inherits = !inherits)}
-				/>
+				<Checkbox bind:value={exercise.inherits} variant="true-false" disabled={!editing} />
 			</div>
 		</div>
-		{#if inherits}
-			<div>
-				<p class="font-bold">Previous exercise index</p>
-				{#if editing}
-					<Input variant="dark" bind:value={exercise.previous} />
-				{:else}
-					<p>{exercise.previous}</p>
-				{/if}
-			</div>
-		{/if}
 	</div>
 </div>

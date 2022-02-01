@@ -26,6 +26,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Project editor</title>
+</svelte:head>
+
 <PrivateRoute restricted={true} {loading}>
 	<div
 		class="w-screen min-h-screen bg-brand-editor-background flex justify-center items-center text-brand-text"

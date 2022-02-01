@@ -51,6 +51,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Project</title>
+</svelte:head>
+
 <PrivateRoute {loading}>
 	<div
 		class="w-screen min-h-screen bg-brand-editor-background flex justify-center text-brand-text overflow-y-auto"

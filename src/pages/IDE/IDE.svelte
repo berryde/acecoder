@@ -9,7 +9,6 @@
 		initialising,
 		loadExercise,
 		project,
-		result,
 		submit
 	} from 'src/utils/exercise/exercise';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
@@ -43,9 +42,7 @@
 	});
 
 	async function handleNext() {
-		if (!$exercise.assessed) {
-			await incrementProgress($page.params.projectID, $page.params.index);
-		}
+		await incrementProgress($page.params.projectID, $page.params.index);
 		window.location.href = `/project/${$page.params.projectID}/exercise-${index + 1}`;
 	}
 
@@ -63,9 +60,6 @@
 	async function handleSubmit() {
 		loading = true;
 		await submit($page.params.projectID, $page.params.index);
-		if (Object.values($result).every((res) => res.passed)) {
-			await incrementProgress($page.params.projectID, $page.params.index);
-		}
 		loading = false;
 	}
 </script>

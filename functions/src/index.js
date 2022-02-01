@@ -71,51 +71,51 @@ exports.incrementProgress = functions.region('europe-west2').https.onCall(functi
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, store_1.runTransaction(function (transaction) { return __awaiter(void 0, void 0, void 0, function () {
-                        var projectSnapshot, project, settingsSnapshot, settings, exerciseSnapshot, exercise, hasPassed, resultsSnapshot, results;
+                        var projectSnapshot, project, index, settingsSnapshot, settings, progress, exerciseSnapshot, exercise, passed, resultsSnapshot, results;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0: return [4 /*yield*/, transaction.get(store_1.collection("projects").doc(data.projectID))];
                                 case 1:
                                     projectSnapshot = _a.sent();
-                                    if (!projectSnapshot.exists) {
+                                    if (!projectSnapshot.exists)
                                         throw ("Project ".concat(data.projectID, " does not exist"));
-                                    }
                                     project = projectSnapshot.data();
-                                    if (!(parseInt(data.exerciseID) < project.exerciseCount)) return [3 /*break*/, 6];
+                                    index = parseInt(data.exerciseID);
+                                    if (index >= project.exerciseCount)
+                                        throw ("That exercise does not exist");
                                     return [4 /*yield*/, transaction.get(store_1.collection("projects").doc(data.projectID).collection('settings').doc(context.auth.uid))];
                                 case 2:
                                     settingsSnapshot = _a.sent();
-                                    if (!settingsSnapshot.exists) {
+                                    if (!settingsSnapshot.exists)
                                         throw ("No settings could be found for that user");
-                                    }
                                     settings = settingsSnapshot.data();
+                                    progress = parseInt(settings.progress);
+                                    if (progress != index)
+                                        throw ("Cannot increment a non-current exercise. Trying to increment ".concat(data.exerciseID, " with progress ").concat(settings.progress));
                                     return [4 /*yield*/, transaction.get(store_1.collection("projects").doc(data.projectID).collection('exercises').doc(data.exerciseID))];
                                 case 3:
                                     exerciseSnapshot = _a.sent();
-                                    if (!exerciseSnapshot.exists) {
+                                    if (!exerciseSnapshot.exists)
                                         throw ("That exercise does not exist");
-                                    }
                                     exercise = exerciseSnapshot.data();
-                                    hasPassed = true;
+                                    passed = !exercise.assessed;
                                     if (!exercise.assessed) return [3 /*break*/, 5];
                                     return [4 /*yield*/, transaction.get(store_1.collection("projects").doc(data.projectID).collection('exercises').doc(data.exerciseID).collection('results').doc(context.auth.uid))];
                                 case 4:
                                     resultsSnapshot = _a.sent();
-                                    if (!resultsSnapshot.exists) {
+                                    if (!resultsSnapshot.exists)
                                         throw ("No results could be found for that user");
-                                    }
                                     results = resultsSnapshot.data();
-                                    hasPassed = Object.values(results).every(function (result) { return result.passed; });
+                                    passed = Object.values(results).every(function (result) { return result.passed; });
                                     _a.label = 5;
                                 case 5:
-                                    if (hasPassed && settings.progress == data.exerciseID) {
-                                        console.log("Incrementing progress from ".concat(settings.progress, " for user ").concat(context.auth.uid, " to ").concat(settings.progress + 1));
+                                    if (passed) {
+                                        console.log("Incrementing progress from ".concat(settings.progress, " for user ").concat(context.auth.uid, " to ").concat(index + 1));
                                         transaction.update(store_1.collection('projects').doc(data.projectID).collection('settings').doc(context.auth.uid), {
-                                            'progress': (parseInt(settings.progress) + 1).toString()
+                                            'progress': (progress + 1).toString()
                                         });
                                     }
-                                    _a.label = 6;
-                                case 6: return [2 /*return*/];
+                                    return [2 /*return*/];
                             }
                         });
                     }); })];

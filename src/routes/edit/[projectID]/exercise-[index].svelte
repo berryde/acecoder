@@ -4,7 +4,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import type { Exercise, Project } from 'src/utils/types';
-	import { getExercise, getProject } from 'src/utils/project/project';
+	import { getExerciseAdmin, getProject } from 'src/utils/project/project';
 	import ProfileMenu from 'src/components/profile/ProfileMenu.svelte';
 
 	let project: Project;
@@ -14,7 +14,11 @@
 	onMount(async () => {
 		try {
 			project = await getProject($page.params.projectID);
-			exercise = await getExercise($page.params.projectID, $page.params.index, project.languages);
+			exercise = await getExerciseAdmin(
+				$page.params.projectID,
+				$page.params.index,
+				project.languages
+			);
 			loading = false;
 		} catch (err) {
 			console.error(err);
@@ -22,6 +26,10 @@
 		}
 	});
 </script>
+
+<svelte:head>
+	<title>Exercise editor</title>
+</svelte:head>
 
 <PrivateRoute restricted={true} {loading}>
 	<div

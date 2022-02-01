@@ -23,7 +23,9 @@
 			window.location.href = '/error/403';
 		} else {
 			try {
-				exercise.set(await getExercise($page.params.projectID, $page.params.index));
+				exercise.set(
+					await getExercise($page.params.projectID, $page.params.index, settings.language)
+				);
 				project.set(await getProject($page.params.projectID));
 				language.set(Object.keys($exercise.files)[0]);
 				const editable = Object.keys($exercise.files[$language]).filter(

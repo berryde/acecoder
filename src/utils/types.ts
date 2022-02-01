@@ -190,8 +190,8 @@ export type ExerciseMetadata = {
 	name: string;
 	description: string;
 	assessed: boolean;
-	previous?: number;
 	chapters: ExerciseChapter[];
+	inherits: boolean;
 };
 
 export interface Exercise extends ExerciseMetadata {

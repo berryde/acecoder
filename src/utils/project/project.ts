@@ -10,6 +10,32 @@ import type {
 	ServerResponse
 } from '../types';
 
+export const getExerciseAdmin = async (projectID: string,
+	index: string,
+	languages: string[]): Promise<Exercise> => {
+	return await runTransaction(db, async (transaction) => {
+		// Get the exercise metadata
+		const metadata = (
+			await transaction.get(doc(db, 'projects', projectID, 'exercises', index))
+		).data() as ExerciseMetadata;
+
+		// Get the exercise files
+		const files: Record<string, Record<string, ExerciseFile>> = {};
+		for (const language of languages) {
+			files[language] = (
+				await transaction.get(
+					doc(db, 'projects', projectID, 'exercises', index, 'files', language)
+				)
+			).data() as Record<string, ExerciseFile>;
+		}
+		return {
+			...metadata,
+			files: files
+		};
+	})
+
+}
+
 /**
  * Gets exercise metadata and files as an atomic transaction. If a list of languages is provided, the files for each language are provided.
  * @param projectID The ID of the project.
@@ -19,7 +45,7 @@ import type {
 export const getExercise = async (
 	projectID: string,
 	index: string,
-	languages?: string[]
+	language: string
 ): Promise<Exercise> => {
 	try {
 		return await runTransaction(db, async (transaction) => {
@@ -27,68 +53,31 @@ export const getExercise = async (
 			const metadata = (
 				await transaction.get(doc(db, 'projects', projectID, 'exercises', index))
 			).data() as ExerciseMetadata;
+
 			// Get the exercise files
-			let files: Record<string, Record<string, ExerciseFile>>;
-			if (languages) {
-				files = {};
-				for (const language of languages) {
-					files[language] = (
-						await transaction.get(
-							doc(db, 'projects', projectID, 'exercises', index, 'files', language)
-						)
-					).data() as Record<string, ExerciseFile>;
-				}
-			} else {
-				// Determine the language based on the user's settings
-				const language = (
-					await transaction.get(doc(db, 'projects', projectID, 'settings', auth.currentUser.uid))
-				).data()['language'];
-				files = {
-					[language]: (
-						await transaction.get(
-							doc(db, 'projects', projectID, 'exercises', index, 'files', language)
-						)
-					).data()
-				};
+			const files: Record<string, Record<string, ExerciseFile>> = {
+				[language]: (
+					await transaction.get(
+						doc(db, 'projects', projectID, 'exercises', index, 'files', language)
+					)
+				).data()
+			};
 
-				// Check if the exercise inherits from any previous exercises and download those submissions if so.
-				if (metadata.previous) {
-					const previous = await transaction.get(
-						doc(
-							db,
-							'projects',
-							projectID,
-							'exercises',
-							metadata.previous.toString(),
-							'submissions',
-							auth.currentUser.uid
-						)
-					);
-					if (previous.exists()) {
-						const previousFiles = previous.data() as Record<string, string>;
-						Object.keys(previousFiles).forEach((name) => {
-							files[language][name] = {
-								contents: previousFiles[name],
-								editable: true
-							};
-						});
-					}
-				}
-
-				// Check if the user has made a submission and download it if so. These files shouldn't be editable
-				const submission = await transaction.get(
-					doc(db, 'projects', projectID, 'exercises', index, 'submissions', auth.currentUser.uid)
-				);
-				if (submission.exists()) {
-					const submissionFiles = submission.data() as Record<string, string>;
-					Object.keys(submissionFiles).forEach((name) => {
-						files[language][name] = {
-							contents: submissionFiles[name],
-							editable: true
-						};
-					});
-				}
+			// Check if the user has made a submission and download it if so.
+			const submission = await transaction.get(
+				doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid)
+			);
+			if (submission.exists()) {
+				const submissionFiles = submission.data() as Record<string, string>;
+				Object.keys(submissionFiles).forEach((name) => {
+					// Only overwrite files relevant to this exercise.
+					files[language][name] = {
+						contents: submissionFiles[name],
+						editable: ((Object.keys(files[language]).filter(name => files[language][name].editable).includes(name)))
+					};
+				});
 			}
+
 			return {
 				...metadata,
 				files: files

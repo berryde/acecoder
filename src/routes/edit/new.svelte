@@ -4,6 +4,10 @@
 	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
 </script>
 
+<svelte:head>
+	<title>New project</title>
+</svelte:head>
+
 <PrivateRoute restricted={true}>
 	<div
 		class="w-screen min-h-screen bg-brand-editor-background flex justify-center items-center text-brand-text overflow-y-auto"

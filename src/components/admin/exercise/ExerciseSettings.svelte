@@ -22,7 +22,8 @@
 		description: '',
 		chapters: [],
 		files: {},
-		assessed: true
+		assessed: true,
+		inherits: true
 	};
 	/**
 	 * Whether the editing UI should be shown.
@@ -78,11 +79,9 @@
 					name: exercise.name,
 					description: exercise.description,
 					assessed: exercise.assessed,
-					chapters: exercise.chapters
+					chapters: exercise.chapters,
+					inherits: exercise.inherits
 				};
-				if (exercise.previous) {
-					metadata.previous = exercise.previous;
-				}
 
 				// Use a batch write to create the exercise.
 				await runTransaction(db, async (transaction) => {

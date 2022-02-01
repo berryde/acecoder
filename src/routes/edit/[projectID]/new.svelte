@@ -14,6 +14,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>New exercise</title>
+</svelte:head>
+
 <PrivateRoute restricted={true} loading={!project}>
 	<div
 		class="max-w-screen min-h-screen bg-brand-editor-background flex justify-center items-center text-brand-text overflow-y-auto"

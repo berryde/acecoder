@@ -24,6 +24,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Admin Dashboard</title>
+</svelte:head>
+
 <PrivateRoute restricted={true} {loading}>
 	<div
 		class="w-screen h-screen bg-brand-editor-background flex justify-center items-center text-brand-text"
