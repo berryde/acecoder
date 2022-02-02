@@ -33,7 +33,7 @@
 		<div
 			class="relative transition-all text-center {visible
 				? 'visible opacity-100'
-				: 'invisible opacity-0'} top-5 right-9 text-xs bg-brand-text text-brand-background shadow-xlP rounded hover:bg-gray-300"
+				: 'invisible opacity-0'} top-5 right-9 text-xs bg-brand-text text-brand-background shadow-xl rounded hover:bg-gray-300 min-w-max  overflow-hidden"
 		>
 			<div class="p-3 cursor-pointer" on:click={() => signOut()}>
 				<p>Log out</p>
