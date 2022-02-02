@@ -27,15 +27,12 @@
 	}
 </script>
 
-<div class="w-full px-3">
-	<div class="uppercase text-xs pb-1">Add admin claim</div>
-	<Input placeholder="User ID" bind:value={uid} classes="w-full bg-dark-bglight" />
-	<Button
-		text="Add"
-		classes="bg-light-bglight text-light-text hover:bg-opacity-50 dark:bg-dark-bglight dark:hover:bg-opacity-50 dark:text-dark-text h-7 mt-2"
-		{loading}
-		on:click={submit}
-	/>
+<div class="w-full bg-brand-accent rounded p-5 space-y-1">
+	<div class="font-bold">Add admin claim</div>
+	<div class="flex flex-row space-x-3">
+		<Input placeholder="User ID" bind:value={uid} variant="dark" />
+		<Button text="Add" {loading} on:click={submit} />
+	</div>
 	{#if message}
 		<div
 			class="{success

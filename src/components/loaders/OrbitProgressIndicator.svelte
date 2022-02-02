@@ -8,7 +8,7 @@
 		display: block;
 		margin: 15px auto;
 		position: relative;
-		color: #d1d5db;
+		color: #f0f0f0;
 		box-sizing: border-box;
 		animation: rotation 1.5s linear infinite;
 	}
@@ -22,7 +22,7 @@
 		top: 50%;
 		left: 50%;
 		transform: scale(0.5) translate(0, 0);
-		background-color: #d1d5db;
+		background-color: #f0f0f0;
 		border-radius: 50%;
 		animation: loader 1.5s infinite ease-in-out;
 	}

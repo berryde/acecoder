@@ -54,42 +54,33 @@
 </svelte:head>
 
 <div
-	class="w-full h-screen bg-dark-bgdark flex flex-col justify-center items-center text-dark-text"
+	class="w-full h-screen bg-brand-background flex flex-col justify-center items-center text-brand-text"
 >
-	<div class="w-96 flex flex-col">
+	<div class="w-96 flex flex-col space-y-3">
 		<h1 class="text-3xl font-bold mb-10">Welcome back</h1>
-		<Input
-			placeholder="Email"
-			type="email"
-			icon={true}
-			classes="mb-3 bg-dark-bglight"
-			bind:value={email}
-		>
+		<Input placeholder="Email" type="email" icon={true} bind:value={email}>
 			<IoMdPerson />
 		</Input>
-		<Input
-			placeholder="Password"
-			type="password"
-			icon={true}
-			classes="mb-3 bg-dark-bglight"
-			bind:value={password}
-		>
+		<Input placeholder="Password" type="password" icon={true} bind:value={password}>
 			<IoMdLock />
 		</Input>
 
-		<a class="text-right pb-3 text-blue-700 textlink whitespace-nowrap" href="/account-recovery">
+		<a
+			class="text-right pb-3 text-brand-primary textlink whitespace-nowrap"
+			href="/account-recovery"
+		>
 			Forgot your password?
 		</a>
 
 		<Button
 			text="Sign in"
 			on:click={() => signIn()}
-			classes="hover:bg-blue-800 bg-blue-700"
 			loading={loading && method == 'default'}
+			expanded={true}
 		/>
 
 		{#if error}
-			<div class="bg-red-900 text-red-400 bg-opacity-50 p-3 mt-3 rounded">
+			<div class="bg-brand-danger-dark bg-opacity-50 text-brand-danger-light p-3 mt-3 rounded">
 				<p class="font-bold">{error.errorCode}</p>
 				<p>
 					{error.errorMessage}
@@ -98,31 +89,34 @@
 		{/if}
 
 		<div class="flex flex-row justify-center items-center mx-24 my-12">
-			<hr class="border-dark-text flex-grow mr-3" />
+			<hr class="border-brand-text flex-grow mr-3" />
 			<p class="">or</p>
-			<hr class="border-dark-text flex-grow ml-3" />
+			<hr class="border-brand-text flex-grow ml-3" />
 		</div>
-
-		<Button
-			text="Sign in with Google"
-			icon={true}
-			loading={loading && method == 'google'}
-			classes="hover:bg-opacity-50 bg-dark-bglight mb-3"
-			on:click={() => signInWith('google')}
-		>
-			<IoLogoGoogle />
-		</Button>
-		<Button
-			text="Sign in with GitHub"
-			icon={true}
-			loading={loading && method == 'github'}
-			classes="hover:bg-opacity-50 bg-dark-bglight"
-			on:click={() => signInWith('github')}
-		>
-			<IoLogoGithub />
-		</Button>
+		<div class="space-y-3">
+			<Button
+				text="Sign in with Google"
+				icon={true}
+				loading={loading && method == 'google'}
+				variant="accent"
+				expanded={true}
+				on:click={() => signInWith('google')}
+			>
+				<IoLogoGoogle />
+			</Button>
+			<Button
+				text="Sign in with GitHub"
+				icon={true}
+				loading={loading && method == 'github'}
+				variant="accent"
+				expanded={true}
+				on:click={() => signInWith('github')}
+			>
+				<IoLogoGithub />
+			</Button>
+		</div>
 		<span class="mt-3"
-			>Don't have an account? <a href="register" class="text-blue-700">Sign up</a></span
+			>Don't have an account? <a href="register" class="text-brand-primary">Sign up</a></span
 		>
 	</div>
 </div>

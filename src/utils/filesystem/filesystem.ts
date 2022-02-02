@@ -291,6 +291,17 @@ export const getAllFiles = (prefix: string, root: Filesystem): File[] => {
 	return files;
 };
 
+export const extractZip = async (file: Blob): Promise<Record<string, string>> => {
+	const result: { [filename: string]: string } = {};
+	const zip = await JSZip.loadAsync(file);
+	for (const filename of Object.keys(zip.files)) {
+		await zip.files[filename].async('string').then((data) => {
+			if (!filename.endsWith('/')) result[filename] = data;
+		});
+	}
+	return result;
+};
+
 const createZip = (zip: JSZip, state: Filesystem) => {
 	// Create a zip from the file system by traversing it.
 	for (const [name, file] of Object.entries(state)) {

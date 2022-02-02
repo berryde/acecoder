@@ -25,8 +25,6 @@
 	 */
 	export let minPane2Size = '0';
 
-	export let isHorizontal: boolean;
-
 	/**
 	 * The left pane.
 	 */
@@ -81,25 +79,14 @@
 			y: e.clientY - mouseData.event.clientY
 		};
 
-		if (isHorizontal) {
-			delta.x = Math.min(Math.max(delta.x, -mouseData.pane1Size), mouseData.pane2Size);
+		delta.x = Math.min(Math.max(delta.x, -mouseData.pane1Size), mouseData.pane2Size);
 
-			const left = ((mouseData.pane1Size + delta.x) / width) * 100;
-			const right = 100 - left - separatorSize;
-			pane1Size = left;
-			pane2Size = right;
-			pane1.style.width = left + '%';
-			pane2.style.width = right + '%';
-		} else {
-			delta.y = Math.min(Math.max(delta.y, -mouseData.pane1Size), mouseData.pane2Size);
-
-			const top = ((mouseData.pane1Size + delta.y) / height) * 100;
-			const bottom = 100 - top - separatorSize;
-			pane1Size = top;
-			pane2Size = bottom;
-			pane1.style.height = pane1Size + '%';
-			pane2.style.height = pane2Size + '%';
-		}
+		const left = ((mouseData.pane1Size + delta.x) / width) * 100;
+		const right = 100 - left;
+		pane1Size = left;
+		pane2Size = right;
+		pane1.style.width = left + '%';
+		pane2.style.width = right + '%';
 	}
 
 	/**
@@ -128,9 +115,9 @@
 		if (e.button !== 0) return;
 		mouseData = {
 			event: e,
-			offset: isHorizontal ? separator.offsetLeft : separator.offsetTop,
-			pane1Size: isHorizontal ? pane1.offsetWidth : pane1.offsetHeight,
-			pane2Size: isHorizontal ? pane2.offsetWidth : pane2.offsetHeight
+			offset: separator.offsetLeft,
+			pane1Size: pane1.offsetWidth,
+			pane2Size: pane2.offsetWidth
 		};
 		if (window) {
 			resizing = true;
@@ -155,7 +142,6 @@
 		if (window) {
 			window.addEventListener('resize', resize);
 		}
-		separatorSize = getSeparatorSize();
 	});
 
 	onDestroy(() => {
@@ -173,58 +159,36 @@
 		if (separator) separator.removeAttribute('style');
 	}
 
-	function getSeparatorSize() {
-		if (separator) {
-			return isHorizontal
-				? (separator.clientWidth / width) * 100
-				: (separator.clientHeight / height) * 100;
-		}
-		return 0;
-	}
-
 	$: pane1Size && resetSize();
 	$: pane2Size && resetSize();
 	$: minPane1Size && resetSize();
 
 	let width: number;
-	let height: number;
-	let separatorSize: number;
 </script>
 
 <div
-	class="flex {isHorizontal ? 'flex-row' : 'flex-col'} flex-grow h-full"
+	class="flex flex-row flex-grow overflow-y-auto"
 	style="--left-pane-size: {pane1Size}%; --right-pane-size: {pane2Size}%; --min-left-pane-size: {minPane1Size}; --min-right-pane-size: {minPane2Size};"
 	bind:clientWidth={width}
-	bind:clientHeight={height}
 >
-	<div bind:this={pane1} class="pane1-{isHorizontal ? 'horizontal' : 'vertical'}">
+	<div bind:this={pane1} class="pane1 overflow-auto h-full">
 		<slot name="pane1" {resizing} />
 	</div>
 	<div bind:this={separator} on:mousedown={mouseDown} on:mouseup={mouseUp}>
-		<Separator {isHorizontal} {resizing} />
+		<Separator />
 	</div>
-	<div bind:this={pane2} class="pane2-{isHorizontal ? 'horizontal' : 'vertical'}">
+	<div bind:this={pane2} class="pane2 h-full">
 		<slot name="pane2" {resizing} />
 	</div>
 </div>
 
 <style lang="postcss">
-	.pane1-horizontal {
+	.pane1 {
 		width: var(--left-pane-size);
 		min-width: var(--min-left-pane-size);
 	}
-	.pane2-horizontal {
+	.pane2 {
 		width: var(--right-pane-size);
 		min-width: var(--min-right-pane-size);
-	}
-	.pane1-vertical {
-		height: var(--left-pane-size);
-		min-height: var(--min-left-pane-size);
-		width: 100%;
-	}
-	.pane2-vertical {
-		height: var(--right-pane-size);
-		min-height: var(--min-right-pane-size);
-		width: 100%;
 	}
 </style>

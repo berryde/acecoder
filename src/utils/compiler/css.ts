@@ -9,7 +9,7 @@ import { resolveRelativePath, fileNotFoundError, isRelativeImport } from './comp
 export default function css(files: { [key: string]: File }): Plugin {
 	const styles = {};
 	return {
-		name: 'import-css',
+		name: 'folio-css',
 		/**
 		 * Determine absolute path from relative paths for in memory files.
 		 * @param importee The file being imported

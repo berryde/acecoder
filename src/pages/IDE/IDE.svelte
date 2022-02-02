@@ -1,35 +1,23 @@
 <script lang="ts">
 	import SplitPane from 'src/components/splitpane/SplitPane.svelte';
-	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
 	import EditorContainer from './EditorContainer.svelte';
 	import PreviewContainer from './PreviewContainer.svelte';
-	import { onDestroy, onMount } from 'svelte';
-	import type { SidebarTab } from 'src/utils/types';
-	import SidebarItem from 'src/components/sidebar/SidebarItem.svelte';
-	import Admin from 'src/components/admin/Admin.svelte';
-	import IoIosBuild from 'svelte-icons/io/IoIosBuild.svelte';
+	import { onMount } from 'svelte';
 	import {
+		chapter,
+		exercise,
 		initialising,
 		loadExercise,
-		result,
-		submitted,
-		pending
+		project,
+		submit
 	} from 'src/utils/exercise/exercise';
-	import { isAdmin } from 'src/utils/auth/auth';
-	import Explorer from 'src/components/explorer/Explorer.svelte';
-	import Feedback from 'src/components/feedback/Feedback.svelte';
-	import Settings from 'src/components/settings/Settings.svelte';
-	import IoIosFiling from 'svelte-icons/io/IoIosFiling.svelte';
-	import IoIosSettings from 'svelte-icons/io/IoIosSettings.svelte';
-	import IoMdText from 'svelte-icons/io/IoMdText.svelte';
-	import Profile from 'src/components/profile/Profile.svelte';
-	import ProfileImage from 'src/components/profile/ProfileImage.svelte';
-	import MdBook from 'svelte-icons/md/MdBook.svelte';
-	import Exercise from 'src/components/exercise/Exercise.svelte';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
 	import { loadSettings } from 'src/utils/settings/settings';
-	import Results from 'src/components/exercise/Results.svelte';
-	import Modal from 'src/components/common/Modal.svelte';
+	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
+	import Navbar from 'src/components/navbar/Navbar.svelte';
+	import Button from 'src/components/common/Button.svelte';
+	import { page } from '$app/stores';
+	import { incrementProgress } from 'src/utils/firebase';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -38,196 +26,86 @@
 	let selecting = false;
 
 	/**
-	 * The selected sidebar item's index.
-	 */
-	let selected = 1;
-
-	/**
-	 * Whether the sidebar is collapsed.
-	 */
-	let collapsed = false;
-
-	/**
-	 * The size of the left pane before the sidebar is collapsed.
-	 */
-	let prevL: number;
-
-	/**
-	 * The size of the right pane before the sidebar is collapsed.
-	 */
-	let prevR: number;
-
-	/**
-	 * The size of the left pane.
-	 */
-	let L = 13;
-
-	/**
-	 * The size of the right pane.
-	 */
-	let R = 87;
-
-	let sidebarTabs: SidebarTab[] = [
-		{
-			name: 'profile',
-			icon: ProfileImage,
-			component: Profile
-		},
-		{
-			name: 'Exercise',
-			icon: MdBook,
-			component: Exercise
-		},
-		{
-			name: 'explorer',
-			icon: IoIosFiling,
-			component: Explorer
-		},
-		{
-			name: 'feedback',
-			icon: IoMdText,
-			component: Feedback
-		},
-		{
-			name: 'settings',
-			icon: IoIosSettings,
-			component: Settings
-		}
-	];
-
-	/**
-	 * Update the selected index and collapsed state of the sidebar.
-	 * @param updatedIndex The newly selected sidebar item index.
-	 */
-	function updateSidebar(updatedIndex: number | undefined) {
-		selected = updatedIndex;
-		if (collapsed) {
-			openSidebar();
-		}
-	}
-
-	/**
 	 * Update the value of whether the user is currently drawing a selection over the editor.
 	 * @param e The triggering event.
 	 */
 	function toggleSelecting(e: CustomEvent<boolean>) {
 		selecting = e.detail;
 	}
-
-	/**
-	 * Called when the user presses a key while using the application
-	 * @param e The event that triggered this function.
-	 */
-	function keydown(e: KeyboardEvent) {
-		if (e.ctrlKey) {
-			switch (e.code) {
-				case 'KeyB':
-					e.preventDefault();
-					collapsed ? openSidebar() : collapseSidebar();
-					break;
-			}
-		}
-	}
-
-	/**
-	 * Collapse the sidebar so that it is not visible.
-	 */
-	function collapseSidebar() {
-		prevL = L;
-		prevR = R;
-
-		collapsed = true;
-
-		L = 0;
-		R = 100;
-	}
-
-	/**
-	 * Make the sidebar visible.
-	 */
-	function openSidebar(left: number = prevL, right: number = prevR) {
-		collapsed = false;
-		L = left;
-		R = right;
-	}
+	let index: number;
 
 	// Add a listener for key combinations
 	onMount(async () => {
+		index = parseInt($page.params.index);
 		loadExercise();
 		loadSettings();
+	});
 
-		// Add a listener for application-wide keyboard shortcuts
-		window.addEventListener('keydown', keydown);
+	async function handleNext() {
+		await incrementProgress($page.params.projectID, $page.params.index);
+		window.location.href = `/project/${$page.params.projectID}/exercise-${index + 1}`;
+	}
 
-		if (await isAdmin()) {
-			sidebarTabs.push({
-				name: 'admin',
-				component: Admin,
-				icon: IoIosBuild
-			});
-			sidebarTabs = sidebarTabs;
+	function handleFinish() {
+		window.location.href = `/project/${$page.params.projectID}`;
+	}
+
+	function handlePrevious() {
+		if (index > 0) {
+			window.location.href = `/project/${$page.params.projectID}/exercise-${index - 1}`;
 		}
-	});
-
-	onDestroy(() => {
-		window.removeEventListener('keydown', keydown);
-	});
-
-	let showingResults = false;
-
-	function showResults() {
-		showingResults = true;
 	}
 
-	function hideResults() {
-		showingResults = false;
+	let loading = false;
+	async function handleSubmit() {
+		loading = true;
+		await submit($page.params.projectID, $page.params.index);
+		loading = false;
 	}
-
-	$: $submitted && !$pending && $result && showResults();
 </script>
 
 {#if $initialising}
-	<div class="h-screen w-screen bg-dark-bgdark flex justify-center items-center">
+	<div class="h-screen w-screen bg-brand-background flex justify-center items-center">
 		<OrbitProgressIndicator />
 	</div>
 {:else}
-	{#if showingResults}
-		<Modal title="Submission Results" on:close={hideResults}>
-			<Results />
-		</Modal>
-	{/if}
-	<div class="h-screen text-light-text dark:text-dark-text dark:bg-dark-bglight flex flex-row">
-		<Sidebar
-			on:collapse={() => collapseSidebar()}
-			on:select={(e) => updateSidebar(e.detail)}
-			{collapsed}
-			{selected}
-			tabs={sidebarTabs}
-		/>
-		<SplitPane
-			isHorizontal={true}
-			minPane1Size={collapsed ? '0' : undefined}
-			bind:pane1Size={L}
-			bind:pane2Size={R}
-			on:resize={() => collapsed && openSidebar(0, 100)}
-		>
-			<div slot="pane1">
-				{#if !collapsed}
-					<SidebarItem title={sidebarTabs[selected].name}>
-						<svelte:component this={sidebarTabs[selected].component} />
-					</SidebarItem>
-				{/if}
+	<div class="h-screen max-h-screen text-brand-text bg-brand-accent flex flex-col">
+		<Navbar />
+		<SplitPane pane1Size={25} pane2Size={75}>
+			<div slot="pane1" class="h-full">
+				<Sidebar />
 			</div>
-			<div slot="pane2">
-				<SplitPane isHorizontal={true} let:resizing={resizingX}>
-					<div slot="pane1">
+			<div slot="pane2" class="h-full flex flex-col">
+				<SplitPane let:resizing={resizingX} minPane2Size={'10rem'} pane1Size={66} pane2Size={34}>
+					<div slot="pane1" class="h-full">
 						<EditorContainer on:drag={toggleSelecting} />
 					</div>
-					<div slot="pane2">
+					<div slot="pane2" class="h-full">
 						<PreviewContainer {resizingX} {selecting} />
 					</div>
 				</SplitPane>
 			</div>
 		</SplitPane>
+		<div class="px-5 py-3 flex flex-row w-full justify-between bg-brand-background items-center">
+			<div class="flex-grow w-full">
+				{#if $page.params.index !== '0'}
+					<Button text="Previous" on:click={handlePrevious} outline={true} />
+				{/if}
+			</div>
+
+			<p>{index}/{$project.exerciseCount - 1}</p>
+			<div class="flex space-x-5 flex-grow justify-end w-full">
+				{#if $exercise.assessed && $chapter < $exercise.chapters.length}
+					<Button text="Submit" on:click={handleSubmit} {loading} />
+				{:else if index + 1 == $project.exerciseCount}
+					<Button text="Finish" on:click={handleFinish} />
+				{:else}
+					{#if $exercise.assessed}
+						<Button text="Re-submit" on:click={handleSubmit} outline={true} {loading} />
+					{/if}
+					<Button text="Next" on:click={handleNext} />
+				{/if}
+			</div>
+		</div>
 	</div>
 {/if}

@@ -1,6 +1,3 @@
-import type { DocumentReference, Timestamp } from 'firebase/firestore';
-import type { SvelteComponentDev } from 'svelte/internal';
-
 /**
  * A project file.
  */
@@ -146,106 +143,20 @@ export type AuthError = {
 };
 
 /**
- * A single sidebar tab.
+ * Data to send to the submission server in order to generate a result.
  */
-export type SidebarTab = {
-	/**
-	 * The name of this tab.
-	 */
-	name: string;
-	/**
-	 * The sidebar icon to show for this tab.
-	 */
-	icon: typeof SvelteComponentDev;
-	/**
-	 * The component to render when the tab is opened.
-	 */
-	component: typeof SvelteComponentDev;
-};
-
-/**
- * A feedback submission for evaluation.
- */
-export type Feedback = {
-	/**
-	 * When this feedback was posted.
-	 */
-	posted: string;
-	/**
-	 * The feedback comment.
-	 */
-	comment: string;
-	/**
-	 * The component this feedback is about.
-	 */
-	component: string;
-};
-
-/**
- * An exercise that the user can complete.
- */
-export type Exercise = {
-	/**
-	 * The tests that should be run for this exercise
-	 */
-	tests: { [key: string]: string };
-	/**
-	 * A reference to the location of the template that should be loaded when the exercise is opened for the first time.
-	 */
-	template?: DocumentReference;
-	/**
-	 * The requirements for this exercise, exactly matching the tests that should be run.
-	 */
-	requirements: string[];
-	/**
-	 * The name of the exercise.
-	 */
-	name: string;
-	/**
-	 * A brief description of the tasks required by the exercise.
-	 */
-	description: string;
-	/**
-	 * Any files that should override the template for this project.
-	 */
-	overrides?: { [key: string]: string };
-	/**
-	 * A reference to the previous exercise. This should be provided if template is not present.
-	 */
-	previous?: DocumentReference;
-	/**
-	 * A reference to the previous exercise, if any.
-	 */
-	next?: DocumentReference;
-};
-
-/**
- * Files to load into the application, representing a filesystem state.
- */
-export type Template = {
-	files: { [key: string]: string };
+export type ServerRequest = {
+	projectID: string;
+	exerciseID: string;
+	userID: string;
 };
 
 /**
  * Response from the submission server.
  */
-export type TestResult = {
-	/**
-	 * The number of tests that passed.
-	 */
-	passed: number;
-	/**
-	 * The total number of tests.
-	 */
-	total: number;
-	/**
-	 * The test results
-	 */
-	results: {
-		/**
-		 * The error message, if any, for this test.
-		 */
-		message: string;
+export type ServerResponse = Record<
+	number,
+	{
 		/**
 		 * Whether this test passed.
 		 */
@@ -253,21 +164,56 @@ export type TestResult = {
 		/**
 		 * The name of this test.
 		 */
-		name: string;
-	}[];
-	/**
-	 * The timestamp of the result.
-	 */
-	timestamp: Timestamp;
+		spec: string;
+	}
+>;
+
+export type ServerError = {
+	status: 403 | 404 | 500;
+	message: string;
+};
+
+export type ExerciseFile = {
+	contents: string;
+	editable: boolean;
 };
 
 export type Project = {
 	name: string;
-
+	icon: string;
 	description: string;
-	exercises: {
-		title: string;
-		id: string;
-		completed: boolean;
-	}[];
+	exerciseCount: number;
+	languages: string[];
+};
+
+export type ExerciseMetadata = {
+	name: string;
+	description: string;
+	assessed: boolean;
+	chapters: ExerciseChapter[];
+	inherits: boolean;
+};
+
+export interface Exercise extends ExerciseMetadata {
+	files: Record<string, Record<string, ExerciseFile>>;
+}
+
+export type ExerciseChapter = {
+	/**
+	 * The text content to be displayed for this chapter.
+	 */
+	text: string;
+	/**
+	 * The spec name of the test that evaluates this chapter.
+	 */
+	spec?: string;
+	/**
+	 * A hint to show if the test fails.
+	 */
+	hint?: string;
+};
+
+export type ProjectSettings = {
+	progress: number;
+	language: string;
 };

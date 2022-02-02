@@ -5,7 +5,7 @@
 	/**
 	 * The icon size to display.
 	 */
-	export let size: 'small' | 'medium' | 'large' = 'medium';
+	export let size: 'small' | 'medium' | 'large' | 'xl' = 'medium';
 
 	/**
 	 * Whether this icon is also a button.
@@ -15,6 +15,8 @@
 	export let labelPosition: 'below' | 'above' = 'below';
 
 	export let label: string = undefined;
+
+	export let card: boolean = false;
 
 	/**
 	 * The test-id of this icon, so that it can be identified programatically in tests.
@@ -38,6 +40,8 @@
 				return 'h-3 w-3';
 			case 'large':
 				return 'h-6 w-6';
+			case 'xl':
+				return 'h-8 w-8';
 			case 'medium':
 			default:
 				return 'h-4 w-4';
@@ -51,22 +55,22 @@
 		if (labelPosition == 'above') {
 			switch (size) {
 				case 'small':
-					return '-top-3';
+					return '-top-4';
 				case 'large':
-					return '-top-8';
+					return '-top-9';
 				case 'medium':
 				default:
-					return '-top-5';
+					return '-top-6';
 			}
 		} else {
 			switch (size) {
 				case 'small':
-					return 'top-3';
+					return 'top-4';
 				case 'large':
-					return 'top-8';
+					return 'top-9';
 				case 'medium':
 				default:
-					return 'top-5';
+					return 'top-6';
 			}
 		}
 	}
@@ -74,11 +78,14 @@
 
 <Hoverable let:hovering>
 	<div class="flex flex-col items-center">
-		<div class="flex flex-col justify-center items-center">
+		<div
+			class="flex flex-col justify-center items-center {card &&
+				'bg-brand-editor-background rounded-lg p-1'}"
+		>
 			{#if button}
 				<button
 					on:click={click}
-					class="{getDimensions()} flex-shrink-0 flex-grow-0 dark:text-dark-text text-light-text"
+					class="{getDimensions()} flex-shrink-0 flex-grow-0 text-brand-text text-light-text"
 					data-testid={testId}><slot /></button
 				>
 			{:else}
@@ -92,7 +99,7 @@
 				<p
 					class="relative transition-all text-center {hovering
 						? 'visible opacity-100'
-						: 'invisible opacity-0'} {getOffset()} text-xs dark:bg-dark-bgdark bg-light-bgdark px-1 py-0.5 shadow rounded "
+						: 'invisible opacity-0'} {getOffset()} text-xs bg-brand-editor-background bg-light-bgdark px-1 py-0.5 shadow rounded "
 				>
 					{label[0].toUpperCase() + label.slice(1)}
 				</p>

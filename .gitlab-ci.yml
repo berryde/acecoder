@@ -9,23 +9,23 @@ stages:
 lint:
   stage: test
   script:
-    - yarn install
-    - yarn run format
-    - yarn run lint
+    - pnpm install
+    - pnpm run format
+    - pnpm run lint
 
 test:
   stage: test
   script:
-    - yarn install
-    - yarn run test
+    - pnpm install
+    - pnpm run test
 
 build:
   except:
     - master
   stage: build
   script:
-    - yarn install
-    - yarn run build
+    - pnpm install
+    - pnpm run build
 
 deploy:
   stage: deploy
@@ -35,6 +35,6 @@ deploy:
   only:
     - master
   script:
-    - yarn install
-    - yarn run build
+    - pnpm install
+    - pnpm run build
     - npx netlify-cli deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod

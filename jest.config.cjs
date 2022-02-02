@@ -11,10 +11,10 @@ module.exports = {
 	moduleFileExtensions: ['js', 'ts', 'tsx', 'svelte'],
 	moduleNameMapper: {
 		'^src/(.*)$': '<rootDir>/src/$1',
-		'^\\$app(.*)$': '<rootDir>/.svelte-kit/build/runtime/app$1'
+		'^\\$app(.*)$': '<rootDir>/.svelte-kit/runtime/app$1'
 	},
 	setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect'],
 	testEnvironment: 'jsdom',
-	transformIgnorePatterns: ['node_modules/(?!(svelte-icons)/)'],
+	transformIgnorePatterns: ['node_modules/(?!(.*svelte-icons)/)'],
 	coveragePathIgnorePatterns: ['node_modules', '.svelte-kit']
 };

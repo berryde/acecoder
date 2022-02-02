@@ -1,45 +1,22 @@
 <script lang="ts">
-	import Button from 'src/components/common/Button.svelte';
-	import Progress from 'src/components/projects/Progress.svelte';
-	import Checkbox from 'src/components/exercise/Checkbox.svelte';
-
 	import type { Project } from 'src/utils/types';
-
+	import Photos from 'svelte-icons/io/IoIosPhotos.svelte';
+	import Icon from '../common/Icon.svelte';
 	export let project: Project;
+	export let projectID: string;
 
-	function getCompletion(project: Project) {
-		return Math.trunc(
-			(project.exercises.filter((ex) => ex.completed).length / project.exercises.length) * 100
-		);
-	}
-
-	function handleClick(project: Project) {
-		window.location.href = 'exercise/' + project.exercises.find((ex) => !ex.completed).id;
+	function handleClick() {
+		window.location.href = '/project/' + projectID;
 	}
 </script>
 
-<div class="p-10 bg-dark-bglight rounded space-y-3">
-	<div class="flex flex-row justify-between">
-		<p class="text-xl font-bold">{project.name}</p>
-		<div class="flex flex-col items-end">
-			<p class="mb-1">{getCompletion(project)}%</p>
-			<Progress percentage={getCompletion(project)} />
-		</div>
+<div class=" rounded cursor-pointer" on:click={handleClick}>
+	<div class="p-10 rounded-t bg-gradient-to-r from-green-400 to-green-600">
+		<Icon size="xl">
+			<Photos />
+		</Icon>
 	</div>
-	<p>{@html project.description}</p>
-	<div>
-		{#each project.exercises as exercise}
-			<div class="flex flex-row items-center space-x-2">
-				<Checkbox value={exercise.completed ? true : undefined} />
-				<a class="hover:underline" href="exercise/{exercise.id}">{exercise.title}</a>
-			</div>
-		{/each}
+	<div class="bg-brand-accent p-4 rounded-b">
+		<p>{project.name}</p>
 	</div>
-	{#if project.exercises.filter((ex) => !ex.completed).length > 0}
-		<Button
-			text={getCompletion(project) > 0 ? 'Resume' : 'Start'}
-			classes="bg-blue-700 px-10 ml-auto w-24"
-			on:click={() => handleClick(project)}
-		/>
-	{/if}
 </div>

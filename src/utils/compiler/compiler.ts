@@ -1,13 +1,16 @@
 import { writable } from 'svelte/store';
 import type { File } from '../types';
 import type { WorkerResponse } from '../types';
-import type { RollupWarning } from 'rollup';
+import type { RollupWarning, Plugin } from 'rollup';
+import reactCompiler from './react';
+import cssCompiler from './css';
+import svelteCompiler from './svelte';
 
 /**
  * The most recent compilation of the application's files.
  */
 export const compiled = writable<WorkerResponse>();
-
+export const CDN_URL = 'https://cdn.skypack.dev';
 /**
  * Gets the last segment of the path.
  *
@@ -116,3 +119,50 @@ export const fileNotFoundError = (importee: string, importer: string): RollupWar
 	id: importer,
 	name: 'FileNotFoundError'
 });
+
+/**
+ * Recreates the in memory filesystem with the given files
+ * @param files The files for the filesystem.
+ */
+export const generateLookup = (files: File[]): { [key: string]: File } => {
+	const filesystem = {};
+	files.forEach((file) => {
+		filesystem[file.name] = file;
+	});
+	return filesystem;
+};
+
+/**
+ * Extracts the dependencies from a package json file.
+ *
+ * @param packageJSON The JSON parsed package json file.
+ * @returns The union of the dev and standard dependencies.
+ */
+export const getDependencies = (packageJSON: {
+	devDependencies: Record<string, string> | undefined;
+	dependencies: Record<string, string> | undefined;
+}): Record<string, string> => {
+	let result = {};
+	if (packageJSON.devDependencies) {
+		result = { ...packageJSON.devDependencies };
+	}
+	if (packageJSON.dependencies) {
+		result = { ...packageJSON.dependencies };
+	}
+	return result;
+};
+
+export const getPlugins = (
+	framework: string,
+	files: { [key: string]: File },
+	dependencies: Record<string, string>
+): Plugin[] => {
+	switch (framework) {
+		case 'svelte':
+			return [svelteCompiler(files, dependencies)];
+		case 'react':
+			return [cssCompiler(files), reactCompiler(files, dependencies)];
+		default:
+			return [];
+	}
+};

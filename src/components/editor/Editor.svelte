@@ -1,150 +1,58 @@
 <script lang="ts">
-	import { createEventDispatcher, onDestroy } from 'svelte';
-	import { onMount } from 'svelte';
-	import { EditorView, keymap } from '@codemirror/view';
-	import { Compartment, EditorSelection, EditorState } from '@codemirror/state';
-	import type { Extension } from '@codemirror/state';
-	import {
-		defaultExtensions,
-		getLanguageSupport,
-		format as _format,
-		isSupported
-	} from '../../utils/codemirror/codemirror';
-	import type { ViewUpdate } from '@codemirror/view';
-	import type { KeyBinding, Command } from '@codemirror/view';
-	import type { Diagnostic } from '@codemirror/lint';
-	import { linter } from '@codemirror/lint';
-	import { latestError } from '../../utils/console/console';
-	import { darkMode, formatOnSave } from '../../utils/settings/settings';
-	import { oneDark } from '@codemirror/theme-one-dark';
+	import type { Editor, IEditSession, Position } from 'brace';
 	import { getExtension, getFile } from 'src/utils/filesystem/filesystem';
-	import type { FSFile } from 'src/utils/types';
 	import { selectedTab, unsavedTabs } from 'src/utils/tabs/tabs';
-	import { save } from 'src/utils/codemirror/codemirror';
-	import { save as writeToFirebase } from 'src/utils/exercise/exercise';
+	import type { FSFile } from 'src/utils/types';
+	import { onDestroy, onMount } from 'svelte';
+	import { browser } from '$app/env';
+	import { contents, format } from 'src/utils/editor/editor';
+	import { formatOnSave } from 'src/utils/settings/settings';
+	import { save } from 'src/utils/editor/editor';
 
-	/**
-	 * The path of the file being edited.
-	 */
-	export let filename: string;
+	let element: HTMLElement;
+	let editor: Editor;
+	let sessions: Record<string, IEditSession> = {};
+	let loaded = false;
 
-	export let visible: boolean;
+	async function configureEditor() {
+		await import('brace/mode/javascript');
+		await import('brace/ext/language_tools');
+		await import('./AceTheme');
 
-	/**
-	 * Event dispatcher to send custom events.
-	 */
-	const dispatch = createEventDispatcher();
-
-	/**
-	 * The parent element for the editor.
-	 */
-	let element: HTMLDivElement;
-
-	/**
-	 * CodeMirror command to format the editor with prettier.
-	 *
-	 * @param view The editor to format
-	 * @returns Whether the format was successful
-	 */
-	export const formatEditor: Command = (view: EditorView): boolean => {
-		let pos = 0;
-		if (view.state.selection.main) {
-			pos = view.state.selection.main.from;
-		}
-		const formatted = _format(view.state.doc.toString(), getExtension(filename));
-		pos = Math.min(pos, formatted.length);
-		view.dispatch({
-			changes: {
-				from: 0,
-				to: view.state.doc.length,
-				insert: formatted
-			},
-			selection: EditorSelection.cursor(pos)
+		editor = ace.edit(element);
+		editor.$blockScrolling = Infinity;
+		editor.setTheme('ace/theme/folio');
+		editor.setShowPrintMargin(false);
+		editor.setOptions({ enableBasicAutocompletion: true, fontSize: '1rem' });
+		editor.on('change', () => {
+			contents.set(editor.getValue());
+			if (!$unsavedTabs.includes($selectedTab)) {
+				unsavedTabs.update((tabs) => [...tabs, $selectedTab]);
+			} else if (editor.getValue() === (getFile($selectedTab) as FSFile).value) {
+				unsavedTabs.update((tabs) => {
+					tabs.splice(tabs.indexOf($selectedTab), 1);
+					return tabs;
+				});
+			}
 		});
-
-		return true;
-	};
-
-	const getError = (view: EditorView): readonly Diagnostic[] => {
-		const error = $latestError;
-		let output: readonly Diagnostic[] = [];
-		if (error && error.location == filename) {
-			output = [
-				{
-					from: Math.max(0, error.pos - 5),
-					to: Math.min(view.state.doc.toString().length, error.pos + 5),
-					message: error.message,
-					severity: 'error',
-					source: error.name
-				}
-			];
-		}
-		return output;
-	};
-
-	/**
-	 * A key binding to run prettier formatting.
-	 */
-	const format: KeyBinding = {
-		key: 'Ctrl-Alt-l',
-		run: formatEditor
-	};
-
-	/**
-	 * Get the text value of the editor.
-	 */
-	function getValue() {
-		return view == undefined ? '' : view.state.doc.toString();
+		loaded = true;
 	}
 
-	function mouseUp() {
-		if (window) {
-			dispatch('drag', false);
-			window.removeEventListener('mouseup', mouseUp);
-		}
-	}
-
-	function mouseDown() {
-		if (window) {
-			dispatch('drag', true);
-			window.addEventListener('mouseup', mouseUp);
-		}
-	}
-
-	function getTheme(): Extension {
-		return $darkMode ? oneDark : EditorView.theme({});
-	}
-
-	function updateTheme() {
-		view.dispatch({
-			effects: [theme.reconfigure(getTheme())]
-		});
-	}
-
-	function getLanguage(): Extension {
-		const language = getExtension(filename);
-		return isSupported(language) ? getLanguageSupport(language) : [];
+	function handleFormat() {
+		const pos: Position = editor.getCursorPosition();
+		editor.setValue(format(editor.getValue(), getExtension($selectedTab)));
+		editor.moveCursorToPosition(pos);
+		editor.clearSelection();
 	}
 
 	function handleSave() {
-		if ($selectedTab == filename && $unsavedTabs.includes(filename)) {
-			if ($formatOnSave) {
-				formatEditor(view);
-			}
-			save();
-			writeToFirebase();
+		if ($formatOnSave) {
+			handleFormat();
 		}
+		save();
 	}
 
-	let languageSupport = new Compartment();
-	let theme = new Compartment();
-	let view: EditorView;
-
-	/**
-	 * Called when the user presses a key while using the application
-	 * @param e The event that triggered this function.
-	 */
-	function keydown(e: KeyboardEvent) {
+	function keydownListener(e: KeyboardEvent) {
 		if (e.ctrlKey) {
 			switch (e.code) {
 				case 'KeyS':
@@ -155,74 +63,74 @@
 		}
 	}
 
-	onMount(() => {
-		// Add a listener for application-wide keyboard shortcuts
-		window.addEventListener('keydown', keydown);
-		setView();
+	let ace;
+	onMount(async () => {
+		// Brace is imported dynamically since it requires the `window` object to exist.
+		ace = await import('brace');
+		await import('brace/ext/searchbox');
+		configureEditor();
+		window.addEventListener('keydown', keydownListener);
 	});
 
 	onDestroy(() => {
-		window.removeEventListener('keydown', keydown);
-		window.removeEventListener('mouseup', mouseUp);
+		if (editor) {
+			editor.destroy();
+		}
+		window.removeEventListener('keydown', keydownListener);
 	});
 
-	function setView() {
-		view = new EditorView({
-			state: EditorState.create({
-				doc: (getFile(filename) as FSFile).value,
-				extensions: [
-					defaultExtensions,
-					EditorView.updateListener.of((viewUpdate: ViewUpdate) => {
-						// Emit an event to allow parent components to listen to the editor's value.
-						if (viewUpdate.docChanged) dispatch('docchanged', getValue());
-					}),
-					keymap.of([format]),
-					linter((view) => getError(view)),
-					// Create a dummy extension when no language support is available.
-					languageSupport.of(getLanguage()),
-					theme.of(getTheme())
-				]
-			}),
-			parent: element
-		});
-	}
-
-	/**
-	 * The number of times this component has been reused
-	 */
-	let count = 0;
-
-	/**
-	 * Destroy the previous view if this component is being reused (handles temporary files).
-	 */
-	function reset() {
-		count += 1;
-		if (count > 1) {
-			if (view) {
-				view.destroy();
-			}
-			setView();
+	async function importMode(filename: string) {
+		switch (getExtension(filename)) {
+			case 'tsx':
+				await import('brace/mode/tsx');
+				return 'ace/mode/tsx';
+			case 'jsx':
+				await import('brace/mode/jsx');
+				return 'ace/mode/jsx';
+			case 'js':
+				await import('brace/mode/javascript');
+				return 'ace/mode/javascript';
+			case 'ts':
+				await import('brace/mode/typescript');
+				return 'ace/mode/typescript';
+			case 'svelte':
+			case 'html':
+				await import('brace/mode/html');
+				return 'ace/mode/html';
+			case 'css':
+				await import('brace/mode/css');
+				return 'ace/mode/css';
+			default:
+				await import('brace/mode/plain_text');
+				return 'ace/mode/plain_text';
 		}
 	}
 
-	$: filename && reset();
-	$: view && ($darkMode || !$darkMode) && updateTheme();
+	async function updateSession() {
+		if (browser) {
+			if (!($selectedTab in sessions)) {
+				const session = new ace.EditSession((getFile($selectedTab) as FSFile).value);
+				session.setMode(await importMode($selectedTab));
+				session.setUndoManager(new ace.UndoManager());
+				if (getExtension($selectedTab) == 'svelte') {
+					session.setUseWorker(false);
+				}
+				session.setUseWrapMode(true);
+				sessions[$selectedTab] = session;
+			}
+			editor.setSession(sessions[$selectedTab]);
+		}
+	}
+
+	function handleResize() {
+		editor.resize();
+	}
+
+	$: loaded && $selectedTab && updateSession();
+	$: clientWidth && editor && handleResize();
+	let clientWidth: number;
 </script>
 
-<div
-	bind:this={element}
-	class="text-sm {!visible && 'hidden'} overflow-y-auto"
-	on:mousedown={mouseDown}
-/>
-
-<style lang="postcss">
-	:global(.cm-editor) {
-		@apply h-full;
-	}
-	:global(.cm-tooltip) {
-		font-family: monospace;
-	}
-	:global(.cm-content) {
-		min-width: 0 !important;
-	}
-</style>
+<div class="h-full w-full pt-3 bg-brand-editor-background" bind:clientWidth>
+	<div bind:this={element} class="h-full w-full" />
+</div>

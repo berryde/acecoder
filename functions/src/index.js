@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,11 +35,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
-var functions = require('firebase-functions');
-var admin = require('firebase-admin');
+exports.__esModule = true;
+var functions = require("firebase-functions");
+var admin = require("firebase-admin");
 admin.initializeApp();
-exports.setClaim = functions.region('europe-west2').https.onCall(function (data, context) { return __awaiter(_this, void 0, void 0, function () {
+exports.setClaim = functions.region('europe-west2').https.onCall(function (data, context) { return __awaiter(void 0, void 0, void 0, function () {
     var e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -56,6 +57,76 @@ exports.setClaim = functions.region('europe-west2').https.onCall(function (data,
                 console.error(e_1);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/, false];
+        }
+    });
+}); });
+exports.incrementProgress = functions.region('europe-west2').https.onCall(function (data, context) { return __awaiter(void 0, void 0, void 0, function () {
+    var store_1, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!context.auth) return [3 /*break*/, 4];
+                store_1 = admin.firestore();
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, store_1.runTransaction(function (transaction) { return __awaiter(void 0, void 0, void 0, function () {
+                        var projectSnapshot, project, index, settingsSnapshot, settings, progress, exerciseSnapshot, exercise, passed, resultsSnapshot, results;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, transaction.get(store_1.collection("projects").doc(data.projectID))];
+                                case 1:
+                                    projectSnapshot = _a.sent();
+                                    if (!projectSnapshot.exists)
+                                        throw ("Project ".concat(data.projectID, " does not exist"));
+                                    project = projectSnapshot.data();
+                                    index = parseInt(data.exerciseID);
+                                    if (index >= project.exerciseCount)
+                                        throw ("That exercise does not exist");
+                                    return [4 /*yield*/, transaction.get(store_1.collection("projects").doc(data.projectID).collection('settings').doc(context.auth.uid))];
+                                case 2:
+                                    settingsSnapshot = _a.sent();
+                                    if (!settingsSnapshot.exists)
+                                        throw ("No settings could be found for that user");
+                                    settings = settingsSnapshot.data();
+                                    progress = parseInt(settings.progress);
+                                    if (progress != index)
+                                        throw ("Cannot increment a non-current exercise. Trying to increment ".concat(data.exerciseID, " with progress ").concat(settings.progress));
+                                    return [4 /*yield*/, transaction.get(store_1.collection("projects").doc(data.projectID).collection('exercises').doc(data.exerciseID))];
+                                case 3:
+                                    exerciseSnapshot = _a.sent();
+                                    if (!exerciseSnapshot.exists)
+                                        throw ("That exercise does not exist");
+                                    exercise = exerciseSnapshot.data();
+                                    passed = !exercise.assessed;
+                                    if (!exercise.assessed) return [3 /*break*/, 5];
+                                    return [4 /*yield*/, transaction.get(store_1.collection("projects").doc(data.projectID).collection('exercises').doc(data.exerciseID).collection('results').doc(context.auth.uid))];
+                                case 4:
+                                    resultsSnapshot = _a.sent();
+                                    if (!resultsSnapshot.exists)
+                                        throw ("No results could be found for that user");
+                                    results = resultsSnapshot.data();
+                                    passed = Object.values(results).every(function (result) { return result.passed; });
+                                    _a.label = 5;
+                                case 5:
+                                    if (passed) {
+                                        console.log("Incrementing progress from ".concat(settings.progress, " for user ").concat(context.auth.uid, " to ").concat(index + 1));
+                                        transaction.update(store_1.collection('projects').doc(data.projectID).collection('settings').doc(context.auth.uid), {
+                                            'progress': (progress + 1).toString()
+                                        });
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); })];
+            case 2:
+                _a.sent();
+                return [3 /*break*/, 4];
+            case 3:
+                err_1 = _a.sent();
+                console.error(err_1);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); });

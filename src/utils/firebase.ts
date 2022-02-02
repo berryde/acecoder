@@ -54,4 +54,14 @@ const setClaim = async (claim: Record<string, unknown>): Promise<boolean> => {
 	}
 };
 
-export { app, db, auth, setClaim };
+const incrementProgress = async (projectID: string, exerciseID: string): Promise<void> => {
+	await httpsCallable<Record<string, unknown>, boolean>(
+		functions,
+		'incrementProgress'
+	)({
+		projectID: projectID,
+		exerciseID: exerciseID
+	});
+};
+
+export { app, db, auth, setClaim, incrementProgress };

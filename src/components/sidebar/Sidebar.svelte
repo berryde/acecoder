@@ -1,51 +1,108 @@
 <script lang="ts">
-	import type { SidebarTab } from 'src/utils/types';
-
-	import { createEventDispatcher } from 'svelte';
 	import Icon from '../common/Icon.svelte';
+	import Bookmark from 'svelte-icons/io/IoMdBookmark.svelte';
+	import Book from 'svelte-icons/io/IoIosJournal.svelte';
+	import {
+		chapter as _chapter,
+		exercise,
+		project,
+		reset,
+		result
+	} from 'src/utils/exercise/exercise';
+	import Checkbox from '../common/Checkbox.svelte';
+	import Refresh from 'svelte-icons/io/IoMdRefresh.svelte';
+	import Wand from 'svelte-icons/io/IoIosColorWand.svelte';
+	import { onMount } from 'svelte';
 
-	const dispatch = createEventDispatcher();
-
-	/**
-	 * The selected sidebar item's index.
-	 */
-	export let selected: number;
-
-	/**
-	 * Whether the sidebar is collapsed.
-	 */
-	export let collapsed: boolean;
-
-	/**
-	 * Called when the user selects a sidebar item.
-	 * @param index the index of the selected item.
-	 */
-	function select(index: number) {
-		if (!collapsed && selected == index) {
-			dispatch('collapse');
-		} else {
-			selected = index;
-			dispatch('select', selected);
+	function updateChapter() {
+		submissionAttempt += 1;
+		if ($_chapter < $exercise.chapters.length && $result[$_chapter].passed) {
+			_chapter.update((c) => c + 1);
+			submissionAttempt = 0;
 		}
 	}
 
-	export let tabs: SidebarTab[];
+	let submissionAttempt = 0;
+	$: $result && updateChapter();
+
+	onMount(() => {
+		if ($result) {
+			const index = Object.values($result).findIndex((res) => !res.passed);
+			if (index == -1) {
+				_chapter.set($exercise.chapters.length);
+			} else {
+				_chapter.set(index);
+			}
+			submissionAttempt = 0;
+		}
+	});
 </script>
 
-<div class="h-screen flex flex-row bg-light-bglight dark:bg-dark-bglight">
-	<div class="flex flex-col">
-		{#each tabs as tab, index}
-			<div
-				class="p-4 {!collapsed && selected == index
-					? 'border-l-2 dark:border-dark-text border-light-text'
-					: 'ml-0.5 opacity-50 hover:opacity-100 transition-opacity'}"
-				on:click={() => select(index)}
-				data-testid={tab.name}
-			>
-				<Icon size="large" button={true} label={tab.name}>
-					<svelte:component this={tab.icon} />
-				</Icon>
-			</div>
+<div class="bg-brand-background h-full overflow-y-auto sidebar">
+	<div class="p-5 space-y-3">
+		<p class="uppercase text-xs">{$project.name}</p>
+		<h1 class="text-xl font-bold">{$exercise.name}</h1>
+		<p id="description">
+			{@html $exercise.description}
+		</p>
+	</div>
+	<div class="flex flex-row px-5 py-3 pt-0 space-x-3 items-center h-10 justify-end">
+		<Icon label="Reset" button={true} card={true} on:click={() => reset()}>
+			<Refresh />
+		</Icon>
+		<Icon label="Format" button={true} card={true}>
+			<Wand />
+		</Icon>
+	</div>
+	<div class="flex flex-row items-center px-5 py-3 space-x-5 bg-brand-accent">
+		{#if $exercise.assessed}
+			<Icon>
+				<Bookmark />
+			</Icon>
+			<p>Tasks</p>
+		{:else}
+			<Icon>
+				<Book />
+			</Icon>
+			<p>Notes</p>
+		{/if}
+	</div>
+	<div class="space-y-3">
+		{#each $exercise.chapters as chapter, index}
+			{#if $exercise.assessed}
+				<div
+					class="transition-opacity p-3 flex items-center space-x-5 {index > $_chapter &&
+						'opacity-40'}"
+				>
+					<Checkbox
+						disabled={true}
+						variant={index <= $_chapter ? 'default' : 'text'}
+						value={$result && index <= $_chapter ? $result[index].passed : undefined}
+					/>
+					<p>{@html chapter.text}</p>
+				</div>
+				{#if $result && !$result[index].passed && chapter.hint && index == $_chapter && submissionAttempt > 0}
+					<div class="bg-brand-danger-dark bg-opacity-50 p-5 text-brand-danger-light">
+						<p class="hint">{@html chapter.hint}</p>
+					</div>
+				{/if}
+			{:else}
+				<div class="p-5">
+					<p>{@html chapter.text}</p>
+				</div>
+			{/if}
 		{/each}
 	</div>
 </div>
+
+<style lang="postcss">
+	:global(#description a) {
+		@apply text-brand-primary underline;
+	}
+	:global(.hint a) {
+		@apply underline;
+	}
+	:global(.sidebar code) {
+		@apply px-1 py-0.5 text-yellow-400 bg-brand-editor-background rounded;
+	}
+</style>
