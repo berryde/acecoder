@@ -1,6 +1,7 @@
 import functions = require('firebase-functions');
 import admin = require('firebase-admin');
-import type { Badge, Exercise, Project, Settings } from "./types"
+import type { Badge, Exercise, Project, Settings, Stats } from "./types"
+
 
 const store = admin.firestore()
 
@@ -78,17 +79,27 @@ const getBadge = async (transaction: admin.firestore.Transaction, badgeID: strin
     if (!snapshot.exists) {
         throw `Badge ${badgeID} does not exist!`
     }
-    return snapshot.data() as {
-        description: string;
-        name: string;
-        reward: number;
-    }
+    return snapshot.data() as Badge
 }
 
 const getSettings = async (transaction: admin.firestore.Transaction, projectID: string, uid: string): Promise<Settings> => {
     const snapshot = await transaction.get(getProjectRef(projectID).collection('settings').doc(uid))
     if (!snapshot.exists) throw ("No settings could be found for that user")
     return snapshot.data() as Settings
+}
+
+const calculateBadges = async (transaction: admin.firestore.Transaction, stats: Stats, projectID: string, language: string): Promise<Record<string, Badge>> => {
+    const badges: Record<string, Badge> = {}
+    const addBadge = async (id: string) => {
+        badges[id] = await getBadge(transaction, id)
+    }
+    // A badge awarded for completing a single exercise
+    if (stats.completed == 1) await addBadge('completed_1')
+    // A badge awarded for completing a single exercise in the given language
+    if (stats[language] == 1) await addBadge(`${language}_1`)
+    // A badge awarded for completing the project
+    await addBadge(projectID)
+    return badges;
 }
 
 export const completeProject = functions.region('europe-west2').https.onCall(async (data: { projectID: string }, context) => {
@@ -123,30 +134,16 @@ export const completeProject = functions.region('europe-west2').https.onCall(asy
                 stats[settings.language] += 1
                 stats['completed'] += 1
 
-                const badges: Badge[] = []
+
 
                 //TODO: write a function that calculates the badges to add based on the user stats.
                 //TODO: add timestamp to user badges in stats so that they can be sorted.
 
-                // A badge awarded for completing a single exercise
-                if (stats.completed == 1) {
-                    let badge = await getBadge(transaction, 'completed_1')
-                    stats.badges['completed_1'] = true
-                    stats.points += badge.reward
-                    badges.push(badge)
-                }
-                // A badge awarded for completing a single exercise in the given language
-                if (stats[settings.language] == 1) {
-                    let badge = await getBadge(transaction, `${settings.language}_1`)
-                    stats.badges[`${settings.language}_1`] = true
-                    stats.points += badge.reward
-                    badges.push(badge)
-                }
-                // A badge awarded for completing the project
-                let badge = await getBadge(transaction, data.projectID)
-                stats.badges[data.projectID] = true
-                stats.points += badge.reward
-                badges.push(badge)
+                const badges: Record<string, Badge> = await calculateBadges(transaction, stats, projectID, settings.language)
+                Object.keys(badges).forEach(id => {
+                    stats.badges[id] = true
+                    stats.points += badges[id].reward
+                })
 
                 transaction.update(store.collection('projects').doc(data.projectID).collection('settings').doc(context.auth.uid), {
                     completed: true
