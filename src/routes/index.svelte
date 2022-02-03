@@ -2,11 +2,14 @@
 	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
 	import { collection, getDocs } from 'firebase/firestore';
 	import { getName } from 'src/utils/auth/auth';
-	import type { Project } from 'src/utils/types';
+	import type { Badge as BadgeType, Project } from 'src/utils/types';
 	import { onMount } from 'svelte';
 	import { db } from 'src/utils/firebase';
 	import ProjectCard from 'src/components/projects/ProjectCard.svelte';
 	import Navbar from 'src/components/navbar/Navbar.svelte';
+	import { getBadges, getStats } from 'src/utils/project/project';
+	import Badge from 'src/components/projects/Badge.svelte';
+	import { points } from 'src/utils/exercise/exercise';
 
 	let projects: {
 		id: string;
@@ -38,29 +41,44 @@
 		projects = projects;
 	}
 
+	let badges: BadgeType[] = [];
 	onMount(() => {
 		getProjects();
 	});
+
+	async function loadUserData() {
+		points.set((await getStats()).points);
+		badges = await getBadges();
+	}
 </script>
 
 <svelte:head>
 	<title>Svelte Application</title>
 </svelte:head>
 
-<PrivateRoute loading={projects.length == 0}>
+<PrivateRoute loading={projects.length == 0} on:authenticated={loadUserData}>
 	<div
 		class="w-screen min-h-screen bg-brand-editor-background flex flex-col items-center text-brand-text overflow-y-auto"
 	>
 		<Navbar />
-		<div class="flex-grow lg:max-w-5xl h-full p-20 space-y-8">
+		<div class="w-full lg:max-w-5xl h-full p-20 space-y-8">
 			<p class="text-3xl font-bold">{greeting}, {getName()}</p>
-			<div class=" items-center">
-				<p class="text-lg font-bold">Top badges</p>
-				<p>
-					Unlock more badges by completing projects and levelling up. Select a badge to view its
-					unique certificate.
-				</p>
-			</div>
+			{#if badges.length > 0}
+				<div class=" items-center">
+					<p class="text-lg font-bold">Recent badges</p>
+					<p class="mb-8">
+						Unlock more badges by completing projects and levelling up. Select a badge to view its
+						unique certificate.
+					</p>
+					<div class="flex flex-row space-x-3 w-full overflow-x-auto">
+						{#each badges as badge}
+							<div class="cursor-pointer">
+								<Badge {badge} showAmount={false} />
+							</div>
+						{/each}
+					</div>
+				</div>
+			{/if}
 			<div class=" items-center">
 				<p class="text-lg font-bold">Beginner projects</p>
 				<p>Get started creating eye-catching, responsive websites.</p>

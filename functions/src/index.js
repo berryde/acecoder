@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var functions = require("firebase-functions");
 var admin = require("firebase-admin");
+require("fs");
 admin.initializeApp();
 exports.setClaim = functions.region('europe-west2').https.onCall(function (data, context) { return __awaiter(void 0, void 0, void 0, function () {
     var e_1;
@@ -60,6 +61,7 @@ exports.setClaim = functions.region('europe-west2').https.onCall(function (data,
         }
     });
 }); });
+true;
 exports.incrementProgress = functions.region('europe-west2').https.onCall(function (data, context) { return __awaiter(void 0, void 0, void 0, function () {
     var store_1, err_1;
     return __generator(this, function (_a) {
@@ -130,4 +132,107 @@ exports.incrementProgress = functions.region('europe-west2').https.onCall(functi
         }
     });
 }); });
+exports.completeProject = functions.region('europe-west2').https.onCall(function (data, context) { return __awaiter(void 0, void 0, void 0, function () {
+    var store_2, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!context.auth) return [3 /*break*/, 4];
+                store_2 = admin.firestore();
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, store_2.runTransaction(function (transaction) { return __awaiter(void 0, void 0, void 0, function () {
+                        var settingsSnapshot, settings, projectSnapshot, project, progress, stats, statsSnapshot, badges, badge_1, badge_2, badge;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, transaction.get(store_2.collection("projects").doc(data.projectID).collection('settings').doc(context.auth.uid))];
+                                case 1:
+                                    settingsSnapshot = _a.sent();
+                                    if (!settingsSnapshot.exists)
+                                        throw ("No settings could be found for that user");
+                                    settings = settingsSnapshot.data();
+                                    if (settings.completed) {
+                                        throw "Project already completed";
+                                    }
+                                    return [4 /*yield*/, transaction.get(store_2.collection("projects").doc(data.projectID))];
+                                case 2:
+                                    projectSnapshot = _a.sent();
+                                    if (!projectSnapshot.exists)
+                                        throw ("Project ".concat(data.projectID, " does not exist"));
+                                    project = projectSnapshot.data();
+                                    progress = parseInt(settings.progress);
+                                    if (progress != project.exerciseCount - 1) {
+                                        throw "Some exercises have not been completed yet";
+                                    }
+                                    stats = {
+                                        react: 0,
+                                        svelte: 0,
+                                        completed: 0,
+                                        badges: {},
+                                        points: 0
+                                    };
+                                    return [4 /*yield*/, transaction.get(store_2.collection('stats').doc(context.auth.uid))];
+                                case 3:
+                                    statsSnapshot = (_a.sent());
+                                    if (statsSnapshot.exists) {
+                                        stats = statsSnapshot.data();
+                                    }
+                                    stats[settings.language] += 1;
+                                    stats['completed'] += 1;
+                                    badges = [];
+                                    if (!(stats.completed == 1)) return [3 /*break*/, 5];
+                                    return [4 /*yield*/, getBadge(transaction, 'completed_1')];
+                                case 4:
+                                    badge_1 = _a.sent();
+                                    stats.badges['completed_1'] = true;
+                                    stats.points += badge_1.reward;
+                                    badges.push(badge_1);
+                                    _a.label = 5;
+                                case 5:
+                                    if (!(stats[settings.language] == 1)) return [3 /*break*/, 7];
+                                    return [4 /*yield*/, getBadge(transaction, "".concat(settings.language, "_1"))];
+                                case 6:
+                                    badge_2 = _a.sent();
+                                    stats.badges["".concat(settings.language, "_1")] = true;
+                                    stats.points += badge_2.reward;
+                                    badges.push(badge_2);
+                                    _a.label = 7;
+                                case 7: return [4 /*yield*/, getBadge(transaction, data.projectID)];
+                                case 8:
+                                    badge = _a.sent();
+                                    stats.badges[data.projectID] = true;
+                                    stats.points += badge.reward;
+                                    badges.push(badge);
+                                    transaction.update(store_2.collection('projects').doc(data.projectID).collection('settings').doc(context.auth.uid), {
+                                        completed: true
+                                    });
+                                    transaction.set(store_2.collection('stats').doc(context.auth.uid), stats);
+                                    return [2 /*return*/, badges];
+                            }
+                        });
+                    }); })];
+            case 2: return [2 /*return*/, _a.sent()];
+            case 3:
+                err_2 = _a.sent();
+                console.error(err_2);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+var getBadge = function (transaction, badgeID) { return __awaiter(void 0, void 0, void 0, function () {
+    var snapshot;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, transaction.get(admin.firestore().collection('badges').doc(badgeID))];
+            case 1:
+                snapshot = _a.sent();
+                if (!snapshot.exists) {
+                    throw "Badge ".concat(badgeID, " does not exist!");
+                }
+                return [2 /*return*/, snapshot.data()];
+        }
+    });
+}); };
 //# sourceMappingURL=index.js.map

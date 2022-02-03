@@ -46,8 +46,13 @@
 		window.location.href = `/project/${$page.params.projectID}/exercise-${index + 1}`;
 	}
 
-	function handleFinish() {
-		window.location.href = `/project/${$page.params.projectID}`;
+	async function handleFinish() {
+		// If the user has modified the exercise, write those changes.
+		// Increment the progress
+		loading = true;
+		await submit($page.params.projectID, $page.params.index, false);
+		loading = false;
+		window.location.href = `/project/${$page.params.projectID}/finish`;
 	}
 
 	function handlePrevious() {
@@ -70,7 +75,7 @@
 	</div>
 {:else}
 	<div class="h-screen max-h-screen text-brand-text bg-brand-accent flex flex-col">
-		<Navbar />
+		<Navbar expanded={true} />
 		<SplitPane pane1Size={25} pane2Size={75}>
 			<div slot="pane1" class="h-full">
 				<Sidebar />

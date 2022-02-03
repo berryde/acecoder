@@ -5,7 +5,7 @@
 	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
 	import Button from 'src/components/common/Button.svelte';
 	import Checkbox from 'src/components/common/Checkbox.svelte';
-	import ProfileMenu from 'src/components/profile/ProfileMenu.svelte';
+	import Navbar from 'src/components/navbar/Navbar.svelte';
 	import { auth, db } from 'src/utils/firebase';
 	import { capitalise } from 'src/utils/general';
 	import {
@@ -27,7 +27,7 @@
 		try {
 			settings = await getProjectSettings($page.params.projectID);
 		} catch (err) {
-			settings = { progress: 0, language: project.languages[0] };
+			settings = { progress: 0, language: project.languages[0], completed: false };
 		}
 		loading = false;
 	});
@@ -57,13 +57,11 @@
 
 <PrivateRoute {loading}>
 	<div
-		class="w-screen min-h-screen bg-brand-editor-background flex justify-center text-brand-text overflow-y-auto"
+		class="w-screen min-h-screen bg-brand-editor-background flex flex-col items-center text-brand-text overflow-y-auto"
 	>
-		<div class="flex-grow lg:max-w-5xl h-full p-20 space-y-8">
-			<div class="flex flex-row justify-between items-center">
-				<p class="text-3xl font-bold">{project.name}</p>
-				<ProfileMenu />
-			</div>
+		<Navbar />
+		<div class="w-full lg:max-w-5xl h-full p-20 space-y-8">
+			<p class="text-3xl font-bold">{project.name}</p>
 			<p>{project.description}</p>
 			<div class="bg-brand-accent rounded p-8 space-y-3">
 				<div>

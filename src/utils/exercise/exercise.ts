@@ -27,6 +27,7 @@ export const result = writable<ServerResponse>();
  * Whether the exercise is currently being loaded for the first time
  */
 export const initialising = writable<boolean>(true);
+export const points = writable<number>(0);
 
 /**
  * Load the exercise with the given ID into the application.
@@ -55,7 +56,7 @@ export const reset = async (): Promise<void> => {
  *
  * @returns A void promise that resolves when the submission request is completed.
  */
-export const submit = async (projectID: string, exerciseID: string): Promise<ServerResponse> => {
+export const submit = async (projectID: string, exerciseID: string, test = true): Promise<ServerResponse> => {
 	const files = getAllFiles('', get(filesystem));
 	const submission = {};
 	const editable = Object.keys(get(exercise).files[get(language)]).filter(
@@ -73,28 +74,30 @@ export const submit = async (projectID: string, exerciseID: string): Promise<Ser
 		updated
 	);
 
-	let endpoint: string;
-	if (import.meta.env.DEV) {
-		endpoint = 'http://localhost:9080/api/submit';
-	} else {
-		endpoint = 'https://submission-server-rly7tdzvgq-ew.a.run.app/api/submit';
-	}
-	const request: ServerRequest = {
-		exerciseID: exerciseID,
-		projectID: projectID,
-		userID: auth.currentUser.uid
-	};
-	const response = await axios.post(endpoint, request, {
-		headers: {
-			authorization: `Bearer ${await auth.currentUser.getIdToken()}`
+	if (test) {
+		let endpoint: string;
+		if (import.meta.env.DEV) {
+			endpoint = 'http://localhost:9080/api/submit';
+		} else {
+			endpoint = 'https://submission-server-rly7tdzvgq-ew.a.run.app/api/submit';
 		}
-	});
-	if (response.status == 200) {
-		const data = response.data as ServerResponse;
-		result.set(data);
-		return data;
-	} else {
-		throw 'Submission request failed';
+		const request: ServerRequest = {
+			exerciseID: exerciseID,
+			projectID: projectID,
+			userID: auth.currentUser.uid
+		};
+		const response = await axios.post(endpoint, request, {
+			headers: {
+				authorization: `Bearer ${await auth.currentUser.getIdToken()}`
+			}
+		});
+		if (response.status == 200) {
+			const data = response.data as ServerResponse;
+			result.set(data);
+			return data;
+		} else {
+			throw 'Submission request failed';
+		}
 	}
 };
 

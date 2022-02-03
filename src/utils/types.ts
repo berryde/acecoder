@@ -1,3 +1,5 @@
+import type { Timestamp } from "firebase/firestore";
+
 /**
  * A project file.
  */
@@ -216,4 +218,21 @@ export type ExerciseChapter = {
 export type ProjectSettings = {
 	progress: number;
 	language: string;
+	completed: boolean;
 };
+
+export type Badge = {
+	description: string;
+	name: string;
+	reward: number;
+	image: string;
+	timestamp: Timestamp
+}
+
+export type Stats = {
+	badges: Record<string, boolean>
+	completed: number
+	react: number
+	svelte: number
+	points: number
+}

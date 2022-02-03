@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, runTransaction } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, runTransaction, where } from 'firebase/firestore';
 import { result } from '../exercise/exercise';
 import { auth, db } from '../firebase';
 import type {
@@ -7,7 +7,9 @@ import type {
 	ExerciseMetadata,
 	ExerciseFile,
 	ProjectSettings,
-	ServerResponse
+	ServerResponse,
+	Badge,
+	Stats
 } from '../types';
 
 export const getExerciseAdmin = async (projectID: string,
@@ -162,3 +164,39 @@ export const getProject = async (projectID: string): Promise<Project> => {
 		throw 'Project ' + projectID + ' does not exist';
 	}
 };
+
+
+export const getBadge = async (badgeID: string): Promise<Badge> => {
+	const snapshot = await getDoc(doc(db, 'badges', badgeID));
+	if (snapshot.exists()) {
+		return snapshot.data() as Badge;
+	} else {
+
+		throw 'Badge ' + badgeID + ' does not exist';
+	}
+}
+
+export const getBadges = async (): Promise<Badge[]> => {
+	// Get the user's badges
+	const stats = await getStats();
+	if (Object.keys(stats.badges).length > 0) {
+		const snapshot = await getDocs(query(collection(db, 'badges'), where('__name__', 'in', Object.keys(stats.badges))))
+		return snapshot.docs.map(doc => doc.data() as Badge)
+	}
+	return []
+}
+
+export const getStats = async (): Promise<Stats> => {
+	const snapshot = await getDoc(doc(db, 'stats', auth.currentUser.uid));
+	if (snapshot.exists()) {
+		return snapshot.data() as Stats;
+	} else {
+		return {
+			badges: {},
+			completed: 0,
+			points: 0,
+			react: 0,
+			svelte: 0
+		}
+	}
+}
