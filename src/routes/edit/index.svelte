@@ -35,18 +35,30 @@
 		<div class="flex-grow max-w-6xl h-full p-28 space-y-5">
 			<div class="flex flex-row items-center justify-between">
 				<p class="text-3xl font-bold">Admin dashboard</p>
-				<ProfileMenu />
+				<ProfileMenu showScore={false} />
 			</div>
 			<Claim />
 			<div class="flex flex-row items-center justify-between bg-brand-accent p-5 rounded">
 				<div>
 					<p class="font-bold">Create something new</p>
-					<p>Open the project editor to create a new project</p>
+					<p>Open the project editor to create a new project.</p>
 				</div>
 				<Button
 					text="New project"
 					on:click={() => {
 						window.location.href = '/edit/new';
+					}}
+				/>
+			</div>
+			<div class="flex flex-row items-center justify-between bg-brand-accent p-5 rounded">
+				<div>
+					<p class="font-bold">Modify badges</p>
+					<p>Open the badge editor to create and update badges.</p>
+				</div>
+				<Button
+					text="Badge editor"
+					on:click={() => {
+						window.location.href = '/edit/badges';
 					}}
 				/>
 			</div>

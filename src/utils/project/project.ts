@@ -1,4 +1,5 @@
-import { collection, doc, getDoc, getDocs, query, runTransaction, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit, query, runTransaction, where } from 'firebase/firestore';
+import type { DocumentData, QuerySnapshot } from "firebase/firestore"
 import { result } from '../exercise/exercise';
 import { auth, db } from '../firebase';
 import type {
@@ -9,34 +10,32 @@ import type {
 	ProjectSettings,
 	ServerResponse,
 	Badge,
-	Stats
+	UserStats,
+	UserBadge
 } from '../types';
 
-export const getExerciseAdmin = async (projectID: string,
-	index: string,
-	languages: string[]): Promise<Exercise> => {
-	return await runTransaction(db, async (transaction) => {
-		// Get the exercise metadata
-		const metadata = (
-			await transaction.get(doc(db, 'projects', projectID, 'exercises', index))
-		).data() as ExerciseMetadata;
+/**
+ * Loads the metadata for all available exercise of a project without loading the files, for use on the project overview page.
+ *
+ * @param projectID The project ID.
+ * @returns Metadata for all of the exercises in a project
+ */
+export const getProjectExercises = async (
+	projectID: string
+): Promise<Record<string, ExerciseMetadata>> => {
+	const snapshot = await getDocs(collection(db, 'projects', projectID, 'exercises'));
+	const result: Record<string, ExerciseMetadata> = {};
+	try {
+		snapshot.forEach((doc) => {
+			result[doc.id] = doc.data() as ExerciseMetadata;
+		});
+		return result;
+	} catch (err) {
+		throw `Unable to fetch exercises for project ${projectID}`;
+	}
+};
 
-		// Get the exercise files
-		const files: Record<string, Record<string, ExerciseFile>> = {};
-		for (const language of languages) {
-			files[language] = (
-				await transaction.get(
-					doc(db, 'projects', projectID, 'exercises', index, 'files', language)
-				)
-			).data() as Record<string, ExerciseFile>;
-		}
-		return {
-			...metadata,
-			files: files
-		};
-	})
 
-}
 
 /**
  * Gets exercise metadata and files as an atomic transaction. If a list of languages is provided, the files for each language are provided.
@@ -121,34 +120,10 @@ export const getExerciseMetadata = async (
 	}
 };
 
-/**
- * Loads the metadata for all available exercise of a project without loading the files, for use on the project overview page.
- *
- * @param projectID The project ID.
- * @returns Metadata for all of the exercises in a project
- */
-export const getAllExerciseMetadata = async (
-	projectID: string
-): Promise<Record<string, ExerciseMetadata>> => {
-	const snapshot = await getDocs(collection(db, 'projects', projectID, 'exercises'));
-	const result: Record<string, ExerciseMetadata> = {};
-	try {
-		snapshot.forEach((doc) => {
-			result[doc.id] = doc.data() as ExerciseMetadata;
-		});
-		return result;
-	} catch (err) {
-		throw `Unable to fetch exercises for project ${projectID}`;
-	}
-};
-
-export const getProjectSettings = async (projectID: string): Promise<ProjectSettings> => {
+export const getProjectSettings = async (projectID: string, fallback = "react"): Promise<ProjectSettings> => {
 	const snapshot = await getDoc(doc(db, 'projects', projectID, 'settings', auth.currentUser.uid));
-	if (snapshot.exists()) {
-		return snapshot.data() as ProjectSettings;
-	} else {
-		throw `User settings on project ${projectID} do not exist for this user`;
-	}
+	if (snapshot.exists()) return snapshot.data() as ProjectSettings;
+	return { progress: 0, language: fallback, completed: false }
 };
 
 /**
@@ -158,41 +133,44 @@ export const getProjectSettings = async (projectID: string): Promise<ProjectSett
  */
 export const getProject = async (projectID: string): Promise<Project> => {
 	const snapshot = await getDoc(doc(db, 'projects', projectID));
-	if (snapshot.exists()) {
-		return snapshot.data() as Project;
-	} else {
-		throw 'Project ' + projectID + ' does not exist';
-	}
+	if (snapshot.exists()) return snapshot.data() as Project;
+	throw 'Project ' + projectID + ' does not exist';
 };
-
 
 export const getBadge = async (badgeID: string): Promise<Badge> => {
 	const snapshot = await getDoc(doc(db, 'badges', badgeID));
-	if (snapshot.exists()) {
-		return snapshot.data() as Badge;
+	if (snapshot.exists()) return snapshot.data() as Badge;
+	throw 'Badge ' + badgeID + ' does not exist';
+}
+
+export const getBadges = async (_limit = -1): Promise<Badge[]> => {
+	const snapshot = await getDocs(collection(db, 'stats', auth.currentUser.uid, 'badges'));
+	if (snapshot.empty) return []
+	const userBadges = Object.fromEntries(snapshot.docs.map(doc => [doc.id, doc.data() as UserBadge]))
+
+	let querySnapshot: QuerySnapshot<DocumentData>
+	if (_limit > -1) {
+		querySnapshot = await getDocs(query(collection(db, 'badges'), where('__name__', 'in', Object.keys(userBadges)), limit(_limit)))
 	} else {
-
-		throw 'Badge ' + badgeID + ' does not exist';
+		querySnapshot = await getDocs(query(collection(db, 'badges'), where('__name__', 'in', Object.keys(userBadges))))
 	}
+
+	// Sort the result based on the timestamps
+	return querySnapshot.docs.sort((a, b) => {
+		const aTimestamp = userBadges[a.id].timestamp
+		const bTimestamp = userBadges[b.id].timestamp
+		if (aTimestamp < bTimestamp) return -1
+		if (aTimestamp > bTimestamp) return 1
+		return 0
+	}).map(doc => doc.data() as Badge)
 }
 
-export const getBadges = async (): Promise<Badge[]> => {
-	// Get the user's badges
-	const stats = await getStats();
-	if (Object.keys(stats.badges).length > 0) {
-		const snapshot = await getDocs(query(collection(db, 'badges'), where('__name__', 'in', Object.keys(stats.badges))))
-		return snapshot.docs.map(doc => doc.data() as Badge)
-	}
-	return []
-}
-
-export const getStats = async (): Promise<Stats> => {
+export const getStats = async (): Promise<UserStats> => {
 	const snapshot = await getDoc(doc(db, 'stats', auth.currentUser.uid));
 	if (snapshot.exists()) {
-		return snapshot.data() as Stats;
+		return snapshot.data() as UserStats;
 	} else {
 		return {
-			badges: {},
 			completed: 0,
 			points: 0,
 			react: 0,

@@ -33,7 +33,7 @@ const db = getFirestore(app);
  */
 const auth = getAuth(app);
 
-const storage = getStorage(app);
+const storage = getStorage(app, "gs://folio-8b029.appspot.com");
 
 /**
  * The Firebase functions instance.
@@ -59,8 +59,8 @@ const setClaim = async (claim: Record<string, unknown>): Promise<boolean> => {
 	}
 };
 
-const completeProject = async (projectID: string): Promise<Badge[]> => {
-	return (await httpsCallable<Record<string, unknown>, Badge[]>(
+const completeProject = async (projectID: string): Promise<Record<string, Badge>> => {
+	return (await httpsCallable<Record<string, unknown>, Record<string, Badge>>(
 		functions,
 		'completeProject'
 	)({
@@ -78,8 +78,18 @@ const incrementProgress = async (projectID: string, exerciseID: string): Promise
 	});
 };
 
+const startProject = async (projectID: string, language: string): Promise<void> => {
+	await httpsCallable<Record<string, unknown>, void>(
+		functions,
+		'startProject'
+	)({
+		projectID: projectID,
+		language: language
+	})
+}
+
 const getImage = async (uri: string): Promise<string> => {
 	return await getDownloadURL(ref(storage, uri))
 }
 
-export { app, db, auth, setClaim, incrementProgress, completeProject, storage, getImage };
+export { app, db, auth, setClaim, incrementProgress, completeProject, storage, getImage, startProject };

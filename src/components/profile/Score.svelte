@@ -1,5 +1,16 @@
 <script lang="ts">
-	export let amount: number;
+	import { getStats } from 'src/utils/project/project';
+
+	import { onMount } from 'svelte';
+
+	export let amount = 0;
+	export let useScore = true;
+
+	onMount(async () => {
+		if (useScore) {
+			amount = (await getStats()).points;
+		}
+	});
 </script>
 
 <div class="flex flex-row items-center cursor-default">

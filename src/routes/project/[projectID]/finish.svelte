@@ -12,12 +12,12 @@
 
 	let project: Project;
 	let completed: boolean;
-	let badges: BadgeType[] = [];
+	let badges: Record<string, BadgeType> = {};
 	let loading = true;
 	onMount(async () => {
 		loading = true;
 		project = await getProject($page.params.projectID);
-		const settings = await getProjectSettings($page.params.projectID);
+		const settings = await getProjectSettings($page.params.projectID, project.languages[0]);
 		completed = settings.completed;
 		if (!completed) {
 			badges = await completeProject($page.params.projectID);
@@ -41,12 +41,12 @@
 				<p class="uppercase ">{project.name}</p>
 			</div>
 
-			{#if !completed && badges.length != 0}
+			{#if !completed && Object.keys(badges).length != 0}
 				<div class="space-y-3 max-w-full overflow-x-auto">
 					<p class="text-xl font-bold">New badges unlocked!</p>
 					<div class="flex space-x-5">
-						{#each badges as badge}
-							<Badge {badge} />
+						{#each Object.keys(badges) as id}
+							<Badge badge={badges[id]} />
 						{/each}
 					</div>
 				</div>

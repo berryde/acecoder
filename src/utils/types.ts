@@ -226,11 +226,14 @@ export type Badge = {
 	name: string;
 	reward: number;
 	image: string;
-	timestamp: Timestamp
 }
 
-export type Stats = {
-	badges: Record<string, boolean>
+export type UserBadge = {
+	timestamp: Timestamp;
+	projectID: string;
+}
+
+export type UserStats = {
 	completed: number
 	react: number
 	svelte: number

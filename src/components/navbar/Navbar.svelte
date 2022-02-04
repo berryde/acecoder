@@ -1,15 +1,12 @@
 <script>
 	import ProfileMenu from '../profile/ProfileMenu.svelte';
-
-	export let expanded = false;
 </script>
 
-<div class="bg-brand-accent w-full flex {expanded ? 'justify-between' : 'justify-center'} py-2 ">
-	<div
-		class="flex justify-between items-center w-full {expanded ? '' : 'lg:max-w-5xl px-20'} h-full"
-	>
+<div class="bg-brand-accent w-full">
+	<div class="flex justify-between items-center w-full h-full py-2 px-5">
 		<div class="flex space-x-5">
-			<a href="/">Home</a>
+			<p class="cursor-pointer font-bold">FOLIO</p>
+			<a href="/" class="transition-colors hover:text-brand-primary">Home</a>
 		</div>
 		<ProfileMenu />
 	</div>

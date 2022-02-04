@@ -9,7 +9,7 @@
 		"deploy": "npm run build && firebase deploy --only functions",
 		"logs": "firebase functions:log"
 	},
-	"main": "src/index.js",
+	"main": "build/index.js",
 	"dependencies": {
 		"@firebase/app-compat": "^0.1.16",
 		"@firebase/app-types": "^0.7.0",

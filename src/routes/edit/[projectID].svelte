@@ -6,7 +6,7 @@
 	import Button from 'src/components/common/Button.svelte';
 	import { onMount } from 'svelte';
 	import type { ExerciseMetadata, Project } from 'src/utils/types';
-	import { getAllExerciseMetadata, getProject } from 'src/utils/project/project';
+	import { getProjectExercises, getProject } from 'src/utils/project/project';
 
 	let project: Project;
 	let loading = true;
@@ -14,7 +14,7 @@
 	onMount(async () => {
 		try {
 			project = await getProject($page.params.projectID);
-			exercises = await getAllExerciseMetadata($page.params.projectID);
+			exercises = await getProjectExercises($page.params.projectID);
 			loading = false;
 		} catch (err) {
 			window.location.href = '/error/404';

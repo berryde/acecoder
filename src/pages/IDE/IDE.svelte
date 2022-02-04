@@ -75,7 +75,7 @@
 	</div>
 {:else}
 	<div class="h-screen max-h-screen text-brand-text bg-brand-accent flex flex-col">
-		<Navbar expanded={true} />
+		<Navbar />
 		<SplitPane pane1Size={25} pane2Size={75}>
 			<div slot="pane1" class="h-full">
 				<Sidebar />

@@ -19,11 +19,15 @@ export type Badge = {
     name: string;
     reward: number;
     image: string;
-    timestamp: admin.firestore.Timestamp
+
 }
 
-export type Stats = {
-    badges: Record<string, boolean>
+export type UserBadge = {
+    timestamp: admin.firestore.Timestamp;
+    projectID: string;
+}
+
+export type UserStats = {
     completed: number
     react: number
     svelte: number

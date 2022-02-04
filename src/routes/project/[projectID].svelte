@@ -1,20 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { doc, setDoc, updateDoc } from 'firebase/firestore';
-
 	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
 	import Button from 'src/components/common/Button.svelte';
+	import More from 'svelte-icons/io/IoIosMore.svelte';
 	import Checkbox from 'src/components/common/Checkbox.svelte';
 	import Navbar from 'src/components/navbar/Navbar.svelte';
-	import { auth, db } from 'src/utils/firebase';
+	import { startProject } from 'src/utils/firebase';
 	import { capitalise } from 'src/utils/general';
-	import {
-		getAllExerciseMetadata,
-		getProject,
-		getProjectSettings
-	} from 'src/utils/project/project';
+	import { getProjectExercises, getProject, getProjectSettings } from 'src/utils/project/project';
 	import type { ExerciseMetadata, Project, ProjectSettings } from 'src/utils/types';
 	import { onMount } from 'svelte';
+	import Icon from 'src/components/common/Icon.svelte';
+	import Dropdown from 'src/components/common/Dropdown.svelte';
 
 	let project: Project;
 	let exercises: Record<string, ExerciseMetadata>;
@@ -23,9 +20,9 @@
 
 	onMount(async () => {
 		project = await getProject($page.params.projectID);
-		exercises = await getAllExerciseMetadata($page.params.projectID);
+		exercises = await getProjectExercises($page.params.projectID);
 		try {
-			settings = await getProjectSettings($page.params.projectID);
+			settings = await getProjectSettings($page.params.projectID, project.languages[0]);
 		} catch (err) {
 			settings = { progress: 0, language: project.languages[0], completed: false };
 		}
@@ -35,19 +32,13 @@
 	async function handleClick(index: string | number) {
 		index = index.toString();
 		if (index == '0') {
-			await setDoc(doc(db, 'projects', $page.params.projectID, 'settings', auth.currentUser.uid), {
-				language: settings.language,
-				progress: index
-			});
-		} else {
-			await updateDoc(
-				doc(db, 'projects', $page.params.projectID, 'settings', auth.currentUser.uid),
-				{
-					progress: index
-				}
-			);
+			await startProject($page.params.projectID, settings.language);
 		}
 		window.location.href = `/project/${$page.params.projectID}/exercise-${index}`;
+	}
+
+	async function handleRestart(e: MouseEvent) {
+		e.stopPropagation();
 	}
 </script>
 
@@ -65,14 +56,28 @@
 			<p>{project.description}</p>
 			<div class="bg-brand-accent rounded p-8 space-y-3">
 				<div>
-					<p class="text-lg font-bold">Project outline</p>
+					<div class="flex flex-row justify-between mb-2 items-center">
+						<p class="text-lg font-bold">Project outline</p>
+						<Dropdown>
+							<div slot="button">
+								<Icon card={true} button={true}>
+									<More />
+								</Icon>
+							</div>
+							<div slot="menu" class="block origin-top-right">
+								<div class="p-3 text-brand-danger-light block" on:click={handleRestart}>
+									<p>Restart project</p>
+								</div>
+							</div>
+						</Dropdown>
+					</div>
 					{#each Object.entries(exercises) as [index, exercise]}
 						<div
 							class="flex items-center space-x-5 {settings.progress < parseInt(index) &&
 								'opacity-50'}"
 						>
 							<Checkbox
-								value={settings.progress > parseInt(index)}
+								value={settings.progress > parseInt(index) || settings.completed}
 								disabled={true}
 								variant={settings.progress >= parseInt(index) ? 'default' : 'text'}
 							/>

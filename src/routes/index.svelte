@@ -46,9 +46,11 @@
 		getProjects();
 	});
 
+	let loading = true;
 	async function loadUserData() {
 		points.set((await getStats()).points);
-		badges = await getBadges();
+		badges = await getBadges(4);
+		loading = false;
 	}
 </script>
 
@@ -56,7 +58,7 @@
 	<title>Svelte Application</title>
 </svelte:head>
 
-<PrivateRoute loading={projects.length == 0} on:authenticated={loadUserData}>
+<PrivateRoute {loading} on:authenticated={loadUserData}>
 	<div
 		class="w-screen min-h-screen bg-brand-editor-background flex flex-col items-center text-brand-text overflow-y-auto"
 	>

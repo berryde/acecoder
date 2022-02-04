@@ -1,9 +1,8 @@
 import functions = require('firebase-functions');
 import admin = require('firebase-admin');
-import type { Badge, Exercise, Project, Settings, Stats } from "./types"
-
-
-const store = admin.firestore()
+import type { Badge, Exercise, Project, Settings, UserBadge, UserStats } from "./types"
+import { calculateBadges } from './badges';
+import { store } from "./index"
 
 export const incrementProgress = functions.region('europe-west2').https.onCall(async (data: { projectID: string, exerciseID: string }, context) => {
     if (context.auth) {
@@ -74,33 +73,39 @@ const getResults = async (transaction: admin.firestore.Transaction, projectID: s
     return snapshot.data() as Record<number, { passed: boolean }>
 }
 
-const getBadge = async (transaction: admin.firestore.Transaction, badgeID: string): Promise<Badge> => {
-    const snapshot = await transaction.get(admin.firestore().collection('badges').doc(badgeID));
-    if (!snapshot.exists) {
-        throw `Badge ${badgeID} does not exist!`
-    }
-    return snapshot.data() as Badge
-}
-
 const getSettings = async (transaction: admin.firestore.Transaction, projectID: string, uid: string): Promise<Settings> => {
     const snapshot = await transaction.get(getProjectRef(projectID).collection('settings').doc(uid))
     if (!snapshot.exists) throw ("No settings could be found for that user")
     return snapshot.data() as Settings
 }
 
-const calculateBadges = async (transaction: admin.firestore.Transaction, stats: Stats, projectID: string, language: string): Promise<Record<string, Badge>> => {
-    const badges: Record<string, Badge> = {}
-    const addBadge = async (id: string) => {
-        badges[id] = await getBadge(transaction, id)
+const getStats = async (transaction: admin.firestore.Transaction, uid: string): Promise<UserStats> => {
+    const statsSnapshot = (await transaction.get(store.collection('stats').doc(uid)))
+    if (statsSnapshot.exists) return statsSnapshot.data() as UserStats
+    return {
+        react: 0,
+        svelte: 0,
+        completed: 0,
+        points: 0
     }
-    // A badge awarded for completing a single exercise
-    if (stats.completed == 1) await addBadge('completed_1')
-    // A badge awarded for completing a single exercise in the given language
-    if (stats[language] == 1) await addBadge(`${language}_1`)
-    // A badge awarded for completing the project
-    await addBadge(projectID)
-    return badges;
 }
+
+export const startProject = functions.region('europe-west2').https.onCall(async (data: { projectID: string, language: string }, context) => {
+    if (context.auth) {
+        const { projectID, language } = data
+        const uid = context.auth.uid
+
+        // Initialize the project settings for this user
+        try {
+            await getProjectRef(projectID).collection('settings').doc(uid).set({
+                progress: 0,
+                language: language
+            })
+        } catch (err) {
+            console.error(err)
+        }
+    }
+})
 
 export const completeProject = functions.region('europe-west2').https.onCall(async (data: { projectID: string }, context) => {
     if (context.auth) {
@@ -111,46 +116,44 @@ export const completeProject = functions.region('europe-west2').https.onCall(asy
                 // Fetch the user's settings
                 const settings = await getSettings(transaction, projectID, uid)
                 if (settings.completed) throw "Project already completed"
+
                 // Fetch the project metadata
                 const project = await getProject(transaction, projectID)
                 const progress = parseInt(settings.progress)
-
                 if (progress != project.exerciseCount - 1) throw "Some exercises have not been completed yet"
 
                 // Get the user's stats
-                type Stats = { react: number, svelte: number, completed: number, badges: Record<string, boolean>, points: number }
-                let stats: Stats = {
-                    react: 0,
-                    svelte: 0,
-                    completed: 0,
-                    badges: {},
-                    points: 0
-                }
-                const statsSnapshot = (await transaction.get(store.collection('stats').doc(context.auth.uid)))
-                if (statsSnapshot.exists) {
-                    stats = statsSnapshot.data() as Stats
-                }
+                const stats = await getStats(transaction, context.auth.uid)
 
+                // Increment the relevant stats
                 stats[settings.language] += 1
                 stats['completed'] += 1
 
-
-
-                //TODO: write a function that calculates the badges to add based on the user stats.
-                //TODO: add timestamp to user badges in stats so that they can be sorted.
-
+                // Add any awarded badges to the user's stats
                 const badges: Record<string, Badge> = await calculateBadges(transaction, stats, projectID, settings.language)
                 Object.keys(badges).forEach(id => {
-                    stats.badges[id] = true
-                    stats.points += badges[id].reward
+                    try {
+                        // Add the badge to the user's profile
+                        const data: UserBadge = {
+                            timestamp: admin.firestore.Timestamp.now(),
+                            projectID: projectID
+                        }
+                        transaction.create(store.collection('stats').doc(uid).collection('badges').doc(id), data)
+                        stats.points += badges[id].reward
+                    } catch (err) {
+                        console.error("The user already has that badge")
+                    }
                 })
 
-                transaction.update(store.collection('projects').doc(data.projectID).collection('settings').doc(context.auth.uid), {
+                // Mark this project as completed so that this method doesn't run again if they resubmit
+                transaction.update(getProjectRef(projectID).collection('settings').doc(uid), {
                     completed: true
                 })
 
-                transaction.set(store.collection('stats').doc(context.auth.uid), stats)
+                // Set the new stats
+                transaction.set(store.collection('stats').doc(uid), stats)
 
+                // Return the unlocked badges
                 return badges
             })
         } catch (err) {

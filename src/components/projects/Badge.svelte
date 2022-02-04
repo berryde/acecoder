@@ -11,19 +11,29 @@
 	onMount(async () => {
 		url = await getImage(badge.image);
 	});
+
+	let loaded = false;
 </script>
 
 <div
 	class="w-52 flex-shrink-0 flex flex-col items-center justify-between p-3 bg-brand-accent rounded text-center"
 >
 	<div class="flex flex-col items-center space-y-2">
-		<img src={url} class="w-16 h-16 rounded-full my-2" alt="{badge.name} badge" />
+		<img
+			src={url}
+			class="w-16 h-16 rounded-full my-2 {!loaded && 'invisible'} pointer-events-none"
+			alt="{badge.name} badge"
+			on:load={() => {
+				loaded = true;
+			}}
+		/>
+
 		<p class="font-bold uppercase text-sm">{badge.name}</p>
 		<p class="text-xs">{badge.description}</p>
 	</div>
 	{#if showAmount}
 		<div class="mt-3 bg-brand-background px-2 py-0.5 rounded">
-			<Score amount={badge.reward} />
+			<Score useScore={false} amount={badge.reward} />
 		</div>
 	{/if}
 </div>

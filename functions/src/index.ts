@@ -1,5 +1,5 @@
 import admin = require('firebase-admin');
-import { completeProject, incrementProgress } from './project';
+import { completeProject, incrementProgress, startProject } from './project';
 import { setClaim } from './auth';
 
 admin.initializeApp();
@@ -10,3 +10,6 @@ exports.incrementProgress = incrementProgress
 
 exports.completeProject = completeProject
 
+exports.startProject = startProject
+
+export const store = admin.firestore();
