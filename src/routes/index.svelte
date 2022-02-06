@@ -49,18 +49,20 @@
 	let loading = true;
 	async function loadUserData() {
 		points.set((await getStats()).points);
-		badges = await getBadges(4);
+		badges = await getBadges({
+			limit: 4
+		});
 		loading = false;
 	}
 </script>
 
 <svelte:head>
-	<title>Svelte Application</title>
+	<title>Folio</title>
 </svelte:head>
 
 <PrivateRoute {loading} on:authenticated={loadUserData}>
 	<div
-		class="w-screen min-h-screen bg-brand-editor-background flex flex-col items-center text-brand-text overflow-y-auto"
+		class="w-screen min-h-screen bg-brand-background flex flex-col items-center text-brand-text overflow-y-auto"
 	>
 		<Navbar />
 		<div class="w-full lg:max-w-5xl h-full p-20 space-y-8">
@@ -68,27 +70,27 @@
 			{#if badges.length > 0}
 				<div class=" items-center">
 					<p class="text-lg font-bold">Recent badges</p>
-					<p class="mb-8">
+					<p class="mb-3">
 						Unlock more badges by completing projects and levelling up. Select a badge to view its
 						unique certificate.
 					</p>
-					<div class="flex flex-row space-x-3 w-full overflow-x-auto">
+					<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 						{#each badges as badge}
-							<div class="cursor-pointer">
-								<Badge {badge} showAmount={false} />
-							</div>
+							<Badge {badge} showAmount={false} />
 						{/each}
 					</div>
 				</div>
 			{/if}
-			<div class=" items-center">
-				<p class="text-lg font-bold">Beginner projects</p>
-				<p>Get started creating eye-catching, responsive websites.</p>
-			</div>
-			<div class="grid grid-cols-3 gap-4">
-				{#each projects as project}
-					<ProjectCard projectID={project.id} project={project.project} />
-				{/each}
+			<div>
+				<div class=" items-center mb-3">
+					<p class="text-lg font-bold">Projects</p>
+					<p>Get started creating eye-catching, responsive websites.</p>
+				</div>
+				<div class="grid grid-cols-3 gap-4">
+					{#each projects as project}
+						<ProjectCard projectID={project.id} project={project.project} />
+					{/each}
+				</div>
 			</div>
 		</div>
 	</div>

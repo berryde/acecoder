@@ -1,38 +1,40 @@
 <script lang="ts">
 	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
 	import { onMount } from 'svelte';
-	import Button from 'src/components/common/Button.svelte';
 	import Navbar from 'src/components/navbar/Navbar.svelte';
-	import { getProject, getProjectSettings, getStats } from 'src/utils/project/project';
+	import { getBadges, getProject, getProjectSettings, getStats } from 'src/utils/project/project';
 	import { page } from '$app/stores';
-	import type { Project, Badge as BadgeType } from 'src/utils/types';
+	import type { Project, Badge as BadgeType, ProjectSettings } from 'src/utils/types';
 	import Badge from 'src/components/projects/Badge.svelte';
 	import { completeProject } from 'src/utils/firebase';
 	import { points } from 'src/utils/exercise/exercise';
 
+	import Download from 'src/components/projects/Download.svelte';
+
 	let project: Project;
 	let completed: boolean;
-	let badges: Record<string, BadgeType> = {};
+	let badges: BadgeType[] = [];
+	let settings: ProjectSettings;
 	let loading = true;
+
 	onMount(async () => {
 		loading = true;
 		project = await getProject($page.params.projectID);
-		const settings = await getProjectSettings($page.params.projectID, project.languages[0]);
+		settings = await getProjectSettings($page.params.projectID, project.languages[0]);
 		completed = settings.completed;
 		if (!completed) {
-			badges = await completeProject($page.params.projectID);
+			badges = Object.values(await completeProject($page.params.projectID));
 			points.set((await getStats()).points);
+		} else {
+			badges = await getBadges({ projectID: $page.params.projectID });
 		}
-
 		loading = false;
 	});
-
-	function handleDownload() {}
 </script>
 
 <PrivateRoute {loading}>
 	<div
-		class="w-screen min-h-screen bg-brand-editor-background flex flex-col items-center text-brand-text overflow-y-auto"
+		class="w-screen min-h-screen bg-brand-background flex flex-col items-center text-brand-text overflow-y-auto"
 	>
 		<Navbar />
 		<div class="w-full lg:max-w-5xl h-full p-20 space-y-5">
@@ -40,26 +42,19 @@
 				<p class="text-3xl font-bold">Project completed</p>
 				<p class="uppercase ">{project.name}</p>
 			</div>
-
-			{#if !completed && Object.keys(badges).length != 0}
-				<div class="space-y-3 max-w-full overflow-x-auto">
-					<p class="text-xl font-bold">New badges unlocked!</p>
-					<div class="flex space-x-5">
-						{#each Object.keys(badges) as id}
-							<Badge badge={badges[id]} />
+			{#if badges.length != 0}
+				<div>
+					<p class="text-xl font-bold mb-3">
+						{completed ? 'Badges unlocked' : 'New badges unlocked!'}
+					</p>
+					<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+						{#each badges as badge}
+							<Badge {badge} isNew={!completed} />
 						{/each}
 					</div>
 				</div>
 			{/if}
-
-			<div class="bg-brand-accent p-5 rounded">
-				<p class="text-xl font-bold">Your project</p>
-				<p>Download the finished project to share it with the world, or continue working on it.</p>
-				<div class="flex justify-end space-x-3 mt-3">
-					<!-- <Button text="Share on LinkedIn" outline={true} /> -->
-					<Button text="Download" on:click={handleDownload} />
-				</div>
-			</div>
+			<Download {settings} />
 		</div>
 	</div>
 </PrivateRoute>

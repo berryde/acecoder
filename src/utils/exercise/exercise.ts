@@ -30,12 +30,10 @@ export const initialising = writable<boolean>(true);
 export const points = writable<number>(0);
 
 /**
- * Load the exercise with the given ID into the application.
- *
- * @param id The exercise ID
+ * Load the exercise with the given ID into the filesystem.
  */
-export const loadExercise = async (): Promise<void> => {
-	const source = get(exercise).files[get(language)];
+export const loadExercise = async (exercise: Exercise, language: string): Promise<void> => {
+	const source = exercise.files[language];
 
 	// Create the filesystem from the template
 	for (const [path, value] of Object.entries(source)) {
@@ -48,7 +46,7 @@ export const loadExercise = async (): Promise<void> => {
 export const reset = async (): Promise<void> => {
 	initialising.set(true);
 	filesystem.set({});
-	loadExercise();
+	loadExercise(get(exercise), get(language));
 };
 
 /**
@@ -56,7 +54,11 @@ export const reset = async (): Promise<void> => {
  *
  * @returns A void promise that resolves when the submission request is completed.
  */
-export const submit = async (projectID: string, exerciseID: string, test = true): Promise<ServerResponse> => {
+export const submit = async (
+	projectID: string,
+	exerciseID: string,
+	test = true
+): Promise<ServerResponse> => {
 	const files = getAllFiles('', get(filesystem));
 	const submission = {};
 	const editable = Object.keys(get(exercise).files[get(language)]).filter(
@@ -67,12 +69,11 @@ export const submit = async (projectID: string, exerciseID: string, test = true)
 			submission[file.name] = file.code;
 		}
 	});
-	const existing = (await getDoc(doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid))).data() as Record<string, string>
-	const updated = { ...existing, ...submission }
-	await setDoc(
-		doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid),
-		updated
-	);
+	const existing = (
+		await getDoc(doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid))
+	).data() as Record<string, string>;
+	const updated = { ...existing, ...submission };
+	await setDoc(doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid), updated);
 
 	if (test) {
 		let endpoint: string;

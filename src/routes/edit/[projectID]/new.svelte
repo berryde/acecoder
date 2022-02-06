@@ -20,7 +20,7 @@
 
 <PrivateRoute restricted={true} loading={!project}>
 	<div
-		class="max-w-screen min-h-screen bg-brand-editor-background flex justify-center items-center text-brand-text overflow-y-auto"
+		class="max-w-screen min-h-screen bg-brand-background flex justify-center items-center text-brand-text overflow-y-auto"
 	>
 		<div class="flex-grow lg:max-w-5xl h-full p-20 space-y-8">
 			<div class="flex flex-row items-center justify-between">

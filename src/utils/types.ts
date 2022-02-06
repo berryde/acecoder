@@ -1,4 +1,4 @@
-import type { Timestamp } from "firebase/firestore";
+import type { Timestamp } from 'firebase/firestore';
 
 /**
  * A project file.
@@ -226,16 +226,17 @@ export type Badge = {
 	name: string;
 	reward: number;
 	image: string;
-}
+	conditions: Record<string, number>;
+};
 
 export type UserBadge = {
 	timestamp: Timestamp;
 	projectID: string;
-}
+};
 
 export type UserStats = {
-	completed: number
-	react: number
-	svelte: number
-	points: number
-}
+	completed: number;
+	react: number;
+	svelte: number;
+	points: number;
+};

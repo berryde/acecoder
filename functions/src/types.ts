@@ -1,35 +1,35 @@
-import type admin = require('firebase-admin')
+import type admin = require('firebase-admin');
 
-export type Settings = { language: string, progress: string, completed: boolean }
+export type Settings = { language: string; progress: string; completed: boolean };
 
 export type Project = {
-    exerciseCount: number;
-}
+	exerciseCount: number;
+};
 
-export type Exercise = { assessed: boolean }
+export type Exercise = { assessed: boolean };
 
 export type ProjectSettings = {
-    progress: number;
-    language: string;
-    completed: boolean;
+	progress: number;
+	language: string;
+	completed: boolean;
 };
 
 export type Badge = {
-    description: string;
-    name: string;
-    reward: number;
-    image: string;
-
-}
+	description: string;
+	name: string;
+	reward: number;
+	image: string;
+	conditions: Record<string, number>;
+};
 
 export type UserBadge = {
-    timestamp: admin.firestore.Timestamp;
-    projectID: string;
-}
+	timestamp: admin.firestore.Timestamp;
+	projectID: string;
+};
 
 export type UserStats = {
-    completed: number
-    react: number
-    svelte: number
-    points: number
-}
+	completed: number;
+	react: number;
+	svelte: number;
+	points: number;
+};

@@ -14,6 +14,10 @@
 		badges = await getAllBadges();
 		loading = false;
 	});
+
+	function handleClick(id: string) {
+		window.location.href = `/edit/badges/${id}`;
+	}
 </script>
 
 <svelte:head>
@@ -22,7 +26,7 @@
 
 <PrivateRoute restricted={true} {loading}>
 	<div
-		class="w-screen h-screen bg-brand-editor-background flex flex-col justify-center items-center text-brand-text"
+		class="w-screen h-screen bg-brand-background flex flex-col justify-center items-center text-brand-text"
 	>
 		<div class="flex-grow max-w-6xl w-full h-full p-28 space-y-5">
 			<div class="flex flex-row items-center justify-between">
@@ -41,12 +45,12 @@
 					}}
 				/>
 			</div>
-			<div class="flex justify-center">
-				<div class="grid grid-cols-4 gap-5">
-					{#each Object.keys(badges) as id}
+			<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+				{#each Object.keys(badges) as id}
+					<div class="cursor-pointer flex-grow" on:click={() => handleClick(id)}>
 						<Badge badge={badges[id]} />
-					{/each}
-				</div>
+					</div>
+				{/each}
 			</div>
 		</div>
 	</div>

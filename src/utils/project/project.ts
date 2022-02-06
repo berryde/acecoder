@@ -1,5 +1,15 @@
-import { collection, doc, getDoc, getDocs, limit, query, runTransaction, where } from 'firebase/firestore';
-import type { DocumentData, QuerySnapshot } from "firebase/firestore"
+import {
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	limit as _limit,
+	query,
+	QueryConstraint,
+	runTransaction,
+	where
+} from 'firebase/firestore';
+import type { DocumentData, QuerySnapshot } from 'firebase/firestore';
 import { result } from '../exercise/exercise';
 import { auth, db } from '../firebase';
 import type {
@@ -34,8 +44,6 @@ export const getProjectExercises = async (
 		throw `Unable to fetch exercises for project ${projectID}`;
 	}
 };
-
-
 
 /**
  * Gets exercise metadata and files as an atomic transaction. If a list of languages is provided, the files for each language are provided.
@@ -74,7 +82,9 @@ export const getExercise = async (
 					// Only overwrite files relevant to this exercise.
 					files[language][name] = {
 						contents: submissionFiles[name],
-						editable: ((Object.keys(files[language]).filter(name => files[language][name].editable).includes(name)))
+						editable: Object.keys(files[language])
+							.filter((name) => files[language][name].editable)
+							.includes(name)
 					};
 				});
 			}
@@ -120,10 +130,13 @@ export const getExerciseMetadata = async (
 	}
 };
 
-export const getProjectSettings = async (projectID: string, fallback = "react"): Promise<ProjectSettings> => {
+export const getProjectSettings = async (
+	projectID: string,
+	fallback = 'react'
+): Promise<ProjectSettings> => {
 	const snapshot = await getDoc(doc(db, 'projects', projectID, 'settings', auth.currentUser.uid));
 	if (snapshot.exists()) return snapshot.data() as ProjectSettings;
-	return { progress: 0, language: fallback, completed: false }
+	return { progress: 0, language: fallback, completed: false };
 };
 
 /**
@@ -141,29 +154,45 @@ export const getBadge = async (badgeID: string): Promise<Badge> => {
 	const snapshot = await getDoc(doc(db, 'badges', badgeID));
 	if (snapshot.exists()) return snapshot.data() as Badge;
 	throw 'Badge ' + badgeID + ' does not exist';
-}
+};
 
-export const getBadges = async (_limit = -1): Promise<Badge[]> => {
+export const getBadges = async (options: {
+	limit?: number;
+	projectID?: string;
+}): Promise<Badge[]> => {
+	const { limit, projectID } = options;
 	const snapshot = await getDocs(collection(db, 'stats', auth.currentUser.uid, 'badges'));
-	if (snapshot.empty) return []
-	const userBadges = Object.fromEntries(snapshot.docs.map(doc => [doc.id, doc.data() as UserBadge]))
 
-	let querySnapshot: QuerySnapshot<DocumentData>
-	if (_limit > -1) {
-		querySnapshot = await getDocs(query(collection(db, 'badges'), where('__name__', 'in', Object.keys(userBadges)), limit(_limit)))
-	} else {
-		querySnapshot = await getDocs(query(collection(db, 'badges'), where('__name__', 'in', Object.keys(userBadges))))
+	if (snapshot.empty) return [];
+	let userBadges = Object.fromEntries(
+		snapshot.docs.map((doc) => [doc.id, doc.data() as UserBadge])
+	);
+
+	if (projectID) {
+		userBadges = Object.fromEntries(
+			Object.entries(userBadges).filter((entry) => entry[1].projectID == projectID)
+		);
 	}
 
+	const constraints: QueryConstraint[] = [];
+	constraints.push(where('__name__', 'in', Object.keys(userBadges)));
+	if (limit) constraints.push(_limit(limit));
+
+	const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(
+		query(collection(db, 'badges'), ...constraints)
+	);
+
 	// Sort the result based on the timestamps
-	return querySnapshot.docs.sort((a, b) => {
-		const aTimestamp = userBadges[a.id].timestamp
-		const bTimestamp = userBadges[b.id].timestamp
-		if (aTimestamp < bTimestamp) return -1
-		if (aTimestamp > bTimestamp) return 1
-		return 0
-	}).map(doc => doc.data() as Badge)
-}
+	return querySnapshot.docs
+		.sort((a, b) => {
+			const aTimestamp = userBadges[a.id].timestamp;
+			const bTimestamp = userBadges[b.id].timestamp;
+			if (aTimestamp < bTimestamp) return -1;
+			if (aTimestamp > bTimestamp) return 1;
+			return 0;
+		})
+		.map((doc) => doc.data() as Badge);
+};
 
 export const getStats = async (): Promise<UserStats> => {
 	const snapshot = await getDoc(doc(db, 'stats', auth.currentUser.uid));
@@ -175,6 +204,6 @@ export const getStats = async (): Promise<UserStats> => {
 			points: 0,
 			react: 0,
 			svelte: 0
-		}
+		};
 	}
-}
+};

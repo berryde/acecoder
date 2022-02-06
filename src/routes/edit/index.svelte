@@ -30,7 +30,7 @@
 
 <PrivateRoute restricted={true} {loading}>
 	<div
-		class="w-screen h-screen bg-brand-editor-background flex justify-center items-center text-brand-text"
+		class="w-screen h-screen bg-brand-background flex justify-center items-center text-brand-text"
 	>
 		<div class="flex-grow max-w-6xl h-full p-28 space-y-5">
 			<div class="flex flex-row items-center justify-between">

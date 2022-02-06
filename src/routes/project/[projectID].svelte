@@ -12,6 +12,8 @@
 	import { onMount } from 'svelte';
 	import Icon from 'src/components/common/Icon.svelte';
 	import Dropdown from 'src/components/common/Dropdown.svelte';
+	import Download from 'src/components/projects/Download.svelte';
+	import Card from 'src/components/common/Card.svelte';
 
 	let project: Project;
 	let exercises: Record<string, ExerciseMetadata>;
@@ -48,29 +50,27 @@
 
 <PrivateRoute {loading}>
 	<div
-		class="w-screen min-h-screen bg-brand-editor-background flex flex-col items-center text-brand-text overflow-y-auto"
+		class="w-screen min-h-screen bg-brand-background flex flex-col items-center text-brand-text overflow-y-auto"
 	>
 		<Navbar />
 		<div class="w-full lg:max-w-5xl h-full p-20 space-y-8">
 			<p class="text-3xl font-bold">{project.name}</p>
 			<p>{project.description}</p>
-			<div class="bg-brand-accent rounded p-8 space-y-3">
-				<div>
-					<div class="flex flex-row justify-between mb-2 items-center">
-						<p class="text-lg font-bold">Project outline</p>
-						<Dropdown>
-							<div slot="button">
-								<Icon card={true} button={true}>
-									<More />
-								</Icon>
-							</div>
-							<div slot="menu" class="block origin-top-right">
-								<div class="p-3 text-brand-danger-light block" on:click={handleRestart}>
-									<p>Restart project</p>
-								</div>
-							</div>
-						</Dropdown>
+			<Card title="Project outline">
+				<Dropdown slot="action">
+					<div slot="button">
+						<Icon card={true} button={true}>
+							<More />
+						</Icon>
 					</div>
+					<div slot="menu" class="block origin-top-right">
+						<div class="p-3 text-brand-danger-light block" on:click={handleRestart}>
+							<p>Restart project</p>
+						</div>
+					</div>
+				</Dropdown>
+
+				<div>
 					{#each Object.entries(exercises) as [index, exercise]}
 						<div
 							class="flex items-center space-x-5 {settings.progress < parseInt(index) &&
@@ -116,7 +116,10 @@
 						on:click={() => handleClick(settings.progress)}
 					/>
 				</div>
-			</div>
+			</Card>
+			{#if settings.completed}
+				<Download {settings} />
+			{/if}
 		</div>
 	</div>
 </PrivateRoute>

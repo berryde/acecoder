@@ -7,7 +7,7 @@ export const getAllBadges = async (): Promise<Record<string, Badge>> => {
     return Object.fromEntries(snapshot.docs.map(doc => [doc.id, doc.data() as Badge]))
 }
 
-export const getExerciseAdmin = async (projectID: string,
+export const getExercise = async (projectID: string,
     index: string,
     languages: string[]): Promise<Exercise> => {
     return await runTransaction(db, async (transaction) => {

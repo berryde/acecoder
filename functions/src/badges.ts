@@ -1,58 +1,32 @@
-
 import { store } from './index';
-import type admin = require('firebase-admin')
+import type admin = require('firebase-admin');
 import type { Badge, UserStats } from './types';
 
-const getBadge = async (
-    transaction: admin.firestore.Transaction,
-    badgeID: string
-): Promise<Badge> => {
-    const snapshot = await transaction.get(store.collection('badges').doc(badgeID));
-    if (!snapshot.exists) {
-        throw `Badge ${badgeID} does not exist!`;
-    }
-    return snapshot.data() as Badge;
-};
-
-const badges: Record<string, { type: 'project' } | { type: 'stat'; stat: string; value: number }> =
-{
-    completed_1: {
-        type: 'stat',
-        stat: 'completed',
-        value: 1
-    },
-    react_1: {
-        type: 'stat',
-        stat: 'react',
-        value: 1
-    },
-    svelte_1: {
-        type: 'stat',
-        stat: 'svelte',
-        value: 1
-    }
-};
-
-// TODO:
-// get all badges from database instead of using local document
-
 export const calculateBadges = async (
-    transaction: admin.firestore.Transaction,
-    stats: UserStats,
-    projectID: string,
-    language: string
+	transaction: admin.firestore.Transaction,
+	stats: UserStats,
+	projectID: string,
+	language: string
 ): Promise<Record<string, Badge>> => {
-    const result: Record<string, Badge> = {};
-    const addBadge = async (id: string) => {
-        result[id] = await getBadge(transaction, id);
-    };
+	const result: Record<string, Badge> = {};
 
-    for (let id in badges) {
-        const badge = badges[id]
-        if ((badge.type == "stat" && stats[badge.stat] == badge.value) || id == projectID) {
-            await addBadge(id);
-        }
-    }
+	const badges = Object.fromEntries(
+		(await transaction.get(store.collection('badges'))).docs.map((doc) => [
+			doc.id,
+			doc.data() as Badge
+		])
+	);
 
-    return result;
+	for (let id in badges) {
+		const badge = badges[id];
+		if (!!badge.conditions && badge.conditions != {}) {
+			for (let key of Object.keys(badge.conditions)) {
+				if (key in stats && stats[key] == badge.conditions[key]) result[id] = badge;
+			}
+		} else {
+			if (id == projectID) result[id] = badge;
+		}
+	}
+
+	return result;
 };

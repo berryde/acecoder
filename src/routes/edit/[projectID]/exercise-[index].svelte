@@ -4,8 +4,9 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import type { Exercise, Project } from 'src/utils/types';
-	import { getExerciseAdmin, getProject } from 'src/utils/project/project';
+	import { getExercise } from 'src/utils/admin/admin';
 	import ProfileMenu from 'src/components/profile/ProfileMenu.svelte';
+	import { getProject } from 'src/utils/project/project';
 
 	let project: Project;
 	let exercise: Exercise;
@@ -14,11 +15,7 @@
 	onMount(async () => {
 		try {
 			project = await getProject($page.params.projectID);
-			exercise = await getExerciseAdmin(
-				$page.params.projectID,
-				$page.params.index,
-				project.languages
-			);
+			exercise = await getExercise($page.params.projectID, $page.params.index, project.languages);
 			loading = false;
 		} catch (err) {
 			console.error(err);

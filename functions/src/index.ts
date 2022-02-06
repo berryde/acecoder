@@ -4,12 +4,12 @@ import { setClaim } from './auth';
 
 admin.initializeApp();
 
-exports.setClaim = setClaim
+exports.setClaim = setClaim;
 
-exports.incrementProgress = incrementProgress
+exports.incrementProgress = incrementProgress;
 
-exports.completeProject = completeProject
+exports.completeProject = completeProject;
 
-exports.startProject = startProject
+exports.startProject = startProject;
 
 export const store = admin.firestore();

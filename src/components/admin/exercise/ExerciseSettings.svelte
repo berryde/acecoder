@@ -6,6 +6,7 @@
 	import Chapters from './Chapters.svelte';
 	import Settings from './Settings.svelte';
 	import Files from './Files.svelte';
+	import Card from 'src/components/common/Card.svelte';
 
 	/**
 	 * Whether these settings are for the creation of a new project.
@@ -129,7 +130,7 @@
 	}
 </script>
 
-<form class="flex flex-col bg-brand-accent p-8 rounded space-y-5">
+<Card>
 	<Settings
 		{exercise}
 		{editing}
@@ -138,7 +139,7 @@
 	/>
 	<Files {project} {exercise} {editing} />
 	<Chapters {exercise} {editing} />
-</form>
+</Card>
 
 {#if errors.length > 0}
 	<div class="bg-brand-danger-dark bg-opacity-50 p-3 rounded text-brand-danger-light">
