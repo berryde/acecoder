@@ -30,7 +30,7 @@
 				project.set(await getProject($page.params.projectID));
 				language.set(Object.keys($exercise.files)[0]);
 				const editable = Object.keys($exercise.files[$language]).filter(
-					(filename) => $exercise.files[$language][filename].editable
+					(filename) => $exercise.files[$language][filename].modifiable
 				);
 				tabs.set(editable);
 				points.set((await getStats()).points);

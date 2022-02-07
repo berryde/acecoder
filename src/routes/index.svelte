@@ -70,13 +70,10 @@
 			{#if badges.length > 0}
 				<div class=" items-center">
 					<p class="text-lg font-bold">Recent badges</p>
-					<p class="mb-3">
-						Unlock more badges by completing projects and levelling up. Select a badge to view its
-						unique certificate.
-					</p>
-					<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+					<p class="mb-3">Unlock more badges by completing projects and levelling up.</p>
+					<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
 						{#each badges as badge}
-							<Badge {badge} showAmount={false} />
+							<Badge {badge} />
 						{/each}
 					</div>
 				</div>

@@ -1,12 +1,10 @@
 <script lang="ts">
 	import type { Badge } from 'src/utils/types';
 	import { getImage } from 'src/utils/firebase';
-	import Score from '../profile/Score.svelte';
 	import { onMount } from 'svelte';
 	import Hoverable from '../common/Hoverable.svelte';
 
 	export let badge: Badge;
-	export let showAmount = true;
 	export let isNew: boolean = false;
 
 	let url: string = '';
@@ -38,16 +36,11 @@
 
 				<p class="font-bold uppercase text-sm">{badge.name}</p>
 			</div>
-			{#if showAmount}
-				<div class="mt-3 bg-brand-background px-2 py-0.5 rounded">
-					<Score useScore={false} amount={badge.reward} />
-				</div>
-			{/if}
 		</div>
 		<div
-			class="absolute bg-brand-editor-background {hovering
+			class="absolute bg-brand-accent min-w-max origin-center left-1/2 transform -translate-x-1/2 {hovering
 				? 'opacity-100'
-				: 'opacity-0'} z-30 transition-opacity mt-2 rounded px-2 py-1 transform text-xs duration-300"
+				: 'opacity-0'} z-30 transition-opacity mt-2 rounded px-2 py-1 transform text-xs duration-300 shadow-xl"
 		>
 			{badge.description}
 		</div>

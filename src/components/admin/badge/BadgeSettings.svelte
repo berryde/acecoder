@@ -18,7 +18,6 @@
 		description: '',
 		image: '',
 		name: '',
-		reward: 0,
 		conditions: {}
 	};
 	let editing = creating;
@@ -45,7 +44,7 @@
 		if (badge.description == '') errors.push('Please provide a badge description');
 		if (badge.name == '') errors.push('Please provide a name');
 		if (id == '') errors.push('Please provide an ID');
-		if (badge.reward < 0) errors.push('Badge reward must be a positive integer');
+
 		if (!url && (!files || files.length == 0)) errors.push('Please provide an image');
 
 		if (errors.length == 0) {
@@ -176,17 +175,6 @@
 					/>
 					<Button text="Add" outline={true} on:click={addCondition} />
 				</div>
-			{/if}
-		</div>
-		<div>
-			<p class="font-bold">Reward</p>
-			<p class="text-sm mb-1">
-				The number of points to be credited to the user's account upon unlocking this badge.
-			</p>
-			{#if editing}
-				<input type="number" class="p-2 bg-brand-background rounded" bind:value={badge.reward} />
-			{:else}
-				<p>{badge.reward}</p>
 			{/if}
 		</div>
 

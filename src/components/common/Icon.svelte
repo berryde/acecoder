@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { fade } from 'svelte/transition';
 	import Hoverable from './Hoverable.svelte';
 
 	/**
@@ -11,8 +12,6 @@
 	 * Whether this icon is also a button.
 	 */
 	export let button = false;
-
-	export let labelPosition: 'below' | 'above' = 'below';
 
 	export let label: string = undefined;
 
@@ -47,40 +46,44 @@
 				return 'h-4 w-4';
 		}
 	}
-
-	/**
-	 * Due to CSS preprocessing, classes cannot be composed strings.
-	 */
-	function getOffset() {
-		if (labelPosition == 'above') {
-			switch (size) {
-				case 'small':
-					return '-top-4';
-				case 'large':
-					return '-top-9';
-				case 'medium':
-				default:
-					return '-top-6';
-			}
-		} else {
-			switch (size) {
-				case 'small':
-					return 'top-4';
-				case 'large':
-					return 'top-9';
-				case 'medium':
-				default:
-					return 'top-6';
-			}
-		}
-	}
 </script>
 
-<Hoverable let:hovering>
+{#if label}
+	<Hoverable let:hovering>
+		<div class="relative">
+			<div class="flex flex-col items-center">
+				<div
+					class="flex flex-col justify-center items-center {card &&
+						'bg-brand-editor-background rounded-lg'} {size == 'small' ? 'p-1.5' : 'p-1'}"
+				>
+					{#if button}
+						<button
+							on:click={click}
+							class="{getDimensions()} flex-shrink-0 flex-grow-0 text-brand-text text-light-text"
+							data-testid={testId}><slot /></button
+						>
+					{:else}
+						<div class="{getDimensions()} flex-shrink-0 flex-grow-0" data-testid={testId}>
+							<slot />
+						</div>
+					{/if}
+				</div>
+			</div>
+			{#if hovering}
+				<div
+					transition:fade
+					class="absolute bg-brand-editor-background min-w-max origin-center left-1/2 -translate-x-1/2 z-30 mt-1 rounded px-2 py-1 transform text-xs shadow-xl"
+				>
+					{label[0].toUpperCase() + label.slice(1)}
+				</div>
+			{/if}
+		</div>
+	</Hoverable>
+{:else}
 	<div class="flex flex-col items-center">
 		<div
 			class="flex flex-col justify-center items-center {card &&
-				'bg-brand-editor-background rounded-lg p-1'}"
+				'bg-brand-editor-background rounded-lg'} {size == 'small' ? 'p-1.5' : 'p-1'}"
 		>
 			{#if button}
 				<button
@@ -94,16 +97,5 @@
 				</div>
 			{/if}
 		</div>
-		{#if label}
-			<div class="absolute z-50 pointer-events-none">
-				<p
-					class="relative transition-all text-center {hovering
-						? 'visible opacity-100'
-						: 'invisible opacity-0'} {getOffset()} text-xs bg-brand-editor-background bg-light-bgdark px-1 py-0.5 shadow rounded "
-				>
-					{label[0].toUpperCase() + label.slice(1)}
-				</p>
-			</div>
-		{/if}
 	</div>
-</Hoverable>
+{/if}

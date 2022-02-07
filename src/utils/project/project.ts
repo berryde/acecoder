@@ -16,7 +16,7 @@ import type {
 	Project,
 	Exercise,
 	ExerciseMetadata,
-	ExerciseFile,
+	FSFile,
 	ProjectSettings,
 	ServerResponse,
 	Badge,
@@ -64,12 +64,20 @@ export const getExercise = async (
 			).data() as ExerciseMetadata;
 
 			// Get the exercise files
-			const files: Record<string, Record<string, ExerciseFile>> = {
-				[language]: (
-					await transaction.get(
-						doc(db, 'projects', projectID, 'exercises', index, 'files', language)
-					)
-				).data()
+			const exerciseFiles: Record<string, { contents: string; editable: boolean }> = (
+				await transaction.get(doc(db, 'projects', projectID, 'exercises', index, 'files', language))
+			).data();
+			const files: Record<string, Record<string, FSFile>> = {
+				[language]: Object.fromEntries(
+					Object.entries(exerciseFiles).map((entry) => [
+						entry[0],
+						{
+							type: 'file',
+							value: entry[1].contents,
+							modifiable: entry[1].editable
+						}
+					])
+				)
 			};
 
 			// Check if the user has made a submission and download it if so.
@@ -81,9 +89,10 @@ export const getExercise = async (
 				Object.keys(submissionFiles).forEach((name) => {
 					// Only overwrite files relevant to this exercise.
 					files[language][name] = {
-						contents: submissionFiles[name],
-						editable: Object.keys(files[language])
-							.filter((name) => files[language][name].editable)
+						type: 'file',
+						value: submissionFiles[name],
+						modifiable: Object.keys(files[language])
+							.filter((name) => files[language][name].modifiable)
 							.includes(name)
 					};
 				});

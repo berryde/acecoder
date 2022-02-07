@@ -13,6 +13,7 @@
 	import Refresh from 'svelte-icons/io/IoMdRefresh.svelte';
 	import Wand from 'svelte-icons/io/IoIosColorWand.svelte';
 	import { onMount } from 'svelte';
+	import Explorer from '../explorer/Explorer.svelte';
 
 	function updateChapter() {
 		submissionAttempt += 1;
@@ -38,7 +39,7 @@
 	});
 </script>
 
-<div class="bg-brand-background h-full overflow-y-auto sidebar">
+<div class="bg-brand-background h-full overflow-y-auto sidebar overflow-x-hidden">
 	<div class="p-5 space-y-3">
 		<p class="uppercase text-xs">{$project.name}</p>
 		<h1 class="text-xl font-bold">{$exercise.name}</h1>
@@ -93,6 +94,7 @@
 			{/if}
 		{/each}
 	</div>
+	<Explorer />
 </div>
 
 <style lang="postcss">

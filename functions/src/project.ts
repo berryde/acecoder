@@ -181,7 +181,6 @@ export const completeProject = functions
 								store.collection('stats').doc(uid).collection('badges').doc(id),
 								data
 							);
-							stats.points += badges[id].reward;
 						} catch (err) {
 							console.error('The user already has that badge');
 						}

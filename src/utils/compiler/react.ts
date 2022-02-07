@@ -73,7 +73,11 @@ export default function reactCompiler(
 		 */
 		async transform(code, id) {
 			// Babel transform tsx, ts, js and jsx files.
+
 			if (/.*\.(j|t)x?/.test(id)) {
+				if (!/import\s*React(,\s*{.*}\s*)?\sfrom\s*('|")react('|")\s*;?/.test(code)) {
+					code = "import React from 'react';\n" + code;
+				}
 				const options = {
 					filename: id,
 					presets: ['react', 'typescript']

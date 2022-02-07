@@ -175,11 +175,6 @@ export type ServerError = {
 	message: string;
 };
 
-export type ExerciseFile = {
-	contents: string;
-	editable: boolean;
-};
-
 export type Project = {
 	name: string;
 	icon: string;
@@ -197,7 +192,7 @@ export type ExerciseMetadata = {
 };
 
 export interface Exercise extends ExerciseMetadata {
-	files: Record<string, Record<string, ExerciseFile>>;
+	files: Record<string, Record<string, FSFile>>;
 }
 
 export type ExerciseChapter = {
@@ -224,7 +219,6 @@ export type ProjectSettings = {
 export type Badge = {
 	description: string;
 	name: string;
-	reward: number;
 	image: string;
 	conditions: Record<string, number>;
 };

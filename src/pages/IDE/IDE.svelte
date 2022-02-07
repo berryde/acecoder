@@ -7,6 +7,7 @@
 		chapter,
 		exercise,
 		initialising,
+		language,
 		loadExercise,
 		project,
 		submit
@@ -37,7 +38,7 @@
 	// Add a listener for key combinations
 	onMount(async () => {
 		index = parseInt($page.params.index);
-		loadExercise();
+		loadExercise($exercise, $language);
 		loadSettings();
 	});
 

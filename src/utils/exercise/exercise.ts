@@ -37,7 +37,7 @@ export const loadExercise = async (exercise: Exercise, language: string): Promis
 
 	// Create the filesystem from the template
 	for (const [path, value] of Object.entries(source)) {
-		createFile(path, value.contents, value.editable);
+		createFile(path, value.value, value.modifiable);
 	}
 
 	initialising.set(false);
@@ -62,7 +62,7 @@ export const submit = async (
 	const files = getAllFiles('', get(filesystem));
 	const submission = {};
 	const editable = Object.keys(get(exercise).files[get(language)]).filter(
-		(filename) => get(exercise).files[get(language)][filename].editable
+		(filename) => get(exercise).files[get(language)][filename].modifiable
 	);
 	files.forEach((file) => {
 		if (editable.includes(file.name)) {

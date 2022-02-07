@@ -17,7 +17,6 @@ export type ProjectSettings = {
 export type Badge = {
 	description: string;
 	name: string;
-	reward: number;
 	image: string;
 	conditions: Record<string, number>;
 };
