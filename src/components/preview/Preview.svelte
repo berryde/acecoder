@@ -97,17 +97,15 @@
 	function onMessage(message: MessageEvent) {
 		const msg = message.data as PreviewMessage;
 		if (msg.type == 'system') {
-			switch (msg.data) {
-				case 'loaded':
-					// The popup has loaded successfully and should be sent the project code.
-					popup.document.title = 'Preview';
-					popup.postMessage({
-						compiled: $compiled,
-						type: 'reload'
-					});
-					break;
-				default:
-					popup = undefined;
+			if (msg.data == 'loaded') {
+				// The popup has loaded successfully and should be sent the project code.
+				popup.document.title = 'Preview';
+				popup.postMessage({
+					compiled: $compiled,
+					type: 'reload'
+				});
+			} else {
+				popup = undefined;
 			}
 		}
 	}

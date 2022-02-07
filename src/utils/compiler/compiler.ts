@@ -124,7 +124,7 @@ export const fileNotFoundError = (importee: string, importer: string): RollupWar
  * Recreates the in memory filesystem with the given files
  * @param files The files for the filesystem.
  */
-export const generateLookup = (files: File[]): { [key: string]: File } => {
+export const generateLookup = (files: File[]): Record<string, File> => {
 	const filesystem = {};
 	files.forEach((file) => {
 		filesystem[file.name] = file;

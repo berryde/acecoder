@@ -34,20 +34,8 @@
 	let errors: string[] = [];
 	let loading = false;
 
-	function validate() {
+	function validateChapters(): string[] {
 		const output = [];
-
-		if (exercise.name.length == 0) {
-			output.push('The exercise name is missing.');
-		}
-		if (exercise.description.length == 0) {
-			output.push('The exercise descripton is missing.');
-		}
-		for (const language of project.languages) {
-			if (!exercise.files[language]) {
-				output.push('Files are missing for language "' + language + '"');
-			}
-		}
 		if (exercise.chapters.length == 0) {
 			output.push('At least one chapter is required.');
 		} else {
@@ -57,13 +45,31 @@
 				if (chapter.text.length == 0) {
 					output.push(name + ' is missing text.');
 				}
-				if (exercise.assessed) {
-					if (chapter.spec.length == 0) {
-						output.push(name + ' is missing the test spec name.');
-					}
+				if (exercise.assessed && chapter.spec.length == 0) {
+					output.push(name + ' is missing the test spec name.');
 				}
 			}
 		}
+		return output;
+	}
+
+	function validateFiles(): string[] {
+		const output = [];
+		for (const language of project.languages) {
+			if (!exercise.files[language]) {
+				output.push('Files are missing for language "' + language + '"');
+			}
+		}
+		return output;
+	}
+
+	function validate(): string[] {
+		const output = [];
+
+		if (exercise.name.length == 0) output.push('The exercise name is missing.');
+		if (exercise.description.length == 0) output.push('The exercise descripton is missing.');
+
+		output.concat(validateChapters(), validateFiles());
 		return output;
 	}
 
@@ -72,42 +78,44 @@
 		exercise = exercise;
 	}
 
+	async function createExercise(metadata: ExerciseMetadata) {
+		// Use a batch write to create the exercise.
+		await runTransaction(db, async (transaction) => {
+			// Create or update the exercise metadata.
+			if (creating) {
+				// Fetch the project to determine the new documentID to use
+				const project: Project = (
+					await transaction.get(doc(db, 'projects', projectID))
+				).data() as Project;
+				exerciseID = project.exerciseCount.toString();
+				transaction.set(doc(db, 'projects', projectID, 'exercises', exerciseID), metadata);
+				transaction.update(doc(db, 'projects', projectID), {
+					exerciseCount: increment(1)
+				});
+			} else {
+				transaction.set(doc(db, 'projects', projectID, 'exercises', exerciseID), metadata);
+			}
+
+			// Create the files for each language.
+			for (let language of Object.keys(exercise.files)) {
+				transaction.set(
+					doc(db, 'projects', projectID, 'exercises', exerciseID, 'files', language),
+					exercise.files[language]
+				);
+			}
+		});
+	}
+
 	async function submit() {
 		errors = validate();
 		if (errors.length == 0) {
 			try {
-				const metadata: ExerciseMetadata = {
+				createExercise({
 					name: exercise.name,
 					description: exercise.description,
 					assessed: exercise.assessed,
 					chapters: exercise.chapters,
 					inherits: exercise.inherits
-				};
-
-				// Use a batch write to create the exercise.
-				await runTransaction(db, async (transaction) => {
-					// Create or update the exercise metadata.
-					if (creating) {
-						// Fetch the project to determine the new documentID to use
-						const project: Project = (
-							await transaction.get(doc(db, 'projects', projectID))
-						).data() as Project;
-						exerciseID = project.exerciseCount.toString();
-						transaction.set(doc(db, 'projects', projectID, 'exercises', exerciseID), metadata);
-						transaction.update(doc(db, 'projects', projectID), {
-							exerciseCount: increment(1)
-						});
-					} else {
-						transaction.set(doc(db, 'projects', projectID, 'exercises', exerciseID), metadata);
-					}
-
-					// Create the files for each language.
-					for (let language of Object.keys(exercise.files)) {
-						transaction.set(
-							doc(db, 'projects', projectID, 'exercises', exerciseID, 'files', language),
-							exercise.files[language]
-						);
-					}
 				});
 
 				if (creating) {

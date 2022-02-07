@@ -36,13 +36,11 @@
 	function handleFilenameChanged(key: string) {
 		if (key === 'Escape') {
 			dispatch('cancelled');
-		} else if (key === 'Enter') {
-			if (!error) {
-				if (value == initialValue) {
-					dispatch('cancelled');
-				} else {
-					dispatch('submit', value);
-				}
+		} else if (key === 'Enter' && !error) {
+			if (value == initialValue) {
+				dispatch('cancelled');
+			} else {
+				dispatch('submit', value);
 			}
 		}
 	}

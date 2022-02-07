@@ -47,7 +47,7 @@
 			{@html $exercise.description}
 		</p>
 	</div>
-	<div class="flex flex-row px-5 py-3 pt-0 space-x-3 items-center h-10 justify-end">
+	<div class="flex flex-row px-5 py-3 mr-3 pt-0 space-x-3 items-center h-10 justify-end">
 		<Icon label="Reset" button={true} card={true} on:click={() => reset()}>
 			<Refresh />
 		</Icon>

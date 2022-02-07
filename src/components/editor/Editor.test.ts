@@ -4,8 +4,6 @@ import Editor from './Editor.svelte';
 
 describe('The Editor component', () => {
 	it('renders', () => {
-
 		render(Editor);
 	});
-
 });

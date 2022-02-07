@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import '@testing-library/jest-dom';
 import { render, fireEvent } from '@testing-library/svelte';
 import Draggable from './Draggable.svelte';

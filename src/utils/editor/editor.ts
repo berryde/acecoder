@@ -72,8 +72,7 @@ export const getParser = (
  * @returns Whether the language is supported.
  */
 export const isSupported = (language: string): boolean => {
-	const result = supportedExtensions.includes(language);
-	return result;
+	return supportedExtensions.includes(language);
 };
 
 export const save = (): void => {

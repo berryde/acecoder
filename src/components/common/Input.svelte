@@ -16,12 +16,8 @@
 	}
 
 	function getStyle() {
-		switch (variant) {
-			case 'dark':
-				return 'bg-brand-background';
-			default:
-				return 'bg-brand-accent';
-		}
+		if (variant == 'dark') return 'bg-brand-background';
+		return 'bg-brand-accent';
 	}
 </script>
 

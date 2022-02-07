@@ -1,8 +1,8 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import 'svelte';
 import '@testing-library/jest-dom';
 import Button from './Button.svelte';
-import { render } from '@testing-library/svelte';
-import { fireEvent } from '@testing-library/dom';
+import { render, fireEvent } from '@testing-library/svelte';
 
 describe('The Button component', () => {
 	it('displays the provided text', () => {

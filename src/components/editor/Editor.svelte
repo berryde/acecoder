@@ -53,13 +53,9 @@
 	}
 
 	function keydownListener(e: KeyboardEvent) {
-		if (e.ctrlKey) {
-			switch (e.code) {
-				case 'KeyS':
-					e.preventDefault();
-					handleSave();
-					break;
-			}
+		if (e.ctrlKey && e.code == 'KeyS') {
+			e.preventDefault();
+			handleSave();
 		}
 	}
 

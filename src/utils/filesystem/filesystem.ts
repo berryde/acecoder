@@ -1,10 +1,9 @@
 import { writable } from 'svelte/store';
-import type { Exercise, Filesystem, FSFile, FSFolder } from '../types';
+import type { Filesystem, FSFile, FSFolder } from '../types';
 import type { File } from '../../utils/types';
 import { saveAs } from 'file-saver';
 import { get } from 'svelte/store';
 import JSZip from 'jszip';
-import { exercise, language } from '../exercise/exercise';
 
 /**
  * The file system in memory for the application.

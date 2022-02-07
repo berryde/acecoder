@@ -10,7 +10,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"module": "ES2020",
-		"types": ["svelte", "jest", "vite/client"]
+		"types": ["svelte", "jest"]
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules/*", "src/components/preview/template/*"]

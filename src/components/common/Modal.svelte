@@ -4,20 +4,21 @@
 	import Icon from './Icon.svelte';
 
 	const dispatch = createEventDispatcher();
+	const OPEN = 'modal-open';
 
 	export let title: string;
 
 	onMount(() => {
-		document.body.classList.add('modal-open');
+		document.body.classList.add(OPEN);
 	});
 
 	function close() {
-		document.body.classList.remove('modal-open');
+		document.body.classList.remove(OPEN);
 		dispatch('close');
 	}
 
 	onDestroy(() => {
-		document.body.classList.remove('modal-open');
+		document.body.classList.remove(OPEN);
 	});
 </script>
 
