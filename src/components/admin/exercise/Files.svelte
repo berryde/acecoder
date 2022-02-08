@@ -5,8 +5,7 @@
 	import Close from 'svelte-icons/io/IoIosClose.svelte';
 	import { extractZip } from 'src/utils/filesystem/filesystem';
 	import { capitalise } from 'src/utils/general';
-
-	import type { Exercise, ExerciseFile, Project } from 'src/utils/types';
+	import type { Exercise, FSFile, Project } from 'src/utils/types';
 	import Modal from 'src/components/common/Modal.svelte';
 	import Button from 'src/components/common/Button.svelte';
 
@@ -17,10 +16,13 @@
 
 	async function handleUpload(language: string) {
 		let extracted = await extractZip(uploads[language][0]);
-		const result: Record<string, ExerciseFile> = Object.keys(extracted).reduce((result, key) => {
-			result[key] = { contents: extracted[key], editable: false };
-			return result;
-		}, {});
+		const result: Record<string, FSFile> = Object.keys(extracted).reduce(
+			(result: Record<string, FSFile>, key) => {
+				result[key] = { value: extracted[key], modifiable: false, type: 'file' };
+				return result;
+			},
+			{}
+		);
 		exercise.files[language] = result;
 		exercise = exercise;
 	}
@@ -31,7 +33,7 @@
 	}
 
 	function toggleEditable(language: string, filename: string) {
-		exercise.files[language][filename].editable = !exercise.files[language][filename].editable;
+		exercise.files[language][filename].modifiable = !exercise.files[language][filename].modifiable;
 		exercise = exercise;
 	}
 
@@ -41,14 +43,14 @@
 	let modalText: string;
 
 	function openModal(language: string, filename: string) {
-		modalText = exercise.files[language][filename].contents;
+		modalText = exercise.files[language][filename].value;
 		modalLanguage = language;
 		modalFilename = filename;
 		showingModal = true;
 	}
 
 	function saveModal() {
-		exercise.files[modalLanguage][modalFilename].contents = modalText;
+		exercise.files[modalLanguage][modalFilename].value = modalText;
 	}
 
 	function closeModal(save: boolean) {
@@ -112,7 +114,7 @@
 									<div class="flex flex-row items-center">
 										<div class="w-20 mr-3 flex justify-center">
 											<Checkbox
-												value={file.editable}
+												value={file.modifiable}
 												disabled={!editing}
 												on:click={() => toggleEditable(language, name)}
 											/>

@@ -12,12 +12,12 @@
 	 * Whether these settings are for the creation of a new project.
 	 */
 	export let creating = false;
-	export let projectID: string;
+	export let projectID: string = '';
 	export let project: Project;
 	/**
 	 * The ID of the exercise to update.
 	 */
-	export let exerciseID: string = undefined;
+	export let exerciseID: string = '';
 	export let exercise: Exercise = {
 		name: '',
 		description: '',
@@ -45,7 +45,7 @@
 				if (chapter.text.length == 0) {
 					output.push(name + ' is missing text.');
 				}
-				if (exercise.assessed && chapter.spec.length == 0) {
+				if (exercise.assessed && chapter.spec!.length == 0) {
 					output.push(name + ' is missing the test spec name.');
 				}
 			}

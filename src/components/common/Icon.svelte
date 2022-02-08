@@ -13,7 +13,9 @@
 	 */
 	export let button = false;
 
-	export let label: string = undefined;
+	export let label: string | undefined = undefined;
+
+	export let aria: string | undefined = undefined;
 
 	export let card: boolean = false;
 
@@ -58,6 +60,7 @@
 				>
 					{#if button}
 						<button
+							aria-label={aria}
 							on:click={click}
 							class="{getDimensions()} flex-shrink-0 flex-grow-0 text-brand-text text-light-text"
 							data-testid={testId}><slot /></button
@@ -71,7 +74,8 @@
 			</div>
 			{#if hovering}
 				<div
-					transition:fade
+					transition:fade={{ duration: 200 }}
+					role="tooltip"
 					class="absolute bg-brand-editor-background min-w-max origin-center left-1/2 -translate-x-1/2 z-30 mt-1 rounded px-2 py-1 transform text-xs shadow-xl"
 				>
 					{label[0].toUpperCase() + label.slice(1)}

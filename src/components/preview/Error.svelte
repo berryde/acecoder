@@ -6,7 +6,7 @@
 	/**
 	 * The error to display.
 	 */
-	export let error: WorkerError;
+	export let error: WorkerError | undefined;
 
 	/**
 	 * Dismiss this error.

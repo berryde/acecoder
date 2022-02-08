@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
-	export let value: boolean = undefined;
+	export let value: boolean | undefined = undefined;
 	export let classes: string = '';
 	export let disabled = false;
+	export let aria = '';
 
 	type Variant = 'true-false' | 'default' | 'text';
 	export let variant: Variant = 'default';
@@ -34,5 +35,9 @@
 
 <div
 	class="transition-all h-4 w-4 border-2 {classes} rounded {color} flex-shrink-0"
+	role="checkbox"
+	aria-disabled="true"
+	aria-label={aria}
+	checked={value}
 	on:click={handleClick}
 />

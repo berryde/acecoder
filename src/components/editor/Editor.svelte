@@ -8,6 +8,7 @@
 	import { contents, format } from 'src/utils/editor/editor';
 	import { formatOnSave } from 'src/utils/settings/settings';
 	import { save } from 'src/utils/editor/editor';
+	import { page } from '$app/stores';
 
 	let element: HTMLElement;
 	let editor: Editor;
@@ -46,10 +47,8 @@
 	}
 
 	function handleSave() {
-		if ($formatOnSave) {
-			handleFormat();
-		}
-		save();
+		if ($formatOnSave) handleFormat();
+		save($page.params.projectID);
 	}
 
 	function keydownListener(e: KeyboardEvent) {
@@ -59,7 +58,7 @@
 		}
 	}
 
-	let ace;
+	let ace: { edit: any; EditSession: any; UndoManager: any; default?: any };
 	onMount(async () => {
 		// Brace is imported dynamically since it requires the `window` object to exist.
 		ace = await import('brace');

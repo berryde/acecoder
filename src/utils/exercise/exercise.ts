@@ -1,16 +1,15 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, runTransaction } from 'firebase/firestore';
 import { writable, get } from 'svelte/store';
 import { createFile, filesystem, getAllFiles } from '../filesystem/filesystem';
 import { auth, db } from '../firebase';
 import type { Exercise, ServerRequest, ServerResponse } from '../types';
-import { selectedTab, tabs, unsavedTabs } from '../tabs/tabs';
 import type { Project } from 'src/utils/types';
 import axios from 'axios';
 
 /**
  * The current exercise being completed
  */
-export const exercise = writable<Exercise>();
+export const exercise = writable<Exercise>(undefined);
 /**
  * Metadata about the current project
  */
@@ -49,18 +48,9 @@ export const reset = async (): Promise<void> => {
 	loadExercise(get(exercise), get(language));
 };
 
-/**
- * Submit the filesystem to generate a mark.
- *
- * @returns A void promise that resolves when the submission request is completed.
- */
-export const submit = async (
-	projectID: string,
-	exerciseID: string,
-	test = true
-): Promise<ServerResponse> => {
+export const write = async (projectID: string): Promise<void> => {
 	const files = getAllFiles('', get(filesystem));
-	const submission = {};
+	const submission: Record<string, string> = {};
 	const editable = Object.keys(get(exercise).files[get(language)]).filter(
 		(filename) => get(exercise).files[get(language)][filename].modifiable
 	);
@@ -69,45 +59,44 @@ export const submit = async (
 			submission[file.name] = file.code;
 		}
 	});
-	const existing = (
-		await getDoc(doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid))
-	).data() as Record<string, string>;
-	const updated = { ...existing, ...submission };
-	await setDoc(doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid), updated);
-
-	if (test) {
-		let endpoint: string;
-		if (import.meta.env.DEV) {
-			endpoint = 'http://localhost:9080/api/submit';
-		} else {
-			endpoint = 'https://submission-server-rly7tdzvgq-ew.a.run.app/api/submit';
-		}
-		const request: ServerRequest = {
-			exerciseID: exerciseID,
-			projectID: projectID,
-			userID: auth.currentUser.uid
-		};
-		const response = await axios.post(endpoint, request, {
-			headers: {
-				authorization: `Bearer ${await auth.currentUser.getIdToken()}`
-			}
-		});
-		if (response.status == 200) {
-			const data = response.data as ServerResponse;
-			result.set(data);
-			return data;
-		} else {
-			throw 'Submission request failed';
-		}
-	}
+	await runTransaction(db, async (transaction) => {
+		if (auth.currentUser == null) throw 'You need to be logged in to perform that action';
+		const existing = (
+			await transaction.get(doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid))
+		).data() as Record<string, string>;
+		const updated = { ...existing, ...submission };
+		transaction.set(doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid), updated);
+	});
 };
 
-export const restoreDefaults = (): void => {
-	initialising.set(true);
-	exercise.set(undefined);
-	result.set(undefined);
-	filesystem.set({});
-	selectedTab.set(undefined);
-	tabs.set([]);
-	unsavedTabs.set([]);
+/**
+ * Submit the filesystem to generate a mark.
+ *
+ * @returns A void promise that resolves when the submission request is completed.
+ */
+export const test = async (projectID: string, exerciseID: string): Promise<ServerResponse> => {
+	if (!auth.currentUser) throw 'You need to be logged in to perform that action';
+	let endpoint: string;
+	if (import.meta.env.DEV) {
+		endpoint = 'http://localhost:9080/api/submit';
+	} else {
+		endpoint = 'https://submission-server-rly7tdzvgq-ew.a.run.app/api/submit';
+	}
+	const request: ServerRequest = {
+		exerciseID: exerciseID,
+		projectID: projectID,
+		userID: auth.currentUser.uid
+	};
+	const response = await axios.post(endpoint, request, {
+		headers: {
+			authorization: `Bearer ${await auth.currentUser.getIdToken()}`
+		}
+	});
+	if (response.status == 200) {
+		const data = response.data as ServerResponse;
+		result.set(data);
+		return data;
+	} else {
+		throw 'Submission request failed';
+	}
 };

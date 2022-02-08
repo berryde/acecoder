@@ -5,7 +5,7 @@ module.exports = {
 	plugins: ['svelte3', '@typescript-eslint', 'sonarjs'],
 	ignorePatterns: ['*.cjs'],
 	overrides: [
-		{ files: ['**/*.svelte'], processor: 'svelte3/svelte3' },
+		{ files: ['**/*.svelte'], processor: 'svelte3/svelte3', extends: '' },
 		{
 			files: ['**/*.ts'],
 			env: { browser: true, es6: true, node: true },

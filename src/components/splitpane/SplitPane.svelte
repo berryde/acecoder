@@ -93,7 +93,7 @@
 	 * Called when the user stops dragging the separator.
 	 * @param e The mouse event for stopping the drag.
 	 */
-	function mouseUp(e: MouseEvent) {
+	function mouseUp(e: MouseEvent | undefined) {
 		if (e) {
 			e.preventDefault();
 			if (e.button !== 0) return;

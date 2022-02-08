@@ -31,7 +31,7 @@
 		<div class="flex-grow max-w-6xl w-full h-full p-28 space-y-5">
 			<div class="flex flex-row items-center justify-between">
 				<p class="text-3xl font-bold">Badge editor</p>
-				<ProfileMenu showScore={false} />
+				<ProfileMenu />
 			</div>
 			<div class="flex flex-row items-center justify-between bg-brand-accent p-5 rounded">
 				<div>

@@ -5,11 +5,11 @@
 	let iconUrl: string;
 
 	function handleImageError() {
-		iconUrl = undefined;
+		iconUrl = '';
 	}
 
 	onMount(() => {
-		if (auth.currentUser.photoURL) {
+		if (auth.currentUser?.photoURL) {
 			iconUrl = auth.currentUser.photoURL;
 		}
 	});

@@ -10,7 +10,7 @@
 </script>
 
 <Dropdown>
-	<div slot="button">
+	<div slot="button" role="button" tabindex={0} aria-label="open profile menu">
 		<ProfileImage />
 	</div>
 	<div slot="menu">

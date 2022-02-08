@@ -4,7 +4,7 @@
 	// Props
 	export let reservedNames: string[] = [];
 	export let depth: number = 0;
-	export let initialValue: string = undefined;
+	export let initialValue: string = '';
 
 	// Variables
 	/**
@@ -74,6 +74,7 @@
 		<input
 			class="focus:outline-none bg-transparent ring-inset pl-2 w-full h-8"
 			data-testid="explorer-input"
+			aria-label="rename file"
 			bind:value
 			bind:this={input}
 			on:focusout={() => dispatch('cancelled')}

@@ -48,10 +48,10 @@
 		</p>
 	</div>
 	<div class="flex flex-row px-5 py-3 mr-3 pt-0 space-x-3 items-center h-10 justify-end">
-		<Icon label="Reset" button={true} card={true} on:click={() => reset()}>
+		<Icon label="Reset" button={true} card={true} on:click={() => reset()} aria="reset exercise">
 			<Refresh />
 		</Icon>
-		<Icon label="Format" button={true} card={true}>
+		<Icon label="Format" button={true} card={true} aria="format code">
 			<Wand />
 		</Icon>
 	</div>

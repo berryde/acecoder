@@ -35,8 +35,9 @@
 		<div class="flex-grow max-w-6xl h-full p-28 space-y-5">
 			<div class="flex flex-row items-center justify-between">
 				<p class="text-3xl font-bold">Admin dashboard</p>
-				<ProfileMenu showScore={false} />
+				<ProfileMenu />
 			</div>
+
 			<Claim />
 			<div class="flex flex-row items-center justify-between bg-brand-accent p-5 rounded">
 				<div>

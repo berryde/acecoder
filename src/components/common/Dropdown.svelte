@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-
+	import { scale } from 'svelte/transition';
 	let visible = false;
 	let element: HTMLDivElement;
 
 	function toggleMenu() {
 		visible = !visible;
+		console.log('clicked', visible);
 	}
 
 	onMount(async () => {
@@ -27,15 +28,12 @@
 
 <div bind:this={element} class="cursor-pointer relative">
 	<slot name="button" />
-	<div
-		class="origin-top-right absolute right-0 mt-4 text-sm min-w-max rounded-md shadow-lg bg-white transition ease-out duration-100 {!visible
-			? 'transform opacity-0 scale-95'
-			: 'transform opacity-100 scale-100'}"
-	>
-		{#if visible}
-			<div>
-				<slot name="menu" />
-			</div>
-		{/if}
-	</div>
+	{#if visible}
+		<div
+			transition:scale={{ duration: 200 }}
+			class="origin-top-right z-50 absolute right-0 mt-4 text-sm min-w-max rounded-md shadow-lg bg-white transition ease-out duration-100"
+		>
+			<slot name="menu" />
+		</div>
+	{/if}
 </div>

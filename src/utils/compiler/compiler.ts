@@ -9,7 +9,7 @@ import svelteCompiler from './svelte';
 /**
  * The most recent compilation of the application's files.
  */
-export const compiled = writable<WorkerResponse>();
+export const compiled = writable<WorkerResponse | undefined>();
 export const CDN_URL = 'https://cdn.skypack.dev';
 /**
  * Gets the last segment of the path.

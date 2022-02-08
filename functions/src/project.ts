@@ -164,12 +164,7 @@ export const completeProject = functions
 					stats['completed'] += 1;
 
 					// Add any awarded badges to the user's stats
-					const badges: Record<string, Badge> = await calculateBadges(
-						transaction,
-						stats,
-						projectID,
-						settings.language
-					);
+					const badges: Record<string, Badge> = await calculateBadges(transaction, stats);
 					Object.keys(badges).forEach((id) => {
 						try {
 							// Add the badge to the user's profile

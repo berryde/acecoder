@@ -23,7 +23,7 @@
 	/**
 	 * A compilation error.
 	 */
-	export let error: WorkerError = undefined;
+	export let error: WorkerError | undefined = undefined;
 
 	/**
 	 * The preview iframe.
@@ -33,7 +33,7 @@
 	/**
 	 * The popup preview, if any.
 	 */
-	let popup: Window;
+	let popup: Window | undefined;
 
 	/**
 	 * The template to use in the iframe.
@@ -52,7 +52,7 @@
 			compiled: compiled,
 			type: 'reload'
 		};
-		if (iframe) {
+		if (iframe && iframe.contentWindow) {
 			iframe.contentWindow.postMessage(message);
 		}
 		if (popup) {
@@ -71,14 +71,16 @@
 	 * Open the preview in a new popup when the popup button is clicked.
 	 */
 	function handlePopup() {
-		if (popup && !popup.closed) {
+		if (popup == undefined) return;
+		if (!popup.closed) {
 			popup.focus();
 		} else {
-			popup = window.open(
+			const result = window.open(
 				'',
 				'Preview',
 				`width = ${iframe.clientWidth}, height = ${iframe.clientHeight}, popup, location=no, menu=no, status=no, `
 			);
+			if (result != null) popup = result;
 			popup.document.write(previewTemplate);
 			popup.postMessage({
 				type: 'popup'
@@ -91,13 +93,15 @@
 		const message: UrlMessage = {
 			type: 'url'
 		};
-		iframe.contentWindow.postMessage(message);
+		if (iframe.contentWindow) {
+			iframe.contentWindow.postMessage(message);
+		}
 	}
 
 	function onMessage(message: MessageEvent) {
 		const msg = message.data as PreviewMessage;
 		if (msg.type == 'system') {
-			if (msg.data == 'loaded') {
+			if (msg.data == 'loaded' && popup) {
 				// The popup has loaded successfully and should be sent the project code.
 				popup.document.title = 'Preview';
 				popup.postMessage({
@@ -130,15 +134,27 @@
 
 	// Update the preview whenever the compiled code changes.
 
-	$: build($compiled);
+	$: $compiled && build($compiled);
 </script>
 
 <div class="flex-grow h-full w-full flex flex-col overflow-hidden bg-brand-background">
 	<div class="flex w-full justify-end px-5 py-3 space-x-3 items-center h-10">
-		<Icon on:click={() => handleRefresh()} button={true} label="Refresh" card={true}>
+		<Icon
+			on:click={() => handleRefresh()}
+			button={true}
+			label="Refresh"
+			card={true}
+			aria="refresh preview"
+		>
 			<IoIosPlay />
 		</Icon>
-		<Icon on:click={() => handlePopup()} button={true} label="Popout" card={true}>
+		<Icon
+			on:click={() => handlePopup()}
+			button={true}
+			label="Popout"
+			card={true}
+			aria="open preview in new window"
+		>
 			<IoIosExpand />
 		</Icon>
 	</div>

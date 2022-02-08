@@ -1,16 +1,16 @@
 .ace-one-dark .ace_gutter {
-	background: #08122a;
-	color: #474c55;
+	background: #060f23;
+	color: #9c9dab;
 	padding-right: 10px;
 }
 
 .ace-one-dark .ace_print-margin {
 	width: 1px;
-	background: #555651;
+	background: #d1f055;
 }
 
 .ace-one-dark {
-	background-color: #08122a;
+	background-color: #060f23;
 	color: #bec5d1;
 }
 
@@ -145,7 +145,7 @@
 }
 
 .ace-one-dark .ace_comment {
-	color: #5c6370;
+	color: #9c9dab;
 	font-style: italic;
 }
 

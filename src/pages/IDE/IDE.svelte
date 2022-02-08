@@ -10,7 +10,7 @@
 		language,
 		loadExercise,
 		project,
-		submit
+		test
 	} from 'src/utils/exercise/exercise';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
 	import { loadSettings } from 'src/utils/settings/settings';
@@ -48,11 +48,6 @@
 	}
 
 	async function handleFinish() {
-		// If the user has modified the exercise, write those changes.
-		// Increment the progress
-		loading = true;
-		await submit($page.params.projectID, $page.params.index, false);
-		loading = false;
 		window.location.href = `/project/${$page.params.projectID}/finish`;
 	}
 
@@ -65,7 +60,7 @@
 	let loading = false;
 	async function handleSubmit() {
 		loading = true;
-		await submit($page.params.projectID, $page.params.index);
+		await test($page.params.projectID, $page.params.index);
 		loading = false;
 	}
 </script>

@@ -32,7 +32,7 @@
 		} else {
 			const result = await register(email, password);
 
-			if (typeof result != 'undefined') error = getErrorMessage(result);
+			if (result && getErrorMessage(result)) error = getErrorMessage(result)!;
 		}
 	}
 </script>

@@ -4,9 +4,7 @@ import type { Badge, UserStats } from './types';
 
 export const calculateBadges = async (
 	transaction: admin.firestore.Transaction,
-	stats: UserStats,
-	projectID: string,
-	language: string
+	stats: UserStats
 ): Promise<Record<string, Badge>> => {
 	const result: Record<string, Badge> = {};
 
@@ -23,8 +21,6 @@ export const calculateBadges = async (
 			for (let key of Object.keys(badge.conditions)) {
 				if (key in stats && stats[key] == badge.conditions[key]) result[id] = badge;
 			}
-		} else {
-			if (id == projectID) result[id] = badge;
 		}
 	}
 

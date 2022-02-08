@@ -40,7 +40,7 @@
 					: 'bg-brand-success';
 			default:
 				return outline
-					? 'border-brand-primary text-brand-primary hover:bg-brand-primary'
+					? 'border-brand-primary text-brand-primary-light hover:bg-brand-primary'
 					: 'bg-brand-primary';
 		}
 	}
@@ -51,6 +51,8 @@
 		? 'w-full'
 		: 'w-max'} rounded hover:cursor-pointer {disabled && 'opacity-50'} {outline &&
 		'border-2 hover:text-brand-text'} flex justify-center"
+	role="button"
+	tabindex={0}
 	on:click={() => onclick()}
 >
 	{#if loading}

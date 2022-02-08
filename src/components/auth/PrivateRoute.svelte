@@ -15,7 +15,7 @@
 	 * Whether the user has the admin claim.
 	 */
 	let admin: boolean;
-	let user: User;
+	let user: User | null;
 
 	const dispatch = createEventDispatcher();
 

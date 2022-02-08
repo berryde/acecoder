@@ -16,7 +16,7 @@
 	let method: 'default' | 'google' | 'github';
 	let email: string;
 	let password: string;
-	let error: AuthError;
+	let error: AuthError | undefined;
 
 	async function signIn() {
 		if (email == '' || !/\S+@\S+\.\S+/.test(email)) {

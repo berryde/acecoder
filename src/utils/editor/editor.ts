@@ -8,6 +8,7 @@ import { get, writable } from 'svelte/store';
 import { updateFile } from '../filesystem/filesystem';
 import { selectedTab } from 'src/utils/tabs/tabs';
 import { saveTab } from '../tabs/tabs';
+import { write } from '../exercise/exercise';
 
 /**
  * Supported file extensions.
@@ -55,9 +56,7 @@ export const getParser = (
 				parser: 'typescript',
 				plugins: [parserTypescript]
 			};
-		case 'js':
-		case 'jsx':
-		case 'json':
+		default:
 			return {
 				parser: 'babel',
 				plugins: [parserBabel]
@@ -75,9 +74,9 @@ export const isSupported = (language: string): boolean => {
 	return supportedExtensions.includes(language);
 };
 
-export const save = (): void => {
-	const doc = get(contents);
+export const save = async (projectID: string): Promise<void> => {
 	const tab: string = get(selectedTab);
 	saveTab(tab);
-	updateFile(tab, doc);
+	updateFile(tab, get(contents));
+	await write(projectID);
 };

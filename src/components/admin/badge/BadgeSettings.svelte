@@ -76,9 +76,11 @@
 	}
 
 	let conditionKey: string;
-	let conditionValue: number;
+	let conditionValue: number | undefined;
 	function addCondition() {
-		badge.conditions[conditionKey] = conditionValue;
+		if (conditionValue) {
+			badge.conditions[conditionKey] = conditionValue;
+		}
 		conditionKey = '';
 		conditionValue = undefined;
 	}
@@ -93,7 +95,7 @@
 <div class="flex flex-col w-full space-y-8">
 	<div class="flex flex-row items-center justify-between">
 		<p class="text-3xl font-bold">{creating ? 'New badge' : 'Badge editor'}</p>
-		<ProfileMenu showScore={false} />
+		<ProfileMenu />
 	</div>
 	<div class="flex flex-col bg-brand-accent p-8 rounded space-y-3">
 		<div class="flex flex-row w-full justify-between items-center">

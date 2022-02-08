@@ -15,7 +15,7 @@
 	/**
 	 * The ID of the project being updated.
 	 */
-	export let projectID: string = undefined;
+	export let projectID: string | null = null;
 	export let project: Project = {
 		languages: [],
 		name: '',
@@ -58,7 +58,7 @@
 				if (creating) {
 					const ref = await addDoc(collection(db, 'projects'), project);
 					window.location.href = '/edit/' + ref.id;
-				} else {
+				} else if (projectID != null) {
 					await updateDoc(doc(db, 'projects', projectID), project);
 					toggleEdit();
 				}

@@ -1,3 +1,4 @@
+/* eslint-disable no-ex-assign */
 import {
 	createUserWithEmailAndPassword,
 	GithubAuthProvider,
@@ -9,7 +10,7 @@ import {
 	sendPasswordResetEmail
 } from 'firebase/auth';
 import { browser } from '$app/env';
-import type { AuthProvider } from 'firebase/auth';
+import type { AuthProvider, AuthError as _AuthError } from 'firebase/auth';
 import { auth } from '../firebase';
 import type { AuthError } from '../types';
 
@@ -42,9 +43,10 @@ export const register = async (email: string, password: string): Promise<AuthErr
 		await createUserWithEmailAndPassword(auth, email, password);
 		window.location.href = '/';
 	} catch (error) {
+		const err = error as _AuthError;
 		return {
-			errorCode: error.code,
-			errorMessage: error.message
+			errorCode: err.code,
+			errorMessage: err.message
 		};
 	}
 };
@@ -54,9 +56,10 @@ export const signIn = async (email: string, password: string): Promise<AuthError
 		await signInWithEmailAndPassword(auth, email, password);
 		window.location.href = '/';
 	} catch (error) {
+		const err = error as _AuthError;
 		return {
-			errorCode: error.code,
-			errorMessage: error.message
+			errorCode: err.code,
+			errorMessage: err.message
 		};
 	}
 };
@@ -78,9 +81,10 @@ export const signInWith = async (federation: AuthFederation): Promise<AuthError 
 		await signInWithPopup(auth, provider);
 		window.location.href = '/';
 	} catch (error) {
+		const err = error as _AuthError;
 		return {
-			errorCode: error.code,
-			errorMessage: error.message
+			errorCode: err.code,
+			errorMessage: err.message
 		};
 	}
 };
@@ -90,9 +94,10 @@ export const signOut = async (): Promise<AuthError | void> => {
 		await _signOut(auth);
 		window.location.href = '/login';
 	} catch (error) {
+		const err = error as _AuthError;
 		return {
-			errorCode: error.code,
-			errorMessage: error.message
+			errorCode: err.code,
+			errorMessage: err.message
 		};
 	}
 };
@@ -108,20 +113,22 @@ export const resetPassword = async (email: string): Promise<AuthError | void> =>
 	try {
 		await sendPasswordResetEmail(auth, email);
 	} catch (error) {
+		const err = error as _AuthError;
 		return {
-			errorCode: error.code,
-			errorMessage: error.message
+			errorCode: err.code,
+			errorMessage: err.message
 		};
 	}
 };
 
 export const getName = (): string => {
-	return auth.currentUser.displayName
-		? auth.currentUser.displayName.split(' ')[0]
-		: auth.currentUser.email.split('@')[0];
+	if (!auth.currentUser) return '';
+	else if (auth.currentUser.displayName) return auth.currentUser.displayName.split(' ')[0];
+	else if (auth.currentUser.email) return auth.currentUser.email.split('@')[0];
+	else return '';
 };
 
-export const getErrorMessage = (firebaseError: AuthError): AuthError => {
+export const getErrorMessage = (firebaseError: AuthError): AuthError | undefined => {
 	switch (firebaseError.errorCode) {
 		case 'auth/wrong-password':
 			return {

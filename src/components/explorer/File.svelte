@@ -3,6 +3,7 @@
 	import Hoverable from '../common/Hoverable.svelte';
 	import FileIcon from 'svelte-icons/fa/FaRegFile.svelte';
 	import Pen from 'svelte-icons/fa/FaPen.svelte';
+	import { fade } from 'svelte/transition';
 	import ExplorerInput from './ExplorerInput.svelte';
 	import {
 		tail,
@@ -100,29 +101,38 @@
 	<Draggable data={path} variant="explorer">
 		<Hoverable let:hovering>
 			<div
-				class="flex transition flex-row items-center space-x-2 text-brand-text h-8"
-				style="padding-left: {(depth + 1.5) * 0.5}rem;"
+				class="flex transition flex-row items-center space-x-2 text-brand-text py-0.5"
+				style="padding-left: {depth * 1}rem;"
 				on:click={handleClick}
+				role="treeitem"
+				aria-label="open file {name}"
+				transition:fade={{ duration: 100 }}
 			>
 				<Icon>
 					<FileIcon />
 				</Icon>
 				<p class="truncate">{name}</p>
-				{#if modifiable}
+				{#if modifiable && hovering}
 					<div
-						class="flex flex-row dark:text-dark-text justify-end items-center flex-grow pr-2 space-x-1 transition-opacity {!hovering
-							? 'opacity-0'
-							: 'opacity-100'}"
+						class="flex flex-row dark:text-dark-text justify-end items-center flex-grow pr-2 space-x-1"
+						transition:fade={{ duration: 200 }}
 					>
 						<Icon
 							on:click={() => setRenaming(true)}
 							testId="rename-file"
 							button={true}
 							label="Rename"
+							aria="rename file {name}"
 						>
 							<Pen />
 						</Icon>
-						<Icon on:click={handleDelete} testId="delete-file" button={true} label="Delete">
+						<Icon
+							on:click={handleDelete}
+							testId="delete-file"
+							button={true}
+							label="Delete"
+							aria="delete file {name}"
+						>
 							<Trash />
 						</Icon>
 					</div>

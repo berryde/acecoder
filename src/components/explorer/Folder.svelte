@@ -1,5 +1,4 @@
 <script lang="ts">
-	// Icons
 	import FolderOpen from 'svelte-icons/fa/FaRegFolderOpen.svelte';
 	import Folder from 'svelte-icons/fa/FaFolder.svelte';
 	import FolderOutline from 'svelte-icons/fa/FaRegFolder.svelte';
@@ -7,13 +6,10 @@
 	import FileOutline from 'svelte-icons/fa/FaRegFile.svelte';
 	import Trash from 'svelte-icons/io/IoMdTrash.svelte';
 	import Pen from 'svelte-icons/fa/FaPen.svelte';
-
-	// Components
 	import ExplorerInput from './ExplorerInput.svelte';
 	import File from './File.svelte';
 	import Hoverable from '../common/Hoverable.svelte';
-
-	// Utils
+	import { fade } from 'svelte/transition';
 	import {
 		tail,
 		renameFile,
@@ -184,9 +180,11 @@
 			<Draggable data={path} variant="explorer">
 				<Hoverable let:hovering>
 					<div
-						class="flex transition flex-row items-center space-x-2 dark:text-dark-text h-8 {dropping &&
+						class="flex transition flex-row items-center space-x-2 dark:text-dark-text py-0.5 {dropping &&
 							'bg-blue-500 bg-opacity-50'}"
-						style="padding-left: {(depth + 1.5) * 0.5}rem;"
+						style="padding-left: {depth * 1}rem;"
+						role="treeitem"
+						transition:fade={{ duration: 100 }}
 					>
 						<div on:click={toggleCollapse}>
 							{#if collapsed}
@@ -200,41 +198,42 @@
 							{/if}
 						</div>
 						<p class="truncate">{name}</p>
-						<div
-							class="flex flex-row flex-grow items-center justify-end pr-2 space-x-1 transition-opacity {!hovering
-								? 'opacity-0'
-								: 'opacity-100'}"
-						>
-							<Icon
-								on:click={() => setCreating(true, true)}
-								testId="create-child-file"
-								button={true}
-								label="New file"
+						{#if hovering}
+							<div
+								class="flex flex-row flex-grow items-center justify-end pr-2 space-x-1"
+								transition:fade={{ duration: 200 }}
 							>
-								<FileIcon />
-							</Icon>
-							<Icon
-								on:click={() => setCreating(true, false)}
-								testId="create-child-folder"
-								button={true}
-								label="New folder"
-							>
-								<Folder />
-							</Icon>
-							{#if modifiable}
 								<Icon
-									on:click={() => setRenaming(true)}
-									testId="rename-folder"
+									on:click={() => setCreating(true, true)}
+									testId="create-child-file"
 									button={true}
-									label="Rename"
+									label="New file"
 								>
-									<Pen />
+									<FileIcon />
 								</Icon>
-								<Icon on:click={handleDelete} testId="delete-folder" button={true} label="Delete">
-									<Trash />
+								<Icon
+									on:click={() => setCreating(true, false)}
+									testId="create-child-folder"
+									button={true}
+									label="New folder"
+								>
+									<Folder />
 								</Icon>
-							{/if}
-						</div>
+								{#if modifiable}
+									<Icon
+										on:click={() => setRenaming(true)}
+										testId="rename-folder"
+										button={true}
+										label="Rename"
+									>
+										<Pen />
+									</Icon>
+									<Icon on:click={handleDelete} testId="delete-folder" button={true} label="Delete">
+										<Trash />
+									</Icon>
+								{/if}
+							</div>
+						{/if}
 					</div>
 				</Hoverable>
 			</Draggable>

@@ -7,7 +7,7 @@
 
 	let email: string = '';
 	let loading = false;
-	let error: AuthError;
+	let error: AuthError | undefined;
 	let success: boolean;
 
 	async function handleReset() {

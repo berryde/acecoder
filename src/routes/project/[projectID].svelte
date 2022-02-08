@@ -54,17 +54,22 @@
 	>
 		<Navbar />
 		<div class="w-full lg:max-w-5xl h-full p-20 space-y-8">
-			<p class="text-3xl font-bold">{project.name}</p>
+			<h1 class="text-3xl font-bold">{project.name}</h1>
 			<p>{project.description}</p>
 			<Card title="Project outline">
 				<Dropdown slot="action">
 					<div slot="button">
-						<Icon card={true} button={true}>
+						<Icon card={true} button={true} aria="project settings">
 							<More />
 						</Icon>
 					</div>
 					<div slot="menu" class="block origin-top-right">
-						<div class="p-3 text-brand-danger-light block" on:click={handleRestart}>
+						<div
+							class="p-3 text-brand-danger-light block"
+							on:click={handleRestart}
+							role="button"
+							aria-label="project settings"
+						>
 							<p>Restart project</p>
 						</div>
 					</div>
@@ -79,10 +84,13 @@
 							<Checkbox
 								value={settings.progress > parseInt(index) || settings.completed}
 								disabled={true}
+								aria="exercise completed"
 								variant={settings.progress >= parseInt(index) ? 'default' : 'text'}
 							/>
 							<p
 								on:click={() => handleClick(index)}
+								role="link"
+								tabindex={settings.progress >= parseInt(index) ? 0 : undefined}
 								class={settings.progress >= parseInt(index) ? 'cursor-pointer ' : 'cursor-default'}
 							>
 								{exercise.name}

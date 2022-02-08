@@ -18,7 +18,7 @@
 <Hoverable let:hovering>
 	<div class="flex-grow flex-shrink-0 relative">
 		<div class="flex flex-col items-center justify-between p-3 bg-brand-accent rounded text-center">
-			<div class="relative flex flex-col items-center space-y-2">
+			<div class="relative flex flex-col items-center space-y-2 w-full">
 				{#if isNew}
 					<div class="absolute z-30 right-0 bg-brand-success rounded py-0.5 px-1">
 						<p class="text-xs uppercase">new</p>
