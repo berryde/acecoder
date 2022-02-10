@@ -37,7 +37,6 @@
 				<p class="text-3xl font-bold">Admin dashboard</p>
 				<ProfileMenu />
 			</div>
-
 			<Claim />
 			<div class="flex flex-row items-center justify-between bg-brand-accent p-5 rounded">
 				<div>

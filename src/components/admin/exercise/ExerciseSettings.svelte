@@ -119,7 +119,7 @@
 				});
 
 				if (creating) {
-					window.location.href = `/edit/${projectID}/exercise-${exerciseID}`;
+					window.location.href = `/edit/${projectID}`;
 				} else {
 					toggleEdit();
 				}
@@ -136,6 +136,11 @@
 	function toggleEdit() {
 		editing = !editing;
 	}
+
+	function toggleInherits() {
+		exercise.inherits = !exercise.inherits;
+		exercise = exercise;
+	}
 </script>
 
 <Card>
@@ -144,6 +149,7 @@
 		{editing}
 		on:edit={() => (editing = !editing)}
 		on:toggleAssessed={toggleAssessed}
+		on:toggleInherits={toggleInherits}
 	/>
 	<Files {project} {exercise} {editing} />
 	<Chapters {exercise} {editing} />

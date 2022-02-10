@@ -33,7 +33,6 @@ export const points = writable<number>(0);
  */
 export const loadExercise = async (exercise: Exercise, language: string): Promise<void> => {
 	const source = exercise.files[language];
-
 	// Create the filesystem from the template
 	for (const [path, value] of Object.entries(source)) {
 		createFile(path, value.value, value.modifiable);

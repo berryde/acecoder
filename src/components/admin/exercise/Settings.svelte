@@ -60,7 +60,9 @@
 			<p class="font-bold">Previous exercise</p>
 			<div class="flex flex-row items-center space-x-3">
 				<p>This exercise inherits from a previous exercise</p>
-				<Checkbox bind:value={exercise.inherits} variant="true-false" disabled={!editing} />
+				<Checkbox bind:value={exercise.inherits} variant="true-false" disabled={!editing} on:click={() => {
+					dispatch('toggleInherits');
+				}} />
 			</div>
 		</div>
 	</div>
