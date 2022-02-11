@@ -7,7 +7,7 @@ import { resolveRelativePath, fileNotFoundError, isRelativeImport } from './comp
  * @returns A rollup plugin providing CSS support.
  */
 export default function css(files: { [key: string]: File }): Plugin {
-	const styles = {};
+	const styles: Record<string, string> = {};
 	return {
 		name: 'folio-css',
 		/**
@@ -23,7 +23,7 @@ export default function css(files: { [key: string]: File }): Plugin {
 			}
 
 			// Check if it's a relative import to another source file
-			else if (isRelativeImport(importee)) {
+			else if (isRelativeImport(importee) && importer) {
 				try {
 					return resolveRelativePath(importee, importer, files);
 				} catch (err) {
@@ -39,7 +39,7 @@ export default function css(files: { [key: string]: File }): Plugin {
 		 */
 		async load(id) {
 			if (/.*\.css/.test(id)) {
-				return files[id].code;
+				return files[id].value;
 			}
 		},
 

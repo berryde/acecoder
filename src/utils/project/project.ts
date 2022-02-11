@@ -24,7 +24,7 @@ import type {
 	UserBadge
 } from '../types';
 
-const ERR_NO_AUTH = "You need to be logged in to perform that action"
+const ERR_NO_AUTH = 'You need to be logged in to perform that action';
 
 /**
  * Loads the metadata for all available exercise of a project without loading the files, for use on the project overview page.
@@ -59,9 +59,8 @@ export const getExercise = async (
 	language: string
 ): Promise<Exercise> => {
 	try {
-
 		return await runTransaction(db, async (transaction) => {
-			if (auth.currentUser === null) throw Error(ERR_NO_AUTH)
+			if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
 			// Get the exercise metadata
 			const metadata = (
 				await transaction.get(doc(db, 'projects', projectID, 'exercises', index))
@@ -102,12 +101,12 @@ export const getExercise = async (
 		if (import.meta.env.DEV) {
 			console.error(e);
 		}
-		throw Error(`Failed to get exercise ${projectID}[${index}] due to an error`)
+		throw Error(`Failed to get exercise ${projectID}[${index}] due to an error`);
 	}
 };
 
 export const getResults = async (projectID: string, exerciseID: string): Promise<void> => {
-	if (auth.currentUser === null) throw Error(ERR_NO_AUTH)
+	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
 	const snapshot = await getDoc(
 		doc(db, 'projects', projectID, 'exercises', exerciseID, 'results', auth.currentUser.uid)
 	);
@@ -139,7 +138,7 @@ export const getProjectSettings = async (
 	projectID: string,
 	fallback = 'react'
 ): Promise<ProjectSettings> => {
-	if (auth.currentUser === null) throw Error(ERR_NO_AUTH)
+	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
 	const snapshot = await getDoc(doc(db, 'projects', projectID, 'settings', auth.currentUser.uid));
 	if (snapshot.exists()) return snapshot.data() as ProjectSettings;
 	return { progress: 0, language: fallback, completed: false };
@@ -166,7 +165,7 @@ export const getBadges = async (options: {
 	limit?: number;
 	projectID?: string;
 }): Promise<Badge[]> => {
-	if (auth.currentUser === null) throw Error(ERR_NO_AUTH)
+	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
 	const { limit, projectID } = options;
 	const snapshot = await getDocs(collection(db, 'stats', auth.currentUser.uid, 'badges'));
 
@@ -202,7 +201,7 @@ export const getBadges = async (options: {
 };
 
 export const getStats = async (): Promise<UserStats> => {
-	if (auth.currentUser === null) throw Error(ERR_NO_AUTH)
+	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
 	const snapshot = await getDoc(doc(db, 'stats', auth.currentUser.uid));
 	if (snapshot.exists()) {
 		return snapshot.data() as UserStats;

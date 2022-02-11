@@ -1,7 +1,7 @@
-import type { File, WorkerError, WorkerResponse } from '../types';
+import type { File, FSFile, WorkerError, WorkerResponse } from '../types';
 import * as rollup from 'rollup/dist/es/rollup.browser.js';
 import type { RollupWarning } from 'rollup';
-import { generateLookup, getDependencies, getPlugins } from './compiler';
+import { getDependencies, getPlugins } from './compiler';
 
 /**
  * Returns some error data to the live preview iframe in the application
@@ -30,34 +30,34 @@ const PACKAGE = 'package.json';
 
 self.addEventListener(
 	'message',
-	async (event: MessageEvent<{ language: string; files: File[] }>): Promise<void> => {
+	async (event: MessageEvent<{ language: string; files: Record<string, FSFile> }>): Promise<void> => {
 		// Recreate the filesystem in memory.
-		const filesystem = generateLookup(event.data.files);
+		const { files } = event.data
 
 		// Throw an error if there is no index.html file
-		if (!(INDEX in filesystem)) {
+		if (!(INDEX in files)) {
 			return self.postMessage(
 				createError(
 					`The file ${INDEX} could not be found. Make sure the file exists in order to render the application.\nFound files: ` +
-						JSON.stringify(filesystem),
+					JSON.stringify(files),
 					'IndexFileNotFoundError'
 				)
 			);
 		}
 
 		// If there is no package.json, attempt to serve a static page.
-		if (!(PACKAGE in filesystem)) {
+		if (!(PACKAGE in files)) {
 			return self.postMessage({
 				js: '',
 				css: '',
 				public: {
-					[INDEX]: filesystem[INDEX].code
+					[INDEX]: files[INDEX].value
 				}
 			});
 		}
 
 		// Read the package JSON file
-		const packageJSON = JSON.parse(filesystem[PACKAGE].code);
+		const packageJSON = JSON.parse(files[PACKAGE].value);
 		const entryPoint = packageJSON['main'];
 
 		// Throw an error if no entry point is specified
@@ -73,7 +73,7 @@ self.addEventListener(
 		}
 
 		// Throw an error if the specified entry point does not exist
-		if (!(entryPoint in filesystem)) {
+		if (!(entryPoint in files)) {
 			return self.postMessage(
 				createError(
 					"The specified entry point '" + entryPoint + "' could not be found in the file system.",
@@ -86,7 +86,7 @@ self.addEventListener(
 
 		// Return the bundled code
 		return self.postMessage(
-			await bundle(entryPoint, event.data.language, filesystem, getDependencies(packageJSON))
+			await bundle(entryPoint, event.data.language, files, getDependencies(packageJSON))
 		);
 	}
 );
@@ -97,7 +97,7 @@ const bundle = async (
 	filesystem: Record<string, File>,
 	dependencies: Record<string, string>
 ): Promise<WorkerResponse> => {
-	let warning: RollupWarning;
+	let warning: RollupWarning = { message: '' };
 	let error: WorkerError;
 
 	// Bundle the files using rollup.
@@ -116,7 +116,7 @@ const bundle = async (
 		const bundle = await result.generate({ format: 'esm' });
 		const scripts = bundle.output[0] ? bundle.output[0].code : '';
 		let styles = '';
-		const css = bundle.output.find((e) => e.name == 'css');
+		const css = bundle.output.find((e: { name: string }) => e.name == 'css');
 		if (css) {
 			styles += css.source + '\n';
 		}
@@ -127,7 +127,7 @@ const bundle = async (
 			public: getResources(filesystem)
 		};
 	} catch (e) {
-		if (warning) {
+		if (warning.message !== '') {
 			return createError(warning.message, warning.name, warning.pos, warning.id);
 		} else {
 			error = sanitizeError(e as Error, entryPoint);
@@ -146,7 +146,7 @@ const getResources = (filesystem: Record<string, File>): Record<string, string> 
 	return Object.fromEntries(
 		Object.entries(filesystem)
 			.filter((entry) => entry[0].startsWith('public'))
-			.map(([path, value]) => [path, value.code])
+			.map(([path, value]) => [path, value.value])
 	);
 };
 

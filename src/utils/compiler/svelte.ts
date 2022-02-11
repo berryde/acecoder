@@ -34,7 +34,7 @@ export default function svelteCompiler(
 			}
 
 			// Check if it's a relative import to another source file
-			else if (isRelativeImport(importee)) {
+			else if (isRelativeImport(importee) && importer) {
 				try {
 					return resolveRelativePath(importee, importer, files);
 				} catch (err) {
@@ -66,7 +66,7 @@ export default function svelteCompiler(
 		 */
 		async load(id) {
 			if (id in files) {
-				return files[id].code;
+				return files[id].value;
 			}
 		},
 

@@ -5,13 +5,13 @@ import type { Timestamp } from 'firebase/firestore';
  */
 export interface File {
 	/**
-	 * The file source.
+	 * The text content of the file.
 	 */
-	code: string;
+	value: string;
 	/**
-	 * The name of the file.
+	 * Whether this file can be deleted and renamed.
 	 */
-	name: string;
+	modifiable: boolean;
 }
 
 /**
@@ -54,20 +54,12 @@ export type UrlMessage = {
 /**
  * A single file.
  */
-export type FSFile = {
+export interface FSFile extends File {
 	/**
 	 * The type of filesystem object.
 	 */
 	type: 'file';
-	/**
-	 * The text content of the file.
-	 */
-	value: string;
-	/**
-	 * Whether this file can be deleted and renamed.
-	 */
-	modifiable: boolean;
-};
+}
 
 /**
  * A single recursively defined folder.

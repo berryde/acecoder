@@ -53,9 +53,9 @@ export const write = async (projectID: string): Promise<void> => {
 	const editable = Object.keys(get(exercise).files[get(language)]).filter(
 		(filename) => get(exercise).files[get(language)][filename].modifiable
 	);
-	files.forEach((file) => {
-		if (editable.includes(file.name)) {
-			submission[file.name] = file.code;
+	Object.keys(files).forEach((name) => {
+		if (editable.includes(name)) {
+			submission[name] = files[name].value;
 		}
 	});
 	await runTransaction(db, async (transaction) => {

@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { File } from '../types';
+import type { File, FSFile } from '../types';
 import type { WorkerResponse } from '../types';
 import type { RollupWarning, Plugin } from 'rollup';
 import reactCompiler from './react';
@@ -30,7 +30,7 @@ export const tail = (path: string): string => {
  * @param file The file without an extension to resolve
  * @param files The filesystem
  */
-export const resolveExtension = (file: string, files: { [key: string]: File }): string => {
+export const resolveExtension = (file: string, files: { [key: string]: File }): string | undefined => {
 	if (file in files) {
 		return file;
 	}
@@ -53,28 +53,32 @@ export const resolveRelativePath = (
 	importer: string,
 	files: { [key: string]: File }
 ): string => {
-	let resolved: string;
+	let resolved: string | undefined;
 	// If the importer is in the top level directory then the import is not actually relative.
 	if (!importer.includes('/')) {
 		resolved = importee.slice(2);
 	}
-	// Check if it's a same directory import (../)
+	// Check if it's a parent directory import (../)
 	else if (/\.\.\/[^/]*/g.test(importee)) {
 		// If there are more segments in the importee than in the importer, throw an error
 		const parents = importee.match(/\.\.\//g) || [];
 
-		// Get the filename of the importee (everything after the last slash)
-		const filename = importee.split('/')[importee.split('/').length - 1];
+		// Get the absolute component of the importee (everything after the last ../)
+		const filename = importee.split('../')[importee.split('../').length - 1];
 
 		const split = importer.split('/');
 
 		if (parents.length > split.length - 1) {
-			throw 'Could not resolve relative import ' + importee + ' from ' + importer;
+			throw Error(`Could not resolve relative import ${importee} from ${importer}`);
 		}
+
+		// ../components/Search from src/containers/CryptoChecker.tsx
+		// 1] go up as many times as there are ../
+		// 2] append everything after the last ../
 
 		resolved = split.slice(0, split.length - parents.length - 1).join('/') + '/' + filename;
 	}
-	// It's a parent directory import (../)
+	// It's a same directory import (./)
 	else {
 		// Remove the importer filename from the importer path
 		const split = importer.split('/');
@@ -88,7 +92,7 @@ export const resolveRelativePath = (
 		// Ensure that the extension is added incase it is omitted.
 		resolved = resolveExtension(resolved, files);
 
-		if (resolved in files) {
+		if (resolved && resolved in files) {
 			return resolved;
 		}
 	}
@@ -120,17 +124,6 @@ export const fileNotFoundError = (importee: string, importer: string): RollupWar
 	name: 'FileNotFoundError'
 });
 
-/**
- * Recreates the in memory filesystem with the given files
- * @param files The files for the filesystem.
- */
-export const generateLookup = (files: File[]): Record<string, File> => {
-	const filesystem = {};
-	files.forEach((file) => {
-		filesystem[file.name] = file;
-	});
-	return filesystem;
-};
 
 /**
  * Extracts the dependencies from a package json file.
@@ -161,7 +154,7 @@ export const getPlugins = (
 		case 'svelte':
 			return [svelteCompiler(files, dependencies)];
 		case 'react':
-			return [cssCompiler(files), reactCompiler(files, dependencies)];
+			return [reactCompiler(files, dependencies), cssCompiler(files)];
 		default:
 			return [];
 	}

@@ -1,6 +1,5 @@
 import { writable } from 'svelte/store';
 import type { Filesystem, FSFile, FSFolder } from '../types';
-import type { File } from '../../utils/types';
 import { saveAs } from 'file-saver';
 import { get } from 'svelte/store';
 import JSZip from 'jszip';
@@ -93,11 +92,9 @@ export const compareFile = (
 		(a[1].type == 'folder' && b[1].type == 'folder')
 	) {
 		return a[0].localeCompare(b[0]);
-	}
-	if (a[1].type == 'file' && b[1].type == 'folder') {
+	} else if (a[1].type == 'file' && b[1].type == 'folder') {
 		return 1;
-	}
-	if (a[1].type == 'folder' && b[1].type == 'file') {
+	} else {
 		return -1;
 	}
 };
@@ -275,17 +272,14 @@ export const getFile = (path: string): FSFile | FSFolder => {
  * @param state The filesystem
  * @returns A list of all files in the filesystem with their values.
  */
-export const getAllFiles = (prefix: string, root: Filesystem): File[] => {
-	let files: File[] = [];
+export const getAllFiles = (prefix: string, root: Filesystem): Record<string, FSFile> => {
+	let files: Record<string, FSFile> = {};
 	for (const [name, file] of Object.entries(root)) {
 		if (file.type === 'file') {
-			files.push({
-				code: file.value,
-				name: prefix + name
-			});
+			files[prefix + name] = file;
 		} else {
 			const children = getAllFiles(prefix + name + '/', file.children);
-			files = files.concat(children);
+			files = { ...files, ...children };
 		}
 	}
 	return files;
@@ -308,7 +302,8 @@ const createZip = (zip: JSZip, state: Filesystem) => {
 		if (file.type === 'file') {
 			zip.file(name, file.value);
 		} else {
-			createZip(zip.folder(name), file.children);
+			const folder = zip.folder(name);
+			if (folder) createZip(folder, file.children);
 		}
 	}
 	return zip;

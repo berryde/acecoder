@@ -6,7 +6,6 @@
 
 	function toggleMenu() {
 		visible = !visible;
-		console.log('clicked', visible);
 	}
 
 	onMount(async () => {
