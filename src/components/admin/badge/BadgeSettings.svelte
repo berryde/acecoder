@@ -6,12 +6,12 @@
 	import ProfileMenu from 'src/components/profile/ProfileMenu.svelte';
 	import type { Badge } from 'src/utils/types';
 	import { onMount } from 'svelte';
-	import { db, storage, getImage } from 'src/utils/firebase';
+	import { db, getImage, uploadImage } from 'src/utils/firebase';
 	import { doc, setDoc } from 'firebase/firestore';
-	import { ref, uploadBytes } from 'firebase/storage';
 	import Hoverable from 'src/components/common/Hoverable.svelte';
 	import Icon from 'src/components/common/Icon.svelte';
 	import Close from 'svelte-icons/io/IoIosClose.svelte';
+	import ImageUploader from '../ImageUploader.svelte';
 
 	export let creating = false;
 	export let badge: Badge = {
@@ -20,20 +20,17 @@
 		name: '',
 		conditions: {}
 	};
+
 	let editing = creating;
 	let id: string = '';
-
+	let url: string;
+	let file: File;
 	let loading = false;
 	let errors: string[] = [];
-	let files: FileList;
-	let url: string;
 
-	async function uploadImage() {
+	async function uploadBadge() {
 		try {
-			const name = `images/${id}.svg`;
-			const location = ref(storage, name);
-			await uploadBytes(location, files[0]);
-			badge.image = `gs://folio-8b029.appspot.com/${name}`;
+			badge.image = await uploadImage('badges', file);
 		} catch (err) {
 			errors.push('Unable to upload that image');
 		}
@@ -45,13 +42,11 @@
 		if (badge.name == '') errors.push('Please provide a name');
 		if (id == '') errors.push('Please provide an ID');
 
-		if (!url && (!files || files.length == 0)) errors.push('Please provide an image');
+		if (!url && !file) errors.push('Please provide an image');
 
 		if (errors.length == 0) {
 			try {
-				if (!!files && files.length > 0) {
-					await uploadImage();
-				}
+				if (file) await uploadBadge();
 				await setDoc(doc(db, 'badges', id), badge);
 			} catch (err) {
 				console.error(err);
@@ -89,6 +84,10 @@
 		delete badge.conditions[key];
 		conditionKey = '';
 		conditionValue = undefined;
+	}
+
+	function handleUploadError() {
+		errors.push('Unable to upload that image');
 	}
 </script>
 
@@ -132,22 +131,13 @@
 				<p>{badge.description}</p>
 			{/if}
 		</div>
-		<div>
-			<p class="font-bold">Image</p>
-			<p class="text-sm mb-1">An SVG image representing the badge.</p>
-			{#if (files && files.length > 0) || url}
-				<div class="p-3">
-					<img
-						src={url ? url : URL.createObjectURL(files[0])}
-						alt="Preview of upload"
-						class="w-16 h-16 rounded-full"
-					/>
-				</div>
-			{/if}
-			{#if editing}
-				<input type="file" accept="svg" bind:files />
-			{/if}
-		</div>
+		<ImageUploader
+			title="Image"
+			subtitle="An SVG image representing the badge"
+			{editing}
+			bind:file
+			on:error={handleUploadError}
+		/>
 		<div>
 			<p class="font-bold">Conditions</p>
 			<div class="space-y-1">

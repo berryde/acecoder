@@ -27,7 +27,7 @@
 	$: $result && updateChapter();
 
 	onMount(() => {
-		if ($result) {
+		if ($result && $result !== {}) {
 			const index = Object.values($result).findIndex((res) => !res.passed);
 			if (index == -1) {
 				_chapter.set($exercise.chapters.length);
@@ -80,7 +80,7 @@
 						variant={index <= $_chapter ? 'default' : 'text'}
 						value={$result && index <= $_chapter ? $result[index].passed : undefined}
 					/>
-					<p>{@html chapter.text}</p>
+					<p class="chapter">{@html chapter.text}</p>
 				</div>
 				{#if $result && !$result[index].passed && chapter.hint && index == $_chapter && submissionAttempt > 0}
 					<div class="bg-brand-danger-dark bg-opacity-50 p-5 text-brand-danger-light">
@@ -89,7 +89,7 @@
 				{/if}
 			{:else}
 				<div class="p-5">
-					<p>{@html chapter.text}</p>
+					<p class="chapter">{@html chapter.text}</p>
 				</div>
 			{/if}
 		{/each}
@@ -99,6 +99,9 @@
 
 <style lang="postcss">
 	:global(#description a) {
+		@apply text-brand-primary underline;
+	}
+	:global(.chapter a) {
 		@apply text-brand-primary underline;
 	}
 	:global(.hint a) {

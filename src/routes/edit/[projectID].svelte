@@ -39,6 +39,7 @@
 				<p class="text-3xl font-bold">Project editor</p>
 				<ProfileImage />
 			</div>
+			<a href={`/edit`} class="text-brand-primary">Back to projects</a>
 			<ProjectSettings {project} projectID={$page.params.projectID} />
 			<div class="flex flex-col bg-brand-accent p-8 rounded space-y-3">
 				<div>

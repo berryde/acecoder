@@ -7,9 +7,8 @@
 	import { db } from 'src/utils/firebase';
 	import ProjectCard from 'src/components/projects/ProjectCard.svelte';
 	import Navbar from 'src/components/navbar/Navbar.svelte';
-	import { getBadges, getStats } from 'src/utils/project/project';
+	import { getBadges } from 'src/utils/project/project';
 	import Badge from 'src/components/projects/Badge.svelte';
-	import { points } from 'src/utils/exercise/exercise';
 
 	let projects: {
 		id: string;
@@ -48,7 +47,6 @@
 
 	let loading = true;
 	async function loadUserData() {
-		points.set((await getStats()).points);
 		badges = await getBadges({
 			limit: 4
 		});

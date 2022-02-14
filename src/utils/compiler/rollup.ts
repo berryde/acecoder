@@ -25,7 +25,7 @@ const createError = (message: string, name = 'Error', pos = 0, location = ''): W
 	};
 };
 
-const INDEX = 'public/index.html';
+
 const PACKAGE = 'package.json';
 
 self.addEventListener(
@@ -34,25 +34,11 @@ self.addEventListener(
 		// Recreate the filesystem in memory.
 		const { files } = event.data
 
-		// Throw an error if there is no index.html file
-		if (!(INDEX in files)) {
-			return self.postMessage(
-				createError(
-					`The file ${INDEX} could not be found. Make sure the file exists in order to render the application.\nFound files: ` +
-					JSON.stringify(files),
-					'IndexFileNotFoundError'
-				)
-			);
-		}
-
 		// If there is no package.json, attempt to serve a static page.
 		if (!(PACKAGE in files)) {
 			return self.postMessage({
 				js: '',
-				css: '',
-				public: {
-					[INDEX]: files[INDEX].value
-				}
+				css: ''
 			});
 		}
 

@@ -24,7 +24,8 @@
 		chapters: [],
 		files: {},
 		assessed: true,
-		inherits: true
+		inherits: true,
+		writable: true
 	};
 	/**
 	 * Whether the editing UI should be shown.
@@ -73,11 +74,6 @@
 		return output;
 	}
 
-	function toggleAssessed() {
-		exercise.assessed = !exercise.assessed;
-		exercise = exercise;
-	}
-
 	async function createExercise(metadata: ExerciseMetadata) {
 		// Use a batch write to create the exercise.
 		await runTransaction(db, async (transaction) => {
@@ -115,7 +111,8 @@
 					description: exercise.description,
 					assessed: exercise.assessed,
 					chapters: exercise.chapters,
-					inherits: exercise.inherits
+					inherits: exercise.inherits,
+					writable: exercise.writable
 				});
 
 				if (creating) {
@@ -136,21 +133,10 @@
 	function toggleEdit() {
 		editing = !editing;
 	}
-
-	function toggleInherits() {
-		exercise.inherits = !exercise.inherits;
-		exercise = exercise;
-	}
 </script>
 
 <Card>
-	<Settings
-		{exercise}
-		{editing}
-		on:edit={() => (editing = !editing)}
-		on:toggleAssessed={toggleAssessed}
-		on:toggleInherits={toggleInherits}
-	/>
+	<Settings {exercise} {editing} on:edit={() => (editing = !editing)} />
 	<Files {project} {exercise} {editing} />
 	<Chapters {exercise} {editing} />
 </Card>

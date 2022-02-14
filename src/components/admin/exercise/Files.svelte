@@ -43,10 +43,12 @@
 	let modalText: string;
 
 	function openModal(language: string, filename: string) {
-		modalText = exercise.files[language][filename].value;
-		modalLanguage = language;
-		modalFilename = filename;
-		showingModal = true;
+		if (editing) {
+			modalText = exercise.files[language][filename].value;
+			modalLanguage = language;
+			modalFilename = filename;
+			showingModal = true;
+		}
 	}
 
 	function saveModal() {
@@ -72,7 +74,7 @@
 			<span
 				>Upload an archive to use as the template for this project. As a minimum, the <code
 					>package.json</code
-				>, <code>public/index.html</code>
+				>
 				and an entry-point file such as <code>src/index.js</code> are required. The
 				<code>main</code> property in <code>package.json</code> should be used to specify the
 				entry-point. Ensure that you don't upload the <code>node_modules</code> directory, since this

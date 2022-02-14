@@ -7,13 +7,19 @@
 	import Navbar from 'src/components/navbar/Navbar.svelte';
 	import { startProject } from 'src/utils/firebase';
 	import { capitalise } from 'src/utils/general';
-	import { getProjectExercises, getProject, getProjectSettings } from 'src/utils/project/project';
+	import {
+		getProjectExercises,
+		getProject,
+		getProjectSettings,
+		restartProject
+	} from 'src/utils/project/project';
 	import type { ExerciseMetadata, Project, ProjectSettings } from 'src/utils/types';
 	import { onMount } from 'svelte';
 	import Icon from 'src/components/common/Icon.svelte';
 	import Dropdown from 'src/components/common/Dropdown.svelte';
 	import Download from 'src/components/projects/Download.svelte';
 	import Card from 'src/components/common/Card.svelte';
+	import CircularProgressIndicator from 'src/components/loaders/CircularProgressIndicator.svelte';
 
 	let project: Project;
 	let exercises: Record<string, ExerciseMetadata>;
@@ -39,8 +45,12 @@
 		window.location.href = `/project/${$page.params.projectID}/exercise-${index}`;
 	}
 
+	let restarting = false;
 	async function handleRestart(e: MouseEvent) {
 		e.stopPropagation();
+		restarting = true;
+		await restartProject($page.params.projectID);
+		location.reload();
 	}
 </script>
 
@@ -64,14 +74,20 @@
 						</Icon>
 					</div>
 					<div slot="menu" class="block origin-top-right">
-						<div
-							class="p-3 text-brand-danger-light block"
-							on:click={handleRestart}
-							role="button"
-							aria-label="project settings"
-						>
-							<p>Restart project</p>
-						</div>
+						{#if restarting}
+							<div class="p-3 w-20 flex items-center justify-center">
+								<CircularProgressIndicator variant="dark" />
+							</div>
+						{:else}
+							<div
+								class="p-3 text-brand-danger-light block"
+								on:click={handleRestart}
+								role="button"
+								aria-label="project settings"
+							>
+								<p>Restart project</p>
+							</div>
+						{/if}
 					</div>
 				</Dropdown>
 

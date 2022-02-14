@@ -3,7 +3,7 @@ import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import type { Badge } from './types';
-import { connectStorageEmulator, getDownloadURL, getStorage, ref } from 'firebase/storage';
+import { connectStorageEmulator, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 
 /**
  * The firebase client access credentials. This is publicly exposed as it only provides client access.
@@ -21,19 +21,19 @@ const firebaseConfig = {
 /**
  * The firebase app.
  */
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 /**
  * The Firebase firestore instance.
  */
-const db = getFirestore(app);
+export const db = getFirestore(app);
 
 /**
  * The Firebase authentication instance.
  */
-const auth = getAuth(app);
+export const auth = getAuth(app);
 
-const storage = getStorage(app, 'gs://folio-8b029.appspot.com');
+export const storage = getStorage(app, 'gs://folio-8b029.appspot.com');
 
 /**
  * The Firebase functions instance.
@@ -47,7 +47,7 @@ if (import.meta.env.DEV) {
 	connectStorageEmulator(storage, 'localhost', 9199);
 }
 
-const setClaim = async (claim: Record<string, unknown>): Promise<boolean> => {
+export const setClaim = async (claim: Record<string, unknown>): Promise<boolean> => {
 	try {
 		const result = await httpsCallable<Record<string, unknown>, boolean>(
 			functions,
@@ -59,7 +59,7 @@ const setClaim = async (claim: Record<string, unknown>): Promise<boolean> => {
 	}
 };
 
-const completeProject = async (projectID: string): Promise<Record<string, Badge>> => {
+export const completeProject = async (projectID: string): Promise<Record<string, Badge>> => {
 	return (
 		await httpsCallable<Record<string, unknown>, Record<string, Badge>>(
 			functions,
@@ -70,7 +70,7 @@ const completeProject = async (projectID: string): Promise<Record<string, Badge>
 	).data;
 };
 
-const incrementProgress = async (projectID: string, exerciseID: string): Promise<void> => {
+export const incrementProgress = async (projectID: string, exerciseID: string): Promise<void> => {
 	await httpsCallable<Record<string, unknown>, boolean>(
 		functions,
 		'incrementProgress'
@@ -80,7 +80,7 @@ const incrementProgress = async (projectID: string, exerciseID: string): Promise
 	});
 };
 
-const startProject = async (projectID: string, language: string): Promise<void> => {
+export const startProject = async (projectID: string, language: string): Promise<void> => {
 	await httpsCallable<Record<string, unknown>, void>(
 		functions,
 		'startProject'
@@ -90,18 +90,14 @@ const startProject = async (projectID: string, language: string): Promise<void> 
 	});
 };
 
-const getImage = async (uri: string): Promise<string> => {
+export const getImage = async (uri: string): Promise<string> => {
 	return await getDownloadURL(ref(storage, uri));
 };
 
-export {
-	app,
-	db,
-	auth,
-	setClaim,
-	incrementProgress,
-	completeProject,
-	storage,
-	getImage,
-	startProject
-};
+export const uploadImage = async (folder: string, file: File): Promise<string> => {
+	const name = `${folder}/${file.name}`;
+	const location = ref(storage, name);
+	await uploadBytes(location, file);
+	return `gs://folio-8b029.appspot.com/${name}`;
+}
+

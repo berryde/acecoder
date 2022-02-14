@@ -3,9 +3,10 @@
 	import Button from 'src/components/common/Button.svelte';
 	import Input from 'src/components/common/Input.svelte';
 	import Checkbox from 'src/components/common/Checkbox.svelte';
-	import { db } from 'src/utils/firebase';
+	import { db, uploadImage } from 'src/utils/firebase';
 	import type { Project } from 'src/utils/types';
 	import { capitalise } from 'src/utils/general';
+	import ImageUploader from './ImageUploader.svelte';
 
 	/**
 	 * Whether these settings are for the creation of a new project.
@@ -21,9 +22,10 @@
 		name: '',
 		description: '',
 		exerciseCount: 0,
-		icon: ''
+		thumbnail: ''
 	};
 	let errors: string[] = [];
+	let file: File;
 	const languages: string[] = ['react', 'svelte'];
 
 	function toggleProjectLanguage(language: string) {
@@ -46,7 +48,18 @@
 		if (project.name.length == 0) {
 			output.push('The project description is missing.');
 		}
+		if (!project.thumbnail && !file) {
+			output.push('A thumbnail is required');
+		}
 		return output;
+	}
+
+	async function uploadThumbnail() {
+		try {
+			project.thumbnail = await uploadImage('thumbnails', file);
+		} catch (err) {
+			errors.push('Unable to upload that image');
+		}
 	}
 
 	let loading = false;
@@ -55,6 +68,7 @@
 		errors = validate();
 		if (errors.length == 0) {
 			try {
+				if (file) await uploadThumbnail();
 				if (creating) {
 					const ref = await addDoc(collection(db, 'projects'), project);
 					window.location.href = '/edit/' + ref.id;
@@ -74,6 +88,10 @@
 	function toggleEdit() {
 		editing = !editing;
 	}
+
+	function handleUploadError() {
+		errors.push('Unable to upload that image');
+	}
 </script>
 
 <form class="flex flex-col bg-brand-accent p-8 rounded space-y-3">
@@ -92,15 +110,13 @@
 		{/if}
 	</div>
 	<div class="space-y-1">
-		<p>Icon</p>
-		{#if editing}
-			<a href="https://svelte-icons-explorer.vercel.app/" class="text-brand-primary text-xs"
-				>Browse icons</a
-			>
-			<Input variant="dark" bind:value={project.icon} />
-		{:else}
-			<code class="bg-brand-background p-1 rounded">{project.icon}</code>
-		{/if}
+		<ImageUploader
+			bind:file
+			title="Thumbnail"
+			subtitle="A thumbnail image for this project"
+			{editing}
+			on:error={handleUploadError}
+		/>
 	</div>
 	<div class="space-y-1">
 		<p>Description</p>

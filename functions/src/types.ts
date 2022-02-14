@@ -30,5 +30,4 @@ export type UserStats = {
 	completed: number;
 	react: number;
 	svelte: number;
-	points: number;
 };

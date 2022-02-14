@@ -7,8 +7,8 @@
 	import { onMount } from 'svelte';
 	import { db } from 'src/utils/firebase';
 	import type { Project } from 'src/utils/types';
-	import Website from 'svelte-icons/io/IoIosDesktop.svelte';
-	import Icon from 'src/components/common/Icon.svelte';
+
+	import ProjectCard from 'src/components/projects/ProjectCard.svelte';
 
 	let projects: { id: string; project: Project }[];
 	let loading = true;
@@ -18,10 +18,6 @@
 		projects = snapshot.docs.map((doc) => ({ id: doc.id, project: doc.data() as Project }));
 		loading = false;
 	});
-
-	function openProject(id: string) {
-		window.location.href = 'edit/' + id;
-	}
 </script>
 
 <svelte:head>
@@ -62,23 +58,13 @@
 					}}
 				/>
 			</div>
-			<div class="grid grid-cols-4 space-4">
+			<div class="grid grid-cols-3 gap-4">
 				{#each projects as project}
-					<div
-						class="bg-brand-accent rounded w-52 cursor-pointer"
-						on:click={() => openProject(project.id)}
-					>
-						<div
-							class="bg-gradient-to-r from-green-500 to-green-700 w-full h-20 rounded-t flex justify-center items-center"
-						>
-							<Icon size="large">
-								<Website />
-							</Icon>
-						</div>
-						<div class="p-3">
-							<p>{project.project.name}</p>
-						</div>
-					</div>
+					<ProjectCard
+						projectID={project.id}
+						project={project.project}
+						url={`/edit/${project.id}`}
+					/>
 				{/each}
 			</div>
 		</div>

@@ -53,7 +53,7 @@
 	/**
 	 * Whether the user is currently dragging the separator.
 	 */
-	let resizing = false;
+	let resizing: boolean = false;
 
 	const dispatch = createEventDispatcher();
 

@@ -8,7 +8,7 @@ import { get, writable } from 'svelte/store';
 import { updateFile } from '../filesystem/filesystem';
 import { selectedTab } from 'src/utils/tabs/tabs';
 import { saveTab } from '../tabs/tabs';
-import { write } from '../exercise/exercise';
+import { exercise, write } from '../exercise/exercise';
 
 /**
  * Supported file extensions.
@@ -26,6 +26,7 @@ export const format = (value: string, language: string): string => {
 				return prettier.format(value, getParser(language));
 			}
 		} catch (err) {
+			console.error(err)
 			console.error('Auto-formatting failed due to a syntax error.');
 		}
 	}
@@ -36,6 +37,7 @@ export const getParser = (
 	language: string
 ): { parser: string; plugins: [{ parsers: { [key: string]: Parser<string> } }] } => {
 	switch (language) {
+		case 'svelte':
 		case 'html':
 			return {
 				parser: 'html',
@@ -56,6 +58,7 @@ export const getParser = (
 				parser: 'typescript',
 				plugins: [parserTypescript]
 			};
+
 		default:
 			return {
 				parser: 'babel',
@@ -78,5 +81,5 @@ export const save = async (projectID: string): Promise<void> => {
 	const tab: string = get(selectedTab);
 	saveTab(tab);
 	updateFile(tab, get(contents));
-	await write(projectID);
+	if (get(exercise).writable) await write(projectID);
 };

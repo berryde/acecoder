@@ -2,12 +2,11 @@
 	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
 	import { onMount } from 'svelte';
 	import Navbar from 'src/components/navbar/Navbar.svelte';
-	import { getBadges, getProject, getProjectSettings, getStats } from 'src/utils/project/project';
+	import { getBadges, getProject, getProjectSettings } from 'src/utils/project/project';
 	import { page } from '$app/stores';
 	import type { Project, Badge as BadgeType, ProjectSettings } from 'src/utils/types';
 	import Badge from 'src/components/projects/Badge.svelte';
 	import { completeProject } from 'src/utils/firebase';
-	import { points } from 'src/utils/exercise/exercise';
 
 	import Download from 'src/components/projects/Download.svelte';
 
@@ -24,7 +23,6 @@
 		completed = settings.completed;
 		if (!completed) {
 			badges = Object.values(await completeProject($page.params.projectID));
-			points.set((await getStats()).points);
 		} else {
 			badges = await getBadges({ projectID: $page.params.projectID });
 		}

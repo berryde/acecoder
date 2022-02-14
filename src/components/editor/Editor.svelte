@@ -111,6 +111,7 @@
 					session.setUseWorker(false);
 				}
 				session.setUseWrapMode(true);
+				session.setTabSize(2);
 				sessions[$selectedTab] = session;
 			}
 			editor.setSession(sessions[$selectedTab]);

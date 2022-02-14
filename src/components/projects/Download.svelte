@@ -26,7 +26,7 @@
 
 <Card title="Your project">
 	<p>
-		Congratulations on completing this project. Download your final submission to share it with the
+		Congratulations on completing this project! Download your final submission to share it with the
 		world, or continue working on it.
 	</p>
 	<div class="flex justify-end space-x-3 mt-3">

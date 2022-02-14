@@ -37,6 +37,7 @@
 				<p class="text-3xl font-bold">Exercise editor</p>
 				<ProfileMenu />
 			</div>
+			<a href={`/edit/${$page.params.projectID}`} class="text-brand-primary">Back to project</a>
 			<ExerciseSettings
 				projectID={$page.params.projectID}
 				exerciseID={$page.params.index}

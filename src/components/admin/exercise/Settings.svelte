@@ -39,7 +39,8 @@
 					variant="true-false"
 					disabled={!editing}
 					on:click={() => {
-						dispatch('toggleAssessed');
+						exercise.assessed = !exercise.assessed;
+						exercise = exercise;
 					}}
 				/>
 			</div>
@@ -65,7 +66,23 @@
 					variant="true-false"
 					disabled={!editing}
 					on:click={() => {
-						dispatch('toggleInherits');
+						exercise.inherits = !exercise.inherits;
+						exercise = exercise;
+					}}
+				/>
+			</div>
+		</div>
+		<div>
+			<p class="font-bold">Writable</p>
+			<div class="flex flex-row items-center space-x-3">
+				<p>This exercise is writable</p>
+				<Checkbox
+					bind:value={exercise.writable}
+					variant="true-false"
+					disabled={!editing}
+					on:click={() => {
+						exercise.writable = !exercise.writable;
+						exercise = exercise;
 					}}
 				/>
 			</div>

@@ -115,7 +115,6 @@ const getStats = async (
 		react: 0,
 		svelte: 0,
 		completed: 0,
-		points: 0
 	};
 };
 

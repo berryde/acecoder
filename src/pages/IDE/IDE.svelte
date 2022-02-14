@@ -77,12 +77,12 @@
 				<Sidebar />
 			</div>
 			<div slot="pane2" class="h-full flex flex-col">
-				<SplitPane let:resizing={resizingX} minPane2Size={'10rem'} pane1Size={66} pane2Size={34}>
+				<SplitPane minPane2Size={'10rem'} pane1Size={66} pane2Size={34}>
 					<div slot="pane1" class="h-full">
 						<EditorContainer on:drag={toggleSelecting} />
 					</div>
-					<div slot="pane2" class="h-full">
-						<PreviewContainer {resizingX} {selecting} />
+					<div slot="pane2" class="h-full" let:resizing>
+						<PreviewContainer {resizing} {selecting} />
 					</div>
 				</SplitPane>
 			</div>

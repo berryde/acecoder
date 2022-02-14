@@ -5,10 +5,9 @@
 		getExercise,
 		getProject,
 		getProjectSettings,
-		getResults,
-		getStats
+		getResults
 	} from 'src/utils/project/project';
-	import { exercise, language, points, project } from 'src/utils/exercise/exercise';
+	import { exercise, language, project } from 'src/utils/exercise/exercise';
 	import { page } from '$app/stores';
 	import { selectedTab, tabs } from 'src/utils/tabs/tabs';
 
@@ -33,7 +32,6 @@
 					(filename) => $exercise.files[$language][filename].modifiable
 				);
 				tabs.set(editable);
-				points.set((await getStats()).points);
 				await getResults($page.params.projectID, $page.params.index);
 				selectedTab.set(editable[0]);
 				loading = false;

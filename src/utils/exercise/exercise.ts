@@ -26,7 +26,6 @@ export const result = writable<ServerResponse>();
  * Whether the exercise is currently being loaded for the first time
  */
 export const initialising = writable<boolean>(true);
-export const points = writable<number>(0);
 
 /**
  * Load the exercise with the given ID into the filesystem.

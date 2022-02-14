@@ -7,7 +7,7 @@
 	import { compiled } from 'src/utils/compiler/compiler';
 	import { language } from 'src/utils/exercise/exercise';
 
-	export let resizingX = false;
+	export let resizing = false;
 	export let selecting = false;
 
 	let worker: Worker;
@@ -50,4 +50,4 @@
 	$: $filesystem && refresh();
 </script>
 
-<Preview resizing={resizingX || selecting} on:refresh={() => refresh()} />
+<Preview resizing={resizing || selecting} on:refresh={() => refresh()} />
