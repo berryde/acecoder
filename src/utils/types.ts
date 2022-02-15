@@ -180,7 +180,7 @@ export type Project = {
 	 */
 	name: string;
 	/**
-	 * A brief overview of the project
+	 * A detailed description of the project
 	 */
 	description: string;
 	/**
@@ -195,6 +195,10 @@ export type Project = {
 	 * The preview image to use for this project
 	 */
 	thumbnail: string;
+	/**
+	 * A brief sentence describing the project
+	 */
+	overview: string
 };
 
 /**

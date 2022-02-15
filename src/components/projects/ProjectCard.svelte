@@ -18,15 +18,18 @@
 </script>
 
 {#if image}
-	<img
-		src={image}
-		alt="Project thumbnail"
-		class="rounded cursor-pointer h-38 bg-cover"
-		on:click={handleClick}
-		tabindex={0}
-		role="link"
-		aria-label={`${project.name} project`}
-	/>
+	<div class="bg-brand-accent rounded">
+		<img
+			src={image}
+			alt="Project thumbnail"
+			class="rounded-t h-38 cursor-pointer bg-cover"
+			on:click={handleClick}
+			tabindex={0}
+			role="link"
+			aria-label={`${project.name} project`}
+		/>
+		<p class="p-2 text-xs">{project.overview}</p>
+	</div>
 {:else}
-	<div class="bg-brand-accent h-38 rounded" />
+	<div class="bg-brand-accent h-42 rounded" />
 {/if}

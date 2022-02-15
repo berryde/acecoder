@@ -106,7 +106,7 @@
 		errors = validate();
 		if (errors.length == 0) {
 			try {
-				createExercise({
+				await createExercise({
 					name: exercise.name,
 					description: exercise.description,
 					assessed: exercise.assessed,

@@ -102,11 +102,19 @@
 		{/if}
 	</div>
 	<div class="space-y-1">
-		<p>Name</p>
+		<p class="font-bold">Name</p>
 		{#if editing}
 			<Input variant="dark" bind:value={project.name} />
 		{:else}
 			<p>{project.name}</p>
+		{/if}
+	</div>
+	<div class="space-y-1">
+		<p class="font-bold">Overview</p>
+		{#if editing}
+			<Input variant="dark" bind:value={project.overview} expanded={true} />
+		{:else}
+			<p>{project.overview}</p>
 		{/if}
 	</div>
 	<div class="space-y-1">
@@ -119,7 +127,7 @@
 		/>
 	</div>
 	<div class="space-y-1">
-		<p>Description</p>
+		<p class="font-bold">Description</p>
 		{#if editing}
 			<textarea
 				class="bg-brand-background rounded p-2 w-full h-28"
@@ -131,7 +139,7 @@
 		{/if}
 	</div>
 	<div class="space-y-1">
-		<p>Language support</p>
+		<p class="font-bold">Language support</p>
 		<fieldset id="language" class="flex flex-col">
 			{#each languages as language}
 				<div class="flex flex-row items-center space-x-3">
