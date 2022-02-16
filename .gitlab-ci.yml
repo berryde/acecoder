@@ -1,37 +1,30 @@
 default:
   image: node
+  cache:
+    key: '$CI_COMMIT_REF_SLUG'
+    paths:
+      - .pnpm-store
+      - node_modules
 
 stages:
-  - setup
-  - build
+  - install
   - test
   - deploy
 
+before_script:
+  - curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm@6
+  - pnpm config set store-dir .pnpm-store
+
 install:
-  stage: setup
-  before_script:
-    - curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm@6
-    - pnpm config set store-dir .pnpm-store
+  stage: install
   script:
     - pnpm install
-  cache:
-    key: '$CI_COMMIT_REF_SLUG'
-    paths:
-      - .pnpm-store
-
-build:
-  stage: build
-  script:
-    - npm run build
-  cache:
-    key: '$CI_COMMIT_REF_SLUG'
-    paths:
-      - .pnpm-store
 
 test:
   stage: test
   script:
-    - npm run test
+    - pnpm build
+    - pnpm test
 
 deploy:
   stage: deploy
@@ -42,7 +35,3 @@ deploy:
     - master
   script:
     - npx netlify-cli deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod
-  cache:
-    key: '$CI_COMMIT_REF_SLUG'
-    paths:
-      - .pnpm-store

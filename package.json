@@ -11,7 +11,7 @@
 		"lint": "prettier --ignore-path .eslintignore --write --plugin-search-dir=. . && eslint --ignore-path .eslintignore . --fix",
 		"emulator": "firebase emulators:start --import=./.firebase --export-on-exit",
 		"compile": "node scripts/generateTemplate.js && rollup -c",
-		"test": "npm run compile && jest src",
+		"test": "jest src",
 		"test:watch": "npm run test -- --watch"
 	},
 	"devDependencies": {

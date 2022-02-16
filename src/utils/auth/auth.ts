@@ -9,6 +9,7 @@ import {
 	GoogleAuthProvider,
 	sendPasswordResetEmail
 } from 'firebase/auth';
+import { browser } from '$app/env';
 import type { AuthProvider, AuthError as _AuthError } from 'firebase/auth';
 import { auth } from '../firebase';
 import type { AuthError } from '../types';
@@ -23,7 +24,7 @@ type AuthFederation = 'google' | 'github';
 onAuthStateChanged(
 	auth,
 	(user) => {
-		if (!user && !window.location.href.endsWith('login')) {
+		if (browser && !user && !window.location.href.endsWith('login')) {
 			window.location.href = '/login';
 		}
 	},
