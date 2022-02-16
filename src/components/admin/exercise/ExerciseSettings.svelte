@@ -11,7 +11,7 @@
 	/**
 	 * Whether these settings are for the creation of a new project.
 	 */
-	export let creating = false;
+	export let creating: boolean = false;
 	export let projectID: string = '';
 	export let project: Project;
 	/**
@@ -33,7 +33,7 @@
 	let editing = creating;
 
 	let errors: string[] = [];
-	let loading = false;
+	let loading: boolean = false;
 
 	function validateChapters(): string[] {
 		const output = [];

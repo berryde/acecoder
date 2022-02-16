@@ -3,7 +3,7 @@
 
 	export let value: boolean | undefined = undefined;
 	export let classes: string = '';
-	export let disabled = false;
+	export let disabled: boolean = false;
 	export let aria = '';
 
 	type Variant = 'true-false' | 'default' | 'text';

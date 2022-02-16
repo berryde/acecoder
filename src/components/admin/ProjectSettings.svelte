@@ -11,7 +11,7 @@
 	/**
 	 * Whether these settings are for the creation of a new project.
 	 */
-	export let creating = false;
+	export let creating: boolean = false;
 	let editing = creating;
 	/**
 	 * The ID of the project being updated.

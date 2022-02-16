@@ -5,7 +5,7 @@
 
 	let files: FileList;
 	let url: string;
-	export let editing = false;
+	export let editing: boolean = false;
 	export let title: string;
 	export let subtitle: string;
 	export let file: File | undefined = undefined;

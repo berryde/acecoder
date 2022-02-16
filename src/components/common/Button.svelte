@@ -4,12 +4,13 @@
 	import CircularProgressIndicator from '../loaders/CircularProgressIndicator.svelte';
 	const dispatch = createEventDispatcher();
 
-	export let text = '';
-	export let icon = false;
-	export let loading = false;
-	export let disabled = false;
-	export let expanded = false;
-	export let outline = false;
+	export let text: string = '';
+	export let icon: boolean = false;
+	export let loading: boolean = false;
+	export let disabled: boolean = false;
+	export let expanded: boolean = false;
+	export let outline: boolean = false;
+	export let link: boolean = false;
 
 	type Variant = 'default' | 'danger' | 'dark' | 'accent' | 'success';
 	export let variant: Variant = 'default';
@@ -17,6 +18,7 @@
 	function onclick() {
 		if (!disabled) {
 			dispatch('click');
+			if (link) loading = true;
 		}
 	}
 

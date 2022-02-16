@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { loadExercise } from 'src/utils/exercise/exercise';
+	import { loadExercise, getExercise } from 'src/utils/exercise/exercise';
 	import { exportFilesystem } from 'src/utils/filesystem/filesystem';
-
-	import { getExercise } from 'src/utils/project/project';
 	import type { Exercise, ProjectSettings } from 'src/utils/types';
 	import Button from '../common/Button.svelte';
 	import Card from '../common/Card.svelte';

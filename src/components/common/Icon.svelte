@@ -11,7 +11,7 @@
 	/**
 	 * Whether this icon is also a button.
 	 */
-	export let button = false;
+	export let button: boolean = false;
 
 	export let label: string | undefined = undefined;
 

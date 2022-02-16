@@ -2,11 +2,11 @@
 	import Icon from '../common/Icon.svelte';
 
 	export let placeholder = '';
-	export let icon = false;
+	export let icon: boolean = false;
 	export let type = 'text';
 	export let value: string | number = '';
 	export let name = '';
-	export let expanded = false;
+	export let expanded: boolean = false;
 	type Variant = 'default' | 'dark';
 	export let variant: Variant = 'default';
 

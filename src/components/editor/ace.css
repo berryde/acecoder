@@ -54,6 +54,7 @@
 .ace-one-dark .ace_entity.ace_name.ace_tag,
 .ace-one-dark .ace_meta.ace_tag,
 .ace-one-dark .ace_constant,
+.ace-one-dark .ace_variable.ace_parameter,
 .ace-one-dark .ace_storage {
 	color: #e06c75;
 }
@@ -118,20 +119,13 @@
 
 .ace-one-dark .ace_list.ace_markup,
 .ace-one-dark .ace_constant.ace_language.ace_escape .ace_string,
-.ace-one-dark .ace_string.ace_attribute-value {
-	color: #98c379;
-}
-
+.ace-one-dark .ace_string.ace_attribute-value,
 .ace-one-dark .ace_string {
-	color: #bec5d1;
+	color: #98c379;
 }
 
 .ace-one-dark .ace_entity.ace_name.ace_function {
 	color: #61afef;
-}
-
-.ace-one-dark .ace_search {
-	background-color: #0b1633;
 }
 
 .ace-one-dark .ace_operator {
@@ -139,8 +133,7 @@
 }
 
 /*.ace-one-dark .ace_string, */
-.ace-one-dark .ace_identifier,
-.ace-one-dark .ace_variable.ace_parameter {
+.ace-one-dark .ace_identifier {
 	color: #bec5d1;
 }
 

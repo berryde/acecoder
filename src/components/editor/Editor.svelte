@@ -1,14 +1,17 @@
 <script lang="ts">
-	import type { Editor, IEditSession, Position } from 'brace';
+	import type { Editor, IEditSession } from 'brace';
 	import { getExtension, getFile } from 'src/utils/filesystem/filesystem';
 	import { selectedTab, unsavedTabs } from 'src/utils/tabs/tabs';
 	import type { FSFile } from 'src/utils/types';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/env';
 	import { contents, format } from 'src/utils/editor/editor';
-	import { formatOnSave } from 'src/utils/settings/settings';
 	import { save } from 'src/utils/editor/editor';
 	import { page } from '$app/stores';
+	import { formatOnSave } from 'src/utils/settings/settings';
+
+	const TAB_SIZE = 2;
+	const FONT_SIZE = '1rem';
 
 	let element: HTMLElement;
 	let editor: Editor;
@@ -23,15 +26,19 @@
 		editor = ace.edit(element);
 		editor.$blockScrolling = Infinity;
 		editor.setTheme('ace/theme/folio');
+
+		// Disable the find command
+		editor.commands.removeCommand('find');
+
 		editor.setShowPrintMargin(false);
-		editor.setOptions({ enableBasicAutocompletion: true, fontSize: '1rem' });
+		editor.setOptions({ enableBasicAutocompletion: true, fontSize: FONT_SIZE });
 		editor.on('change', () => {
 			contents.set(editor.getValue());
 			if (!$unsavedTabs.includes($selectedTab)) {
 				unsavedTabs.update((tabs) => [...tabs, $selectedTab]);
 			} else if (editor.getValue() === (getFile($selectedTab) as FSFile).value) {
 				unsavedTabs.update((tabs) => {
-					tabs.splice(tabs.indexOf($selectedTab), 1);
+					tabs.splice(tabs.indexOf($selectedTab));
 					return tabs;
 				});
 			}
@@ -40,10 +47,16 @@
 	}
 
 	function handleFormat() {
-		const pos: Position = editor.getCursorPosition();
-		editor.setValue(format(editor.getValue(), getExtension($selectedTab)));
-		editor.moveCursorToPosition(pos);
-		editor.clearSelection();
+		setValue(format(editor.getValue(), getExtension($selectedTab)));
+	}
+
+	function setValue(value: string) {
+		if (editor) {
+			const pos = editor.getCursorPosition();
+			editor.setValue(value);
+			editor.moveCursorToPosition(pos);
+			editor.clearSelection();
+		}
 	}
 
 	function handleSave() {
@@ -74,6 +87,10 @@
 		window.removeEventListener('keydown', keydownListener);
 	});
 
+	/**
+	 * Dynamically imports the required brace mode. Note that dynamic import strings cannot include variables in order to be resolved by vite.
+	 * @param filename The filename to import the brace mode for.
+	 */
 	async function importMode(filename: string) {
 		switch (getExtension(filename)) {
 			case 'tsx':
@@ -107,23 +124,36 @@
 				const session = new ace.EditSession((getFile($selectedTab) as FSFile).value);
 				session.setMode(await importMode($selectedTab));
 				session.setUndoManager(new ace.UndoManager());
-				if (getExtension($selectedTab) == 'svelte') {
+				if (getExtension($selectedTab) === 'svelte') {
 					session.setUseWorker(false);
 				}
 				session.setUseWrapMode(true);
-				session.setTabSize(2);
+				session.setTabSize(TAB_SIZE);
 				sessions[$selectedTab] = session;
 			}
 			editor.setSession(sessions[$selectedTab]);
 		}
 	}
 
+	/**
+	 * Resize the editor whenever the container is resized
+	 */
 	function handleResize() {
 		editor.resize();
 	}
 
+	/**
+	 * Update the value of the editor if the contents state changes due to side effects.
+	 */
+	function updateContents() {
+		if (editor) {
+			setValue($contents);
+		}
+	}
+
 	$: loaded && $selectedTab && updateSession();
 	$: clientWidth && editor && handleResize();
+	$: $contents && updateContents();
 	let clientWidth: number;
 </script>
 

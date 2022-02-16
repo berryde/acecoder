@@ -15,17 +15,14 @@ import { result } from '../exercise/exercise';
 import { auth, db } from '../firebase';
 import type {
 	Project,
-	Exercise,
 	ExerciseMetadata,
-	FSFile,
 	ProjectSettings,
 	ServerResponse,
 	Badge,
 	UserStats,
 	UserBadge
 } from '../types';
-
-const ERR_NO_AUTH = 'You need to be logged in to perform that action';
+import { ERR_NO_AUTH } from '../general';
 
 /**
  * Loads the metadata for all available exercise of a project without loading the files, for use on the project overview page.
@@ -45,65 +42,6 @@ export const getProjectExercises = async (
 		return result;
 	} catch (err) {
 		throw `Unable to fetch exercises for project ${projectID}`;
-	}
-};
-
-/**
- * Gets exercise metadata and files as an atomic transaction. If a list of languages is provided, the files for each language are provided.
- * @param projectID The ID of the project.
- * @param index The index of the project.
- * @param languages The languages of the project. If not specified, the language is determined based on the user's settings.
- */
-export const getExercise = async (
-	projectID: string,
-	index: string,
-	language: string
-): Promise<Exercise> => {
-	try {
-		return await runTransaction(db, async (transaction) => {
-			if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
-			// Get the exercise metadata
-			const metadata = (
-				await transaction.get(doc(db, 'projects', projectID, 'exercises', index))
-			).data() as ExerciseMetadata;
-
-			// Get the exercise files
-			const exerciseFiles: Record<string, FSFile> = (
-				await transaction.get(doc(db, 'projects', projectID, 'exercises', index, 'files', language))
-			).data() as Record<string, FSFile>;
-			const files: Record<string, Record<string, FSFile>> = {
-				[language]: exerciseFiles
-			};
-
-			// Check if the user has made a submission and download it if so.
-			const submission = await transaction.get(
-				doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid)
-			);
-			if (submission.exists()) {
-				const submissionFiles = submission.data() as Record<string, string>;
-				Object.keys(submissionFiles).forEach((name) => {
-					if (metadata.inherits || name in files[language]) {
-						files[language][name] = {
-							type: 'file',
-							value: submissionFiles[name],
-							modifiable: Object.keys(files[language])
-								.filter((name) => files[language][name].modifiable)
-								.includes(name)
-						};
-					}
-				});
-			}
-
-			return {
-				...metadata,
-				files: files
-			};
-		});
-	} catch (e) {
-		if (import.meta.env.DEV) {
-			console.error(e);
-		}
-		throw Error(`Failed to get exercise ${projectID}[${index}] due to an error`);
 	}
 };
 

@@ -7,8 +7,8 @@
 	import { compiled } from 'src/utils/compiler/compiler';
 	import { language } from 'src/utils/exercise/exercise';
 
-	export let resizing = false;
-	export let selecting = false;
+	export let resizing: boolean = false;
+	export let selecting: boolean = false;
 
 	let worker: Worker;
 

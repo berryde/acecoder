@@ -13,7 +13,7 @@
 	import Close from 'svelte-icons/io/IoIosClose.svelte';
 	import ImageUploader from '../ImageUploader.svelte';
 
-	export let creating = false;
+	export let creating: boolean = false;
 	export let badge: Badge = {
 		description: '',
 		image: '',
@@ -25,7 +25,7 @@
 	let id: string = '';
 	let url: string;
 	let file: File;
-	let loading = false;
+	let loading: boolean = false;
 	let errors: string[] = [];
 
 	async function uploadBadge() {

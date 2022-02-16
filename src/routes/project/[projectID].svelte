@@ -24,7 +24,7 @@
 	let project: Project;
 	let exercises: Record<string, ExerciseMetadata>;
 	let settings: ProjectSettings;
-	let loading = true;
+	let loading: boolean = true;
 
 	onMount(async () => {
 		project = await getProject($page.params.projectID);
@@ -138,6 +138,7 @@
 					<Button
 						text={settings.progress == 0 ? 'Start' : 'Resume'}
 						on:click={() => handleClick(settings.progress)}
+						link={true}
 					/>
 				</div>
 			</Card>

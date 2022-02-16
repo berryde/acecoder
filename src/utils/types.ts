@@ -152,6 +152,7 @@ export type ServerRequest = {
 	 * The ID of the user creating this submission
 	 */
 	userID: string;
+	chapter: number;
 };
 
 /**

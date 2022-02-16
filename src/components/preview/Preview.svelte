@@ -18,7 +18,7 @@
 	/**
 	 * Whether the user is resizing the parent splitpane.
 	 */
-	export let resizing = false;
+	export let resizing: boolean = false;
 
 	/**
 	 * A compilation error.

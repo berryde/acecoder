@@ -14,10 +14,18 @@
 	import Wand from 'svelte-icons/io/IoIosColorWand.svelte';
 	import { onMount } from 'svelte';
 	import Explorer from '../explorer/Explorer.svelte';
+	import { contents, format } from 'src/utils/editor/editor';
+	import { getExtension } from 'src/utils/filesystem/filesystem';
+	import { selectedTab } from 'src/utils/tabs/tabs';
+	import { page } from '$app/stores';
 
 	function updateChapter() {
 		submissionAttempt += 1;
-		if ($_chapter < $exercise.chapters.length && $result[$_chapter].passed) {
+		if (
+			$_chapter < $exercise.chapters.length &&
+			$_chapter in $result &&
+			$result[$_chapter].passed
+		) {
 			_chapter.update((c) => c + 1);
 			submissionAttempt = 0;
 		}
@@ -28,15 +36,21 @@
 
 	onMount(() => {
 		if ($result && $result !== {}) {
-			const index = Object.values($result).findIndex((res) => !res.passed);
-			if (index == -1) {
-				_chapter.set($exercise.chapters.length);
-			} else {
-				_chapter.set(index);
-			}
+			// Get index of the most recently passed chapter
+			const index = Math.max(
+				...Object.entries($result)
+					.filter((entry) => entry[1].passed)
+					.map((entry) => parseInt(entry[0]))
+			);
+			_chapter.set(index + 1);
 			submissionAttempt = 0;
 		}
 	});
+
+	function handleFormat() {
+		const formatted = format($contents, getExtension($selectedTab));
+		contents.set(formatted);
+	}
 </script>
 
 <div class="bg-brand-background h-full overflow-y-auto sidebar overflow-x-hidden">
@@ -48,10 +62,16 @@
 		</p>
 	</div>
 	<div class="flex flex-row px-5 py-3 mr-3 pt-0 space-x-3 items-center h-10 justify-end">
-		<Icon label="Reset" button={true} card={true} on:click={() => reset()} aria="reset exercise">
+		<Icon
+			label="Reset"
+			button={true}
+			card={true}
+			on:click={() => reset($page.params.projectID, $page.params.index)}
+			aria="reset exercise"
+		>
 			<Refresh />
 		</Icon>
-		<Icon label="Format" button={true} card={true} aria="format code">
+		<Icon label="Format" button={true} card={true} aria="format code" on:click={handleFormat}>
 			<Wand />
 		</Icon>
 	</div>
@@ -77,12 +97,12 @@
 				>
 					<Checkbox
 						disabled={true}
-						variant={index <= $_chapter ? 'default' : 'text'}
-						value={$result && index <= $_chapter ? $result[index].passed : undefined}
+						variant={index > $_chapter ? 'text' : 'default'}
+						value={$result && $result[index] ? $result[index].passed : undefined}
 					/>
 					<p class="chapter">{@html chapter.text}</p>
 				</div>
-				{#if $result && !$result[index].passed && chapter.hint && index == $_chapter && submissionAttempt > 0}
+				{#if $result && $result[index] && !$result[index].passed && chapter.hint && index == $_chapter && submissionAttempt > 0}
 					<div class="bg-brand-danger-dark bg-opacity-50 p-5 text-brand-danger-light">
 						<p class="hint">{@html chapter.hint}</p>
 					</div>

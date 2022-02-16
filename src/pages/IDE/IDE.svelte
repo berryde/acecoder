@@ -2,18 +2,8 @@
 	import SplitPane from 'src/components/splitpane/SplitPane.svelte';
 	import EditorContainer from './EditorContainer.svelte';
 	import PreviewContainer from './PreviewContainer.svelte';
-	import { onMount } from 'svelte';
-	import {
-		chapter,
-		exercise,
-		initialising,
-		language,
-		loadExercise,
-		project,
-		test
-	} from 'src/utils/exercise/exercise';
-	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
-	import { loadSettings } from 'src/utils/settings/settings';
+	import { chapter, exercise, project, test } from 'src/utils/exercise/exercise';
+
 	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
 	import Navbar from 'src/components/navbar/Navbar.svelte';
 	import Button from 'src/components/common/Button.svelte';
@@ -33,14 +23,7 @@
 	function toggleSelecting(e: CustomEvent<boolean>) {
 		selecting = e.detail;
 	}
-	let index: number;
-
-	// Add a listener for key combinations
-	onMount(async () => {
-		index = parseInt($page.params.index);
-		loadExercise($exercise, $language);
-		loadSettings();
-	});
+	let index = parseInt($page.params.index);
 
 	async function handleNext() {
 		await incrementProgress($page.params.projectID, $page.params.index);
@@ -65,48 +48,42 @@
 	}
 </script>
 
-{#if $initialising}
-	<div class="h-screen w-screen bg-brand-background flex justify-center items-center">
-		<OrbitProgressIndicator />
-	</div>
-{:else}
-	<div class="h-screen max-h-screen text-brand-text bg-brand-accent flex flex-col">
-		<Navbar />
-		<SplitPane pane1Size={25} pane2Size={75}>
-			<div slot="pane1" class="h-full">
-				<Sidebar />
-			</div>
-			<div slot="pane2" class="h-full flex flex-col">
-				<SplitPane minPane2Size={'10rem'} pane1Size={66} pane2Size={34}>
-					<div slot="pane1" class="h-full">
-						<EditorContainer on:drag={toggleSelecting} />
-					</div>
-					<div slot="pane2" class="h-full" let:resizing>
-						<PreviewContainer {resizing} {selecting} />
-					</div>
-				</SplitPane>
-			</div>
-		</SplitPane>
-		<div class="px-5 py-3 flex flex-row w-full justify-between bg-brand-background items-center">
-			<div class="flex-grow w-full">
-				{#if $page.params.index !== '0'}
-					<Button text="Previous" on:click={handlePrevious} outline={true} />
-				{/if}
-			</div>
+<div class="h-screen max-h-screen text-brand-text bg-brand-accent flex flex-col">
+	<Navbar />
+	<SplitPane pane1Size={25} pane2Size={75}>
+		<div slot="pane1" class="h-full">
+			<Sidebar />
+		</div>
+		<div slot="pane2" class="h-full flex flex-col">
+			<SplitPane minPane2Size={'10rem'} pane1Size={66} pane2Size={34}>
+				<div slot="pane1" class="h-full">
+					<EditorContainer on:drag={toggleSelecting} />
+				</div>
+				<div slot="pane2" class="h-full" let:resizing>
+					<PreviewContainer {resizing} {selecting} />
+				</div>
+			</SplitPane>
+		</div>
+	</SplitPane>
+	<div class="px-5 py-3 flex flex-row w-full justify-between bg-brand-background items-center">
+		<div class="flex-grow w-full">
+			{#if $page.params.index !== '0'}
+				<Button text="Previous" on:click={handlePrevious} outline={true} link={true} />
+			{/if}
+		</div>
 
-			<p>{index}/{$project.exerciseCount - 1}</p>
-			<div class="flex space-x-5 flex-grow justify-end w-full">
-				{#if $exercise.assessed && $chapter < $exercise.chapters.length}
-					<Button text="Submit" on:click={handleSubmit} {loading} />
-				{:else if index + 1 == $project.exerciseCount}
-					<Button text="Finish" on:click={handleFinish} />
-				{:else}
-					{#if $exercise.assessed}
-						<Button text="Re-submit" on:click={handleSubmit} outline={true} {loading} />
-					{/if}
-					<Button text="Next" on:click={handleNext} />
+		<p>{index}/{$project.exerciseCount - 1}</p>
+		<div class="flex space-x-5 flex-grow justify-end w-full">
+			{#if $exercise.assessed && $chapter < $exercise.chapters.length}
+				<Button text="Submit" on:click={handleSubmit} {loading} />
+			{:else if index + 1 == $project.exerciseCount}
+				<Button text="Finish" on:click={handleFinish} link={true} />
+			{:else}
+				{#if $exercise.assessed}
+					<Button text="Re-submit" on:click={handleSubmit} outline={true} {loading} />
 				{/if}
-			</div>
+				<Button text="Next" on:click={handleNext} link={true} />
+			{/if}
 		</div>
 	</div>
-{/if}
+</div>

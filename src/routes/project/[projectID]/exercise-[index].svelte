@@ -1,19 +1,20 @@
 <script lang="ts">
 	import IDE from 'src/pages/IDE/IDE.svelte';
 	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
+	import { getProject, getProjectSettings, getResults } from 'src/utils/project/project';
 	import {
+		exercise,
 		getExercise,
-		getProject,
-		getProjectSettings,
-		getResults
-	} from 'src/utils/project/project';
-	import { exercise, language, project } from 'src/utils/exercise/exercise';
+		language,
+		loadExercise,
+		project
+	} from 'src/utils/exercise/exercise';
 	import { page } from '$app/stores';
 	import { selectedTab, tabs } from 'src/utils/tabs/tabs';
 
 	let loading = true;
 
-	async function loadExercise() {
+	async function initialise() {
 		// Check if the user has unlocked this exercise
 		const settings = await getProjectSettings($page.params.projectID);
 		if (settings.progress < parseInt($page.params.index)) {
@@ -34,6 +35,7 @@
 				tabs.set(editable);
 				await getResults($page.params.projectID, $page.params.index);
 				selectedTab.set(editable[0]);
+				await loadExercise();
 				loading = false;
 			} catch (err) {
 				console.error(err);
@@ -47,6 +49,6 @@
 	<title>Exercise</title>
 </svelte:head>
 
-<PrivateRoute {loading} on:authenticated={loadExercise}>
+<PrivateRoute {loading} on:authenticated={initialise}>
 	<IDE />
 </PrivateRoute>
