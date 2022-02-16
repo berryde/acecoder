@@ -82,7 +82,7 @@ export const getExercise = async (
 			if (submission.exists()) {
 				const submissionFiles = submission.data() as Record<string, string>;
 				Object.keys(submissionFiles).forEach((name) => {
-					if (metadata.inherits || (name in files[language])) {
+					if (metadata.inherits || name in files[language]) {
 						files[language][name] = {
 							type: 'file',
 							value: submissionFiles[name],
@@ -216,22 +216,21 @@ export const getStats = async (): Promise<UserStats> => {
 	}
 };
 
-
 export const restartProject = async (projectID: string): Promise<void> => {
-	const project = await getProject(projectID)
+	const project = await getProject(projectID);
 	await runTransaction(db, async (transaction) => {
-		if (!auth.currentUser) throw Error("You need to be logged in to perform that action")
+		if (!auth.currentUser) throw Error('You need to be logged in to perform that action');
 		const uid = auth.currentUser.uid;
 
-		const results: DocumentReference[] = []
+		const results: DocumentReference[] = [];
 		for (let i = 0; i < project.exerciseCount; i++) {
-			const result = doc(db, 'projects', projectID, 'exercises', i.toString(), 'results', uid)
-			if ((await transaction.get(result)).exists()) results.push(result)
+			const result = doc(db, 'projects', projectID, 'exercises', i.toString(), 'results', uid);
+			if ((await transaction.get(result)).exists()) results.push(result);
 		}
 
-		for (const result of results) transaction.delete(result)
+		for (const result of results) transaction.delete(result);
 
-		transaction.delete(doc(db, 'projects', projectID, 'submissions', uid))
-		transaction.delete(doc(db, 'projects', projectID, 'settings', uid))
-	})
-}
+		transaction.delete(doc(db, 'projects', projectID, 'submissions', uid));
+		transaction.delete(doc(db, 'projects', projectID, 'settings', uid));
+	});
+};

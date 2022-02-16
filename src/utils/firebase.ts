@@ -3,7 +3,13 @@ import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import type { Badge } from './types';
-import { connectStorageEmulator, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import {
+	connectStorageEmulator,
+	getDownloadURL,
+	getStorage,
+	ref,
+	uploadBytes
+} from 'firebase/storage';
 
 /**
  * The firebase client access credentials. This is publicly exposed as it only provides client access.
@@ -99,5 +105,4 @@ export const uploadImage = async (folder: string, file: File): Promise<string> =
 	const location = ref(storage, name);
 	await uploadBytes(location, file);
 	return `gs://folio-8b029.appspot.com/${name}`;
-}
-
+};

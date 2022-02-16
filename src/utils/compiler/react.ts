@@ -30,7 +30,7 @@ export default function reactCompiler(
 				try {
 					return resolveRelativePath(importee, importer, files);
 				} catch (err) {
-					console.error(err)
+					console.error(err);
 					this.warn(fileNotFoundError(importee, importer));
 				}
 			}

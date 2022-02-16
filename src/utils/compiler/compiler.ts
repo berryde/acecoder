@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { File, FSFile } from '../types';
+import type { File } from '../types';
 import type { WorkerResponse } from '../types';
 import type { RollupWarning, Plugin } from 'rollup';
 import reactCompiler from './react';
@@ -30,7 +30,10 @@ export const tail = (path: string): string => {
  * @param file The file without an extension to resolve
  * @param files The filesystem
  */
-export const resolveExtension = (file: string, files: { [key: string]: File }): string | undefined => {
+export const resolveExtension = (
+	file: string,
+	files: { [key: string]: File }
+): string | undefined => {
 	if (file in files) {
 		return file;
 	}
@@ -123,7 +126,6 @@ export const fileNotFoundError = (importee: string, importer: string): RollupWar
 	id: importer,
 	name: 'FileNotFoundError'
 });
-
 
 /**
  * Extracts the dependencies from a package json file.

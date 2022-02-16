@@ -9,4 +9,4 @@ declare module 'brace/mode/css';
 declare module 'brace/mode/plain_text';
 declare module 'brace/ext/searchbox';
 declare module 'rollup/dist/es/rollup.browser.js';
-declare module '@babel/standalone'
+declare module '@babel/standalone';

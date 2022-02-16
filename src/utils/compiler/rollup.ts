@@ -25,14 +25,15 @@ const createError = (message: string, name = 'Error', pos = 0, location = ''): W
 	};
 };
 
-
 const PACKAGE = 'package.json';
 
 self.addEventListener(
 	'message',
-	async (event: MessageEvent<{ language: string; files: Record<string, FSFile> }>): Promise<void> => {
+	async (
+		event: MessageEvent<{ language: string; files: Record<string, FSFile> }>
+	): Promise<void> => {
 		// Recreate the filesystem in memory.
-		const { files } = event.data
+		const { files } = event.data;
 
 		// If there is no package.json, attempt to serve a static page.
 		if (!(PACKAGE in files)) {

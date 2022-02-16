@@ -26,7 +26,7 @@ export const format = (value: string, language: string): string => {
 				return prettier.format(value, getParser(language));
 			}
 		} catch (err) {
-			console.error(err)
+			console.error(err);
 			console.error('Auto-formatting failed due to a syntax error.');
 		}
 	}

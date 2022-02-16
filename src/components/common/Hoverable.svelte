@@ -21,6 +21,6 @@
 	export let classes = '';
 </script>
 
-<div on:mouseenter={enter} on:mouseleave={leave} class={classes}>
+<div on:mouseenter={enter} on:mouseleave={leave} class={classes} data-testid="hoverable">
 	<slot {hovering} />
 </div>

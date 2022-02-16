@@ -22,7 +22,8 @@
 		name: '',
 		description: '',
 		exerciseCount: 0,
-		thumbnail: ''
+		thumbnail: '',
+		overview: ''
 	};
 	let errors: string[] = [];
 	let file: File;

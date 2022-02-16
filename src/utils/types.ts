@@ -198,7 +198,7 @@ export type Project = {
 	/**
 	 * A brief sentence describing the project
 	 */
-	overview: string
+	overview: string;
 };
 
 /**

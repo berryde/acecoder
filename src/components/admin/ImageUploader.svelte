@@ -8,7 +8,7 @@
 	export let editing = false;
 	export let title: string;
 	export let subtitle: string;
-	export let file: File = undefined;
+	export let file: File | undefined = undefined;
 
 	async function upload() {
 		try {
