@@ -20,7 +20,9 @@ import type {
 	ServerResponse,
 	Badge,
 	UserStats,
-	UserBadge
+	UserBadge,
+	Certificate,
+	UserCertificate
 } from '../types';
 import { ERR_NO_AUTH } from '../general';
 
@@ -44,6 +46,12 @@ export const getProjectExercises = async (
 		throw `Unable to fetch exercises for project ${projectID}`;
 	}
 };
+
+export const getCertificate = async (certificateID: string): Promise<Certificate> => {
+	const snapshot = await getDoc(doc(db, 'certificates', certificateID))
+	if (!snapshot.exists()) throw new Error("No certificate could be found with that ID")
+	return snapshot.data() as Certificate
+}
 
 export const getResults = async (projectID: string, exerciseID: string): Promise<void> => {
 	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
@@ -101,6 +109,13 @@ export const getBadge = async (badgeID: string): Promise<Badge> => {
 	throw 'Badge ' + badgeID + ' does not exist';
 };
 
+export const getCertificateForProject = async (projectID: string): Promise<string> => {
+	if (!auth.currentUser) throw new Error(ERR_NO_AUTH)
+	const snapshot = await getDocs(query(collection(db, 'stats', auth.currentUser.uid, 'certificates'), where("projectID", "==", projectID)))
+	if (snapshot.empty) throw new Error("No certificate could be found for that project")
+	return snapshot.docs[0].id
+}
+
 export const getBadges = async (options: {
 	limit?: number;
 	projectID?: string;
@@ -119,6 +134,8 @@ export const getBadges = async (options: {
 			Object.entries(userBadges).filter((entry) => entry[1].projectID == projectID)
 		);
 	}
+
+	if (Object.entries(userBadges).length == 0) return []
 
 	const constraints: QueryConstraint[] = [];
 	constraints.push(where('__name__', 'in', Object.keys(userBadges)));

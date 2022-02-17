@@ -1,6 +1,6 @@
 import functions = require('firebase-functions');
 import admin = require('firebase-admin');
-import type { Badge, Exercise, Project, Settings, UserBadge, UserStats } from './types';
+import type { Badge, Certificate, Exercise, Project, Settings, UserBadge, UserCertificate, UserStats } from './types';
 import { calculateBadges } from './badges';
 import { store } from './index';
 
@@ -139,60 +139,78 @@ export const startProject = functions
 
 export const completeProject = functions
 	.region('europe-west2')
-	.https.onCall(async (data: { projectID: string }, context) => {
+	.https.onCall(async (data: { projectID: string, name: string }, context): Promise<{
+		badges: Record<string, Badge>,
+		certificateID: string
+	}> => {
 		if (context.auth) {
-			const { projectID } = data;
+			const { projectID, name } = data;
 			const uid = context.auth.uid;
-			try {
-				return await store.runTransaction(async (transaction) => {
-					// Fetch the user's settings
-					const settings = await getSettings(transaction, projectID, uid);
-					if (settings.completed) throw 'Project already completed';
 
-					// Fetch the project metadata
-					const project = await getProject(transaction, projectID);
-					const progress = parseInt(settings.progress);
-					if (progress != project.exerciseCount - 1)
-						throw 'Some exercises have not been completed yet';
+			return await store.runTransaction(async (transaction) => {
+				// Fetch the user's settings
+				const settings = await getSettings(transaction, projectID, uid);
+				if (settings.completed) throw 'Project already completed';
 
-					// Get the user's stats
-					const stats = await getStats(transaction, context.auth.uid);
+				// Fetch the project metadata
+				const project = await getProject(transaction, projectID);
+				const progress = parseInt(settings.progress);
+				if (progress != project.exerciseCount - 1)
+					throw 'Some exercises have not been completed yet';
 
-					// Increment the relevant stats
-					stats[settings.language] += 1;
-					stats['completed'] += 1;
+				// Get the user's stats
+				const stats = await getStats(transaction, context.auth.uid);
 
-					// Add any awarded badges to the user's stats
-					const badges: Record<string, Badge> = await calculateBadges(transaction, stats);
-					Object.keys(badges).forEach((id) => {
-						try {
-							// Add the badge to the user's profile
-							const data: UserBadge = {
-								timestamp: admin.firestore.Timestamp.now(),
-								projectID: projectID
-							};
-							transaction.create(
-								store.collection('stats').doc(uid).collection('badges').doc(id),
-								data
-							);
-						} catch (err) {
-							console.error('The user already has that badge');
-						}
-					});
+				// Increment the relevant stats
+				stats[settings.language] += 1;
+				stats['completed'] += 1;
 
-					// Mark this project as completed so that this method doesn't run again if they resubmit
-					transaction.update(getProjectRef(projectID).collection('settings').doc(uid), {
-						completed: true
-					});
-
-					// Set the new stats
-					transaction.set(store.collection('stats').doc(uid), stats);
-
-					// Return the unlocked badges
-					return badges;
+				// Add any awarded badges to the user's stats
+				const badges: Record<string, Badge> = await calculateBadges(transaction, stats);
+				Object.keys(badges).forEach((id) => {
+					try {
+						// Add the badge to the user's profile
+						const data: UserBadge = {
+							timestamp: admin.firestore.Timestamp.now(),
+							projectID: projectID
+						};
+						transaction.create(
+							store.collection('stats').doc(uid).collection('badges').doc(id),
+							data
+						);
+					} catch (err) {
+						console.error('The user already has that badge');
+					}
 				});
-			} catch (err) {
-				console.error(err);
-			}
+
+				// Create the certificate 
+				const certificateRef = store.collection('certificates').doc()
+				const certificate: Certificate = {
+					issued: admin.firestore.Timestamp.now(),
+					project: project.name,
+					name: name
+				}
+				transaction.create(certificateRef, certificate)
+
+				// Add a reference to the certificate to the user's profile
+				const userCertificateRef = store.collection('stats').doc(uid).collection('certificates').doc(certificateRef.id)
+				const userCertificate: UserCertificate = {
+					projectID: projectID,
+					timestamp: admin.firestore.Timestamp.now(),
+				}
+				transaction.create(userCertificateRef, userCertificate)
+
+				// Mark this project as completed so that this method doesn't run again if they resubmit
+				transaction.update(getProjectRef(projectID).collection('settings').doc(uid), {
+					completed: true
+				});
+
+				// Set the new stats
+				transaction.set(store.collection('stats').doc(uid), stats);
+
+				// Return the unlocked badges
+				return { badges: badges, certificateID: certificateRef.id };
+			});
+
 		}
 	});

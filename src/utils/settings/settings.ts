@@ -7,6 +7,4 @@ export const formatOnSave = writable(false);
 
 export const toggleFormatOnSave = (): void => {
 	formatOnSave.update((value) => !value);
-
 };
-

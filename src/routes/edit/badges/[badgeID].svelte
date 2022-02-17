@@ -18,7 +18,7 @@
 	<div
 		class="w-screen h-screen bg-brand-background flex flex-col justify-center items-center text-brand-text"
 	>
-		<div class="flex-grow lg:max-w-5xl w-full h-full p-20">
+		<div class="flex-grow lg:max-w-6xl w-full h-full px-20 py-10">
 			<BadgeSettings creating={false} {badge} />
 		</div>
 	</div>

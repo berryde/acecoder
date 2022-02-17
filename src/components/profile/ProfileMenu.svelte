@@ -14,7 +14,15 @@
 		<ProfileImage />
 	</div>
 	<div slot="menu">
-		<div class="p-3 cursor-pointer text-brand-background" on:click={handleClick}>
+		<div
+			class="p-3 cursor-pointer text-brand-background bg-white hover:bg-gray-100 transition-colors rounded-t"
+		>
+			<p>My profile</p>
+		</div>
+		<div
+			class="p-3 cursor-pointer text-brand-background bg-white hover:bg-gray-100 transition-colors rounded-b"
+			on:click={handleClick}
+		>
 			<p>Log out</p>
 		</div>
 	</div>

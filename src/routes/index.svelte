@@ -63,7 +63,7 @@
 		class="w-screen min-h-screen bg-brand-background flex flex-col items-center text-brand-text overflow-y-auto"
 	>
 		<Navbar />
-		<div class="w-full lg:max-w-5xl h-full p-20 space-y-8">
+		<div class="w-full max-w-6xl h-full px-20 py-10 space-y-8">
 			<p class="text-3xl font-bold">{greeting}, {getName()}</p>
 			{#if badges.length > 0}
 				<div class=" items-center">

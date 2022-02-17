@@ -121,9 +121,9 @@ export const resetPassword = async (email: string): Promise<AuthError | void> =>
 	}
 };
 
-export const getName = (): string => {
+export const getName = (full = false): string => {
 	if (!auth.currentUser) return '';
-	else if (auth.currentUser.displayName) return auth.currentUser.displayName.split(' ')[0];
+	else if (auth.currentUser.displayName) return full ? auth.currentUser.displayName : auth.currentUser.displayName.split(' ')[0];
 	else if (auth.currentUser.email) return auth.currentUser.email.split('@')[0];
 	else return '';
 };

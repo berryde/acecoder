@@ -100,11 +100,11 @@ export const getExercise = async (
 export const reset = async (projectID: string, index: string): Promise<void> => {
 	initialising.set(true);
 	console.log(get(contents));
-	exercise.set(await getExercise(projectID, index, get(language), false))
+	exercise.set(await getExercise(projectID, index, get(language), false));
 	filesystem.set({});
 	await loadExercise();
-	contents.set((getFile(get(selectedTab)) as FSFile).value)
-	console.log(get(contents))
+	contents.set((getFile(get(selectedTab)) as FSFile).value);
+	console.log(get(contents));
 	initialising.set(false);
 };
 

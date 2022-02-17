@@ -11,7 +11,8 @@
 		getProjectExercises,
 		getProject,
 		getProjectSettings,
-		restartProject
+		restartProject,
+		getCertificateForProject
 	} from 'src/utils/project/project';
 	import type { ExerciseMetadata, Project, ProjectSettings } from 'src/utils/types';
 	import { onMount } from 'svelte';
@@ -20,11 +21,13 @@
 	import Download from 'src/components/projects/Download.svelte';
 	import Card from 'src/components/common/Card.svelte';
 	import CircularProgressIndicator from 'src/components/loaders/CircularProgressIndicator.svelte';
+	import CertificateLink from 'src/components/projects/CertificateLink.svelte';
 
 	let project: Project;
 	let exercises: Record<string, ExerciseMetadata>;
 	let settings: ProjectSettings;
 	let loading: boolean = true;
+	let certificateID: string;
 
 	onMount(async () => {
 		project = await getProject($page.params.projectID);
@@ -33,6 +36,9 @@
 			settings = await getProjectSettings($page.params.projectID, project.languages[0]);
 		} catch (err) {
 			settings = { progress: 0, language: project.languages[0], completed: false };
+		}
+		if (settings.completed) {
+			certificateID = await getCertificateForProject($page.params.projectID);
 		}
 		loading = false;
 	});
@@ -63,7 +69,7 @@
 		class="w-screen min-h-screen bg-brand-background flex flex-col items-center text-brand-text overflow-y-auto"
 	>
 		<Navbar />
-		<div class="w-full lg:max-w-5xl h-full p-20 space-y-8">
+		<div class="w-full lg:max-w-6xl h-full px-20 py-10 space-y-8">
 			<h1 class="text-3xl font-bold">{project.name}</h1>
 			<p>{project.description}</p>
 			<Card title="Project outline">
@@ -143,7 +149,8 @@
 				</div>
 			</Card>
 			{#if settings.completed}
-				<Download {settings} />
+				<CertificateLink {certificateID} />
+				<Download />
 			{/if}
 		</div>
 	</div>

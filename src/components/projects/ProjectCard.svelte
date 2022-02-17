@@ -22,13 +22,13 @@
 		<img
 			src={image}
 			alt="Project thumbnail"
-			class="rounded-t h-38 cursor-pointer bg-cover"
+			class="rounded-t h-38 cursor-pointer bg-cover w-full"
 			on:click={handleClick}
 			tabindex={0}
 			role="link"
 			aria-label={`${project.name} project`}
 		/>
-		<p class="p-2 text-xs">{project.overview}</p>
+		<p class="p-2 ">{project.overview}</p>
 	</div>
 {:else}
 	<div class="bg-brand-accent h-42 rounded" />

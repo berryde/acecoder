@@ -155,6 +155,12 @@ export type ServerRequest = {
 	chapter: number;
 };
 
+export type Certificate = {
+	issued: Timestamp;
+	name: string;
+	project: string;
+}
+
 /**
  * Response from the submission server.
  */
@@ -313,6 +319,17 @@ export type UserBadge = {
 	 */
 	projectID: string;
 };
+
+export type UserCertificate = {
+	/**
+	 * The timestamp at which the badge was awarded
+	 */
+	timestamp: Timestamp;
+	/**
+	 * The id of the project for which this badge was awarded
+	 */
+	projectID: string;
+}
 
 /**
  * Project completion statistics for a user
