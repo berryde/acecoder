@@ -159,7 +159,7 @@ export type Certificate = {
 	issued: Timestamp;
 	name: string;
 	project: string;
-}
+};
 
 /**
  * Response from the submission server.
@@ -329,7 +329,11 @@ export type UserCertificate = {
 	 * The id of the project for which this badge was awarded
 	 */
 	projectID: string;
-}
+	/**
+	 *
+	 */
+	projectName: string;
+};
 
 /**
  * Project completion statistics for a user

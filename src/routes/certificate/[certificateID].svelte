@@ -21,11 +21,18 @@
 	async function handleDownload() {
 		const element = document.getElementById('certificate');
 		if (element) {
+			const logos = document.getElementsByClassName('logo');
+			for (const logo of logos) {
+				console.log(logo.parentElement);
+			}
 			const canvas = await html2canvas(element);
+
 			const link = document.createElement('a');
 			link.href = canvas.toDataURL();
 			link.download = 'acecoder-certificate.png';
+			document.body.appendChild(link);
 			link.click();
+			document.body.removeChild(link);
 		}
 	}
 </script>
@@ -35,6 +42,11 @@
 	{#if certificate}
 		<div class="flex-grow flex flex-col w-full py-10 px-20 max-w-6xl space-y-5 select-none">
 			<p class="text-3xl font-bold">Certificate of Achievement</p>
+			<p>
+				This certificate has been awarded to {certificate.name} to recognise their success in completing
+				a project on Acecoder. A project is a complex, multi-stage assignment that evaluates the user's
+				front-end development skills.
+			</p>
 			<div class="flex items-center justify-center">
 				<Certificate {certificate} />
 			</div>

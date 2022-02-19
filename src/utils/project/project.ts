@@ -48,10 +48,10 @@ export const getProjectExercises = async (
 };
 
 export const getCertificate = async (certificateID: string): Promise<Certificate> => {
-	const snapshot = await getDoc(doc(db, 'certificates', certificateID))
-	if (!snapshot.exists()) throw new Error("No certificate could be found with that ID")
-	return snapshot.data() as Certificate
-}
+	const snapshot = await getDoc(doc(db, 'certificates', certificateID));
+	if (!snapshot.exists()) throw new Error('No certificate could be found with that ID');
+	return snapshot.data() as Certificate;
+};
 
 export const getResults = async (projectID: string, exerciseID: string): Promise<void> => {
 	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
@@ -110,19 +110,35 @@ export const getBadge = async (badgeID: string): Promise<Badge> => {
 };
 
 export const getCertificateForProject = async (projectID: string): Promise<string> => {
-	if (!auth.currentUser) throw new Error(ERR_NO_AUTH)
-	const snapshot = await getDocs(query(collection(db, 'stats', auth.currentUser.uid, 'certificates'), where("projectID", "==", projectID)))
-	if (snapshot.empty) throw new Error("No certificate could be found for that project")
-	return snapshot.docs[0].id
-}
+	if (!auth.currentUser) throw new Error(ERR_NO_AUTH);
+	const snapshot = await getDocs(
+		query(
+			collection(db, 'stats', auth.currentUser.uid, 'certificates'),
+			where('projectID', '==', projectID)
+		)
+	);
+	if (snapshot.empty) throw new Error('No certificate could be found for that project');
+	return snapshot.docs[0].id;
+};
 
-export const getBadges = async (options: {
-	limit?: number;
-	projectID?: string;
-}): Promise<Badge[]> => {
+export const getCertificates = async (uid: string): Promise<Record<string, UserCertificate>> => {
 	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
+	const snapshot = await getDocs(collection(db, 'stats', uid, 'certificates'));
+
+	// Get the user's certificates
+	if (snapshot.empty) return {};
+	return Object.fromEntries(snapshot.docs.map((doc) => [doc.id, doc.data() as UserCertificate]));
+};
+
+export const getBadges = async (
+	uid: string,
+	options: {
+		limit?: number;
+		projectID?: string;
+	} = { limit: undefined, projectID: undefined }
+): Promise<Badge[]> => {
 	const { limit, projectID } = options;
-	const snapshot = await getDocs(collection(db, 'stats', auth.currentUser.uid, 'badges'));
+	const snapshot = await getDocs(collection(db, 'stats', uid, 'badges'));
 
 	if (snapshot.empty) return [];
 	let userBadges = Object.fromEntries(
@@ -133,9 +149,8 @@ export const getBadges = async (options: {
 		userBadges = Object.fromEntries(
 			Object.entries(userBadges).filter((entry) => entry[1].projectID == projectID)
 		);
+		if (Object.entries(userBadges).length == 0) return [];
 	}
-
-	if (Object.entries(userBadges).length == 0) return []
 
 	const constraints: QueryConstraint[] = [];
 	constraints.push(where('__name__', 'in', Object.keys(userBadges)));

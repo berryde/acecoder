@@ -196,7 +196,7 @@ export const completeProject = functions
 				const userCertificateRef = store.collection('stats').doc(uid).collection('certificates').doc(certificateRef.id)
 				const userCertificate: UserCertificate = {
 					projectID: projectID,
-					timestamp: admin.firestore.Timestamp.now(),
+					projectName: project.name
 				}
 				transaction.create(userCertificateRef, userCertificate)
 

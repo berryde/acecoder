@@ -2,6 +2,15 @@
 	import { signOut } from 'src/utils/auth/auth';
 	import ProfileImage from './ProfileImage.svelte';
 	import Dropdown from '../common/Dropdown.svelte';
+	import { auth } from 'src/utils/firebase';
+	import { onMount } from 'svelte';
+
+	let uid = '';
+	onMount(() => {
+		if (auth.currentUser) {
+			uid = auth.currentUser.uid;
+		}
+	});
 
 	function handleClick(e: MouseEvent) {
 		e.stopPropagation();
@@ -17,7 +26,7 @@
 		<div
 			class="p-3 cursor-pointer text-brand-background bg-white hover:bg-gray-100 transition-colors rounded-t"
 		>
-			<p>My profile</p>
+			<a href="/profile/{uid}">My profile</a>
 		</div>
 		<div
 			class="p-3 cursor-pointer text-brand-background bg-white hover:bg-gray-100 transition-colors rounded-b"

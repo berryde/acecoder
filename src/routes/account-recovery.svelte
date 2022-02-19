@@ -29,7 +29,7 @@
 </script>
 
 <svelte:head>
-	<title>Account Recovery</title>
+	<title>Account Recovery - Acecoder</title>
 </svelte:head>
 
 <div

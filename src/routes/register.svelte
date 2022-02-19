@@ -7,6 +7,7 @@
 	import IoMdPerson from 'svelte-icons/io/IoMdPerson.svelte';
 	import IoMdLock from 'svelte-icons/io/IoMdLock.svelte';
 	import type { AuthError } from 'src/utils/types';
+	import Logo from 'src/components/navbar/Logo.svelte';
 
 	let email = '';
 	let password = '';
@@ -38,32 +39,29 @@
 </script>
 
 <svelte:head>
-	<title>Register</title>
+	<title>Register - Acecoder</title>
 </svelte:head>
 
 <div
 	class="w-full h-screen bg-brand-background flex flex-col justify-center items-center text-brand-text"
 >
-	<div class="w-96 flex flex-col">
+	<div class="w-96 flex flex-col space-y-3">
+		<div class="flex justify-center w-full pb-14">
+			<Logo variant="light" size="large" link={false} />
+		</div>
 		<h1 class="text-3xl font-bold mb-10">Create an account</h1>
 
-		<Input placeholder="Email" type="email" icon={true} variant="dark" bind:value={email}>
+		<Input placeholder="Email" type="email" icon={true} bind:value={email}>
 			<IoMdPerson />
 		</Input>
-		<Input placeholder="Password" type="password" icon={true} variant="dark" bind:value={password}>
+		<Input placeholder="Password" type="password" icon={true} bind:value={password}>
 			<IoMdLock />
 		</Input>
-		<Input
-			placeholder="Confifrm password"
-			type="password"
-			icon={true}
-			variant="dark"
-			bind:value={confirmPassword}
-		>
+		<Input placeholder="Confifrm password" type="password" icon={true} bind:value={confirmPassword}>
 			<IoMdLock />
 		</Input>
 
-		<Button text="Sign up" on:click={() => submit()} />
+		<Button text="Sign up" on:click={() => submit()} expanded={true} />
 
 		{#if error}
 			<div class="bg-red-900 text-red-400 bg-opacity-50 p-3 mt-3 rounded">
@@ -84,6 +82,7 @@
 			text="Sign up with Google"
 			icon={true}
 			variant="accent"
+			expanded={true}
 			on:click={() => {
 				signInWith('google');
 			}}><IoLogoGoogle /></Button
@@ -92,6 +91,7 @@
 			text="Sign up with GitHub"
 			icon={true}
 			variant="accent"
+			expanded={true}
 			on:click={() => {
 				signInWith('github');
 			}}><IoLogoGithub /></Button

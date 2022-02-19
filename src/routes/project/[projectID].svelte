@@ -4,7 +4,7 @@
 	import Button from 'src/components/common/Button.svelte';
 	import More from 'svelte-icons/io/IoIosMore.svelte';
 	import Checkbox from 'src/components/common/Checkbox.svelte';
-	import Navbar from 'src/components/navbar/Navbar.svelte';
+	import Page from 'src/components/common/Page.svelte';
 	import { startProject } from 'src/utils/firebase';
 	import { capitalise } from 'src/utils/general';
 	import {
@@ -61,97 +61,92 @@
 </script>
 
 <svelte:head>
-	<title>Project</title>
+	<title>{project ? `${project.name} - Acecoder` : 'Loading - Acecoder'}</title>
 </svelte:head>
 
 <PrivateRoute {loading}>
-	<div
-		class="w-screen min-h-screen bg-brand-background flex flex-col items-center text-brand-text overflow-y-auto"
-	>
-		<Navbar />
-		<div class="w-full lg:max-w-6xl h-full px-20 py-10 space-y-8">
-			<h1 class="text-3xl font-bold">{project.name}</h1>
-			<p>{project.description}</p>
-			<Card title="Project outline">
-				<Dropdown slot="action">
-					<div slot="button">
-						<Icon card={true} button={true} aria="project settings">
-							<More />
-						</Icon>
-					</div>
-					<div slot="menu" class="block origin-top-right">
-						{#if restarting}
-							<div class="p-3 w-20 flex items-center justify-center">
-								<CircularProgressIndicator variant="dark" />
-							</div>
-						{:else}
-							<div
-								class="p-3 text-brand-danger-light block"
-								on:click={handleRestart}
-								role="button"
-								aria-label="project settings"
-							>
-								<p>Restart project</p>
-							</div>
-						{/if}
-					</div>
-				</Dropdown>
-
-				<div>
-					{#each Object.entries(exercises) as [index, exercise]}
+	<Page>
+		<h1 class="text-3xl font-bold">{project.name}</h1>
+		<p>{project.description}</p>
+		<Card title="Project outline">
+			<Dropdown slot="action">
+				<div slot="button">
+					<Icon card={true} button={true} aria="project settings">
+						<More />
+					</Icon>
+				</div>
+				<div slot="menu" class="block origin-top-right">
+					{#if restarting}
+						<div class="p-3 w-20 flex items-center justify-center">
+							<CircularProgressIndicator variant="dark" />
+						</div>
+					{:else}
 						<div
-							class="flex items-center space-x-5 {settings.progress < parseInt(index) &&
-								'opacity-50'}"
+							class="p-3 text-brand-danger-light block"
+							on:click={handleRestart}
+							role="button"
+							aria-label="project settings"
 						>
-							<Checkbox
-								value={settings.progress > parseInt(index) || settings.completed}
-								disabled={true}
-								aria="exercise completed"
-								variant={settings.progress >= parseInt(index) ? 'default' : 'text'}
+							<p>Restart project</p>
+						</div>
+					{/if}
+				</div>
+			</Dropdown>
+
+			<div>
+				{#each Object.entries(exercises) as [index, exercise]}
+					<div
+						class="flex items-center space-x-5 {settings.progress < parseInt(index) &&
+							'opacity-50'}"
+					>
+						<Checkbox
+							value={settings.progress > parseInt(index) || settings.completed}
+							disabled={true}
+							aria="exercise completed"
+							variant={settings.progress >= parseInt(index) ? 'default' : 'text'}
+						/>
+						<p
+							on:click={() => handleClick(index)}
+							role="link"
+							tabindex={settings.progress >= parseInt(index) ? 0 : undefined}
+							class={settings.progress >= parseInt(index) ? 'cursor-pointer ' : 'cursor-default'}
+						>
+							{exercise.name}
+						</p>
+					</div>
+				{/each}
+			</div>
+			{#if settings.progress == 0}
+				<div>
+					<p class="text-lg font-bold">Project settings</p>
+					<p>
+						Select a front-end framework to use for this project. It is not possible to change this
+						choice later on without restarting the project.
+					</p>
+					{#each project.languages as language}
+						<div class="flex items-center space-x-5">
+							<input
+								type="radio"
+								bind:group={settings.language}
+								value={language}
+								id="radio-{language}"
 							/>
-							<p
-								on:click={() => handleClick(index)}
-								role="link"
-								tabindex={settings.progress >= parseInt(index) ? 0 : undefined}
-								class={settings.progress >= parseInt(index) ? 'cursor-pointer ' : 'cursor-default'}
-							>
-								{exercise.name}
-							</p>
+							<label for="radio-language">{capitalise(language)}</label>
 						</div>
 					{/each}
 				</div>
-				{#if settings.progress == 0}
-					<div>
-						<p class="text-lg font-bold">Project settings</p>
-						<p>
-							Select a front-end framework to use for this project. It is not possible to change
-							this choice later on without restarting the project.
-						</p>
-						{#each project.languages as language}
-							<div class="flex items-center space-x-5">
-								<input
-									type="radio"
-									bind:group={settings.language}
-									value={language}
-									id="radio-{language}"
-								/>
-								<label for="radio-language">{capitalise(language)}</label>
-							</div>
-						{/each}
-					</div>
-				{/if}
-				<div class="flex justify-end">
-					<Button
-						text={settings.progress == 0 ? 'Start' : 'Resume'}
-						on:click={() => handleClick(settings.progress)}
-						link={true}
-					/>
-				</div>
-			</Card>
-			{#if settings.completed}
-				<CertificateLink {certificateID} />
-				<Download />
 			{/if}
-		</div>
-	</div>
+			<div class="flex justify-end">
+				<Button
+					text={settings.progress == 0 ? 'Start' : 'Resume'}
+					on:click={() => handleClick(settings.progress)}
+					link={true}
+				/>
+			</div>
+		</Card>
+		{#if settings.completed}
+			<CertificateLink {certificateID} />
+			<Download />
+		{/if}
+	</Page>
 </PrivateRoute>

@@ -11,6 +11,7 @@
 		getErrorMessage
 	} from 'src/utils/auth/auth';
 	import type { AuthError } from 'src/utils/types';
+	import Logo from 'src/components/navbar/Logo.svelte';
 
 	let loading = false;
 	let method: 'default' | 'google' | 'github';
@@ -50,13 +51,16 @@
 </script>
 
 <svelte:head>
-	<title>Login</title>
+	<title>Login - Acecoder</title>
 </svelte:head>
 
 <div
 	class="w-full h-screen bg-brand-background flex flex-col justify-center items-center text-brand-text"
 >
 	<div class="w-96 flex flex-col space-y-3">
+		<div class="flex justify-center w-full pb-14">
+			<Logo variant="light" size="large" link={false} />
+		</div>
 		<h1 class="text-3xl font-bold mb-10">Welcome back</h1>
 		<Input placeholder="Email" type="email" icon={true} bind:value={email}>
 			<IoMdPerson />

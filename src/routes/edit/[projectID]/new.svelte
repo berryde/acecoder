@@ -15,7 +15,7 @@
 </script>
 
 <svelte:head>
-	<title>New exercise</title>
+	<title>New exercise - Acecoder</title>
 </svelte:head>
 
 <PrivateRoute restricted={true} loading={!project}>

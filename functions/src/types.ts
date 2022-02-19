@@ -34,13 +34,10 @@ export type Project = {
 
 export type UserCertificate = {
 	/**
-	 * The timestamp at which the badge was awarded
-	 */
-	timestamp: admin.firestore.Timestamp;
-	/**
 	 * The id of the project for which this badge was awarded
 	 */
 	projectID: string;
+	projectName: string
 }
 
 

@@ -15,14 +15,12 @@
 	});
 </script>
 
-<div
-	class="rounded-full border-2 border-dark-text border-brand-text flex items-center justify-center w-7 h-7"
->
-	{#if iconUrl}
+{#if iconUrl}
+	<div class="rounded-full border-2 border-brand-text flex items-center justify-center w-7 h-7">
 		<img src={iconUrl} alt="profile" class="rounded-full" on:error={() => handleImageError()} />
-	{:else}
-		<div class="w-5 h-5">
-			<MdAccountCircle />
-		</div>
-	{/if}
-</div>
+	</div>
+{:else}
+	<div class="w-7 h-7 border rounded-full border-brand-text">
+		<MdAccountCircle />
+	</div>
+{/if}

@@ -46,7 +46,7 @@
 </script>
 
 <svelte:head>
-	<title>Exercise</title>
+	<title>{$exercise ? `${$exercise.name} - Acecoder` : 'Loading - Acecoder'}</title>
 </svelte:head>
 
 <PrivateRoute {loading} on:authenticated={initialise}>

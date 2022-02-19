@@ -25,7 +25,7 @@
 </script>
 
 <svelte:head>
-	<title>Exercise editor</title>
+	<title>Exercise editor - Acecoder</title>
 </svelte:head>
 
 <PrivateRoute restricted={true} {loading}>

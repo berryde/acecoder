@@ -5,7 +5,7 @@
 	export let expanded: boolean = false;
 </script>
 
-<div class="bg-brand-accent w-full flex justify-center py-1">
+<div class="bg-brand-accent w-full flex justify-center py-1 h-14">
 	<div
 		class="flex justify-between items-center w-full h-full py-2 {expanded
 			? 'px-5'

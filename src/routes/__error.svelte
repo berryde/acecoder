@@ -29,7 +29,7 @@
 </script>
 
 <svelte:head>
-	<title>Error</title>
+	<title>Error - Acecoder</title>
 </svelte:head>
 
 <div

@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>New project</title>
+	<title>New project - Acecoder</title>
 </svelte:head>
 
 <PrivateRoute restricted={true}>

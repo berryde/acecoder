@@ -4,11 +4,11 @@
 	import { getName } from 'src/utils/auth/auth';
 	import type { Badge as BadgeType, Project } from 'src/utils/types';
 	import { onMount } from 'svelte';
-	import { db } from 'src/utils/firebase';
+	import { auth, db } from 'src/utils/firebase';
 	import ProjectCard from 'src/components/projects/ProjectCard.svelte';
-	import Navbar from 'src/components/navbar/Navbar.svelte';
 	import { getBadges } from 'src/utils/project/project';
-	import Badge from 'src/components/projects/Badge.svelte';
+	import Page from 'src/components/common/Page.svelte';
+	import Badges from 'src/components/profile/Badges.svelte';
 
 	let projects: {
 		id: string;
@@ -47,7 +47,7 @@
 
 	let loading = true;
 	async function loadUserData() {
-		badges = await getBadges({
+		badges = await getBadges(auth.currentUser!.uid, {
 			limit: 4
 		});
 		loading = false;
@@ -55,38 +55,29 @@
 </script>
 
 <svelte:head>
-	<title>Folio</title>
+	<title>Dashboard - Acecoder</title>
 </svelte:head>
 
 <PrivateRoute {loading} on:authenticated={loadUserData}>
-	<div
-		class="w-screen min-h-screen bg-brand-background flex flex-col items-center text-brand-text overflow-y-auto"
-	>
-		<Navbar />
-		<div class="w-full max-w-6xl h-full px-20 py-10 space-y-8">
-			<p class="text-3xl font-bold">{greeting}, {getName()}</p>
-			{#if badges.length > 0}
-				<div class=" items-center">
-					<p class="text-lg font-bold">Recent achievements</p>
-					<p class="mb-3">Unlock more achievements by completing projects.</p>
-					<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-						{#each badges as badge}
-							<Badge {badge} />
-						{/each}
-					</div>
-				</div>
-			{/if}
-			<div>
-				<div class=" items-center mb-3">
-					<p class="text-lg font-bold">Projects</p>
-					<p>Get started creating eye-catching, responsive websites.</p>
-				</div>
-				<div class="grid grid-cols-3 gap-4">
-					{#each projects as project}
-						<ProjectCard projectID={project.id} project={project.project} />
-					{/each}
-				</div>
+	<Page>
+		<p class="text-3xl font-bold">{greeting}, {getName()}</p>
+		{#if badges.length > 0}
+			<div class=" items-center">
+				<p class="text-lg font-bold">Recent achievements</p>
+				<p class="mb-3">Unlock more achievements by completing projects.</p>
+				<Badges {badges} />
+			</div>
+		{/if}
+		<div>
+			<div class=" items-center mb-3">
+				<p class="text-lg font-bold">Projects</p>
+				<p>Get started creating eye-catching, responsive websites.</p>
+			</div>
+			<div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+				{#each projects as project}
+					<ProjectCard projectID={project.id} project={project.project} />
+				{/each}
 			</div>
 		</div>
-	</div>
+	</Page>
 </PrivateRoute>

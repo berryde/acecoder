@@ -65,15 +65,21 @@ export const setClaim = async (claim: Record<string, unknown>): Promise<boolean>
 	}
 };
 
-export const completeProject = async (projectID: string, name: string): Promise<{
-	badges: Record<string, Badge>,
-	certificateID: string
+export const completeProject = async (
+	projectID: string,
+	name: string
+): Promise<{
+	badges: Record<string, Badge>;
+	certificateID: string;
 }> => {
 	return (
-		await httpsCallable<Record<string, unknown>, {
-			badges: Record<string, Badge>,
-			certificateID: string
-		}>(
+		await httpsCallable<
+			Record<string, unknown>,
+			{
+				badges: Record<string, Badge>;
+				certificateID: string;
+			}
+		>(
 			functions,
 			'completeProject'
 		)({
