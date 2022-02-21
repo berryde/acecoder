@@ -335,6 +335,11 @@ export type UserCertificate = {
 	projectName: string;
 };
 
+export type ToastMessage = {
+	message: string;
+	variant: 'success' | 'warning' | 'danger' | 'info';
+};
+
 /**
  * Project completion statistics for a user
  */

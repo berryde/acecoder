@@ -9,6 +9,8 @@
 	import Button from 'src/components/common/Button.svelte';
 	import { page } from '$app/stores';
 	import { incrementProgress } from 'src/utils/firebase';
+	import Toast from 'src/components/common/Toast.svelte';
+	import { save, toastMessage } from 'src/utils/editor/editor';
 
 	/**
 	 * Whether the user is currently drawing a selection over the editor.
@@ -43,7 +45,34 @@
 	let loading = false;
 	async function handleSubmit() {
 		loading = true;
-		await test($page.params.projectID, $page.params.index);
+		try {
+			await save($page.params.projectID);
+			const previousChapter = $chapter;
+			await test($page.params.projectID, $page.params.index);
+			if ($chapter >= $exercise.chapters.length) {
+				toastMessage.set({
+					message: 'Exercise completed!',
+					variant: 'success'
+				});
+			} else if ($chapter > previousChapter) {
+				toastMessage.set({
+					message: `Task ${previousChapter} passed`,
+					variant: 'success'
+				});
+			} else {
+				toastMessage.set({
+					message: `Task ${previousChapter} failed`,
+					variant: 'danger'
+				});
+			}
+		} catch (e) {
+			//set toast message
+			toastMessage.set({
+				message: 'Unable to submit exercise',
+				variant: 'danger'
+			});
+		}
+
 		loading = false;
 	}
 </script>
@@ -65,7 +94,9 @@
 			</SplitPane>
 		</div>
 	</SplitPane>
-	<div class="px-5 py-3 flex flex-row w-full justify-between bg-brand-background items-center">
+	<div
+		class="px-5 py-3 flex flex-row w-full justify-between bg-brand-background items-center relative"
+	>
 		<div class="flex-grow w-full">
 			{#if $page.params.index !== '0'}
 				<Button text="Previous" on:click={handlePrevious} outline={true} link={true} />
@@ -85,5 +116,6 @@
 				<Button text="Next" on:click={handleNext} link={true} />
 			{/if}
 		</div>
+		<Toast />
 	</div>
 </div>

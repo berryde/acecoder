@@ -60,6 +60,7 @@
 	}
 
 	function handleSave() {
+		if ($contents == '') return;
 		if ($formatOnSave) handleFormat();
 		save($page.params.projectID);
 	}

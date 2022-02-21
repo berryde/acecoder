@@ -8,7 +8,7 @@
 
 	function getDateString() {
 		const date: Date = certificate.issued.toDate();
-		return `${getMonthString(date.getMonth())} ${date.getDay()}, ${date.getFullYear()}`;
+		return `${getMonthString(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;
 	}
 </script>
 

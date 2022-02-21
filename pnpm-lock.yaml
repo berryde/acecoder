@@ -57,15 +57,12 @@ specifiers:
   tslib: ^2.3.1
   typescript: ^4.5.5
 
-dependencies:
-  '@firebase/app-types': 0.7.0
-  html2canvas: 1.4.1
-
 devDependencies:
   '@babel/core': 7.17.4
   '@babel/preset-typescript': 7.16.7_@babel+core@7.17.4
   '@babel/standalone': 7.15.8
   '@firebase/app-compat': 0.1.17
+  '@firebase/app-types': 0.7.0
   '@rollup/plugin-commonjs': 21.0.1_rollup@2.67.2
   '@rollup/plugin-node-resolve': 13.1.3_rollup@2.67.2
   '@rollup/plugin-typescript': 8.3.0_0013780227dc696d322520825eac6c82
@@ -96,6 +93,7 @@ devDependencies:
   firebase: 9.6.6_encoding@0.1.13
   firebase-admin: 10.0.2_c0b10b606812be99c22a814bf5382424
   firebase-functions: 3.18.0_firebase-admin@10.0.2
+  html2canvas: 1.4.1
   jest: 27.5.1
   jszip: 3.7.1
   netlify-cli: 7.1.0_c07fda94254d1158435d0affce44c714
@@ -1902,6 +1900,7 @@ packages:
 
   /@firebase/app-types/0.7.0:
     resolution: {integrity: sha512-6fbHQwDv2jp/v6bXhBw2eSRbNBpxHcd1NBF864UksSMVIqIyri9qpJB1Mn6sGZE+bnDsSQBC5j2TbMxYsJQkQg==}
+    dev: true
 
   /@firebase/app/0.7.16:
     resolution: {integrity: sha512-xToEi8f7uvadhtgNsPmuUS9eVHteMjWoa5I7i/+5TBeGgGkm1g9SROJl+8wSrcdT5Xd6OA7eUGZLxr4RQvL7Tw==}
@@ -5069,7 +5068,7 @@ packages:
   /base64-arraybuffer/1.0.2:
     resolution: {integrity: sha512-I3yl4r9QB5ZRY3XuJVEPfc2XhZO6YweFPI+UovAzn+8/hb3oJ6lnysaFcjVpkCPfVWFUDvoZ8kmVDP7WyRtYtQ==}
     engines: {node: '>= 0.6.0'}
-    dev: false
+    dev: true
 
   /base64-js/1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
@@ -6178,7 +6177,7 @@ packages:
     resolution: {integrity: sha512-FHcKFCZcAha3LwfVBhCQbW2nCNbkZXn7KVUJcsT5/P8YmfsVja0FMPJr0B903j/E69HUphKiV9iQArX8SDYA4w==}
     dependencies:
       utrie: 1.0.2
-    dev: false
+    dev: true
 
   /css-select/4.2.1:
     resolution: {integrity: sha512-/aUslKhzkTNCQUB2qTX84lVmfia9NyjP3WpDGtj/WxhwBzWBYUV3DgUpurHTme8UTPcPlAD1DJ+b0nN/t50zDQ==}
@@ -8697,7 +8696,7 @@ packages:
     dependencies:
       css-line-break: 2.1.0
       text-segmentation: 1.0.3
-    dev: false
+    dev: true
 
   /http-cache-semantics/3.8.1:
     resolution: {integrity: sha512-5ai2iksyV8ZXmnZhHH4rWPoxxistEexSi5936zIQ1bnNTW5VnA85B6P/VpXiRM017IgRvb2kKo1a//y+0wSp3w==}
@@ -14157,7 +14156,7 @@ packages:
     resolution: {integrity: sha512-iOiPUo/BGnZ6+54OsWxZidGCsdU8YbE4PSpdPinp7DeMtUJNJBoJ/ouUSTJjHkh1KntHaltHl/gDs2FC4i5+Nw==}
     dependencies:
       utrie: 1.0.2
-    dev: false
+    dev: true
 
   /text-table/0.2.0:
     resolution: {integrity: sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=}
@@ -14638,7 +14637,7 @@ packages:
     resolution: {integrity: sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==}
     dependencies:
       base64-arraybuffer: 1.0.2
-    dev: false
+    dev: true
 
   /uuid/8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}

@@ -9,6 +9,7 @@ import { updateFile } from '../filesystem/filesystem';
 import { selectedTab } from 'src/utils/tabs/tabs';
 import { saveTab } from '../tabs/tabs';
 import { exercise, write } from '../exercise/exercise';
+import type { ToastMessage } from '../types';
 
 /**
  * Supported file extensions.
@@ -16,6 +17,8 @@ import { exercise, write } from '../exercise/exercise';
 export const supportedExtensions = ['jsx', 'css', 'js', 'ts', 'html', 'tsx', 'json', 'svelte'];
 
 export const contents = writable<string>('');
+
+export const toastMessage = writable<ToastMessage>();
 
 export const format = (value: string, language: string): string => {
 	if (isSupported(language)) {

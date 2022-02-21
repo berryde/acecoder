@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Navbar from 'src/components/navbar/Navbar.svelte';
 	import Certificate from 'src/components/certificate/Certificate.svelte';
+	import IoLogoLinkedin from 'svelte-icons/io/IoLogoLinkedin.svelte';
 	import type { Certificate as CertificateType } from 'src/utils/types';
 	import Button from 'src/components/common/Button.svelte';
 	import { onMount } from 'svelte';
@@ -21,12 +22,7 @@
 	async function handleDownload() {
 		const element = document.getElementById('certificate');
 		if (element) {
-			const logos = document.getElementsByClassName('logo');
-			for (const logo of logos) {
-				console.log(logo.parentElement);
-			}
 			const canvas = await html2canvas(element);
-
 			const link = document.createElement('a');
 			link.href = canvas.toDataURL();
 			link.download = 'acecoder-certificate.png';
@@ -34,6 +30,18 @@
 			link.click();
 			document.body.removeChild(link);
 		}
+	}
+
+	function handleShare() {
+		const organisationID = 79117149;
+		const date = certificate.issued.toDate();
+		const url = encodeURIComponent(window.location.href);
+
+		window.location.href = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${
+			certificate.name
+		}&organizationId=${organisationID}&issueYear=${date.getFullYear()}&issueMonth=${date.getMonth()}&certUrl=${url}&certId=${
+			$page.params.certificateID
+		}`;
 	}
 </script>
 
@@ -51,7 +59,8 @@
 				<Certificate {certificate} />
 			</div>
 			<div class="flex justify-end space-x-5">
-				<Button text="Share" />
+				<div class="bg-brand-accent flex items-center p-2 rounded">{window.location.href}</div>
+				<Button icon={true} text="Add to profile" on:click={handleShare}><IoLogoLinkedin /></Button>
 				<Button text="Download" on:click={handleDownload} />
 			</div>
 		</div>

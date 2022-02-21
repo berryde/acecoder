@@ -14,7 +14,12 @@
 	function getColour(value: boolean | undefined) {
 		switch (variant) {
 			case 'true-false':
-				return `border-brand-text ${value ? 'bg-green-500' : 'bg-red-500'}`;
+				if (value !== undefined) {
+					return value
+						? 'border-brand-success bg-brand-success'
+						: 'border-brand-danger-light bg-brand-danger-light';
+				}
+				return 'border-brand-text';
 			case 'text':
 				return 'border-brand-text';
 			default:

@@ -49,7 +49,7 @@
 </script>
 
 <div
-	class="px-5 py-1 transition-all {getStyle()} {expanded
+	class="px-3 py-1 transition-all {getStyle()} {expanded
 		? 'w-full'
 		: 'w-max'} rounded hover:cursor-pointer {disabled && 'opacity-50'} {outline &&
 		'border-2 hover:text-brand-text'} flex justify-center"
@@ -65,7 +65,7 @@
 		<div class="flex flex-row items-center">
 			{#if icon}
 				<div class="mr-3">
-					<Icon>
+					<Icon size="large">
 						<slot />
 					</Icon>
 				</div>

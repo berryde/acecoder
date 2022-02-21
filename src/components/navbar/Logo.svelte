@@ -14,7 +14,7 @@
 		class="flex flex-row items-center cursor-pointer {variant == 'dark'
 			? 'text-brand-accent'
 			: 'text-brand-text'} font-sans space-x-2"
-		href="/"
+		href="/dashboard"
 	>
 		<img src="/images/logo-{variant}.png" class={getSize()} alt="logo" />
 	</a>

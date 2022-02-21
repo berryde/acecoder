@@ -15,6 +15,8 @@ import { auth } from '../firebase';
 import type { AuthError } from '../types';
 
 type AuthFederation = 'google' | 'github';
+const DASHBOARD_URL = '/dashboard';
+const LOGIN_URL = '/login';
 
 /**
  * Helper methods for interacting with Firebase authentication.
@@ -25,7 +27,7 @@ onAuthStateChanged(
 	auth,
 	(user) => {
 		if (browser && !user && !window.location.href.endsWith('login')) {
-			window.location.href = '/login';
+			window.location.href = LOGIN_URL;
 		}
 	},
 	(err) => console.error(err.message)
@@ -41,7 +43,7 @@ onAuthStateChanged(
 export const register = async (email: string, password: string): Promise<AuthError | void> => {
 	try {
 		await createUserWithEmailAndPassword(auth, email, password);
-		window.location.href = '/';
+		window.location.href = DASHBOARD_URL;
 	} catch (error) {
 		const err = error as _AuthError;
 		return {
@@ -54,7 +56,7 @@ export const register = async (email: string, password: string): Promise<AuthErr
 export const signIn = async (email: string, password: string): Promise<AuthError | void> => {
 	try {
 		await signInWithEmailAndPassword(auth, email, password);
-		window.location.href = '/';
+		window.location.href = DASHBOARD_URL;
 	} catch (error) {
 		const err = error as _AuthError;
 		return {
@@ -79,7 +81,7 @@ export const signInWith = async (federation: AuthFederation): Promise<AuthError 
 	// Trigger the federated sign in popup.
 	try {
 		await signInWithPopup(auth, provider);
-		window.location.href = '/';
+		window.location.href = DASHBOARD_URL;
 	} catch (error) {
 		const err = error as _AuthError;
 		return {
@@ -92,7 +94,7 @@ export const signInWith = async (federation: AuthFederation): Promise<AuthError 
 export const signOut = async (): Promise<AuthError | void> => {
 	try {
 		await _signOut(auth);
-		window.location.href = '/login';
+		window.location.href = LOGIN_URL;
 	} catch (error) {
 		const err = error as _AuthError;
 		return {

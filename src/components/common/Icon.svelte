@@ -58,20 +58,13 @@
 					class="flex flex-col justify-center items-center {card &&
 						'bg-brand-editor-background rounded-lg'} {size == 'small' ? 'p-1.5' : 'p-1'}"
 					data-testid={testId}
+					aria-label={aria}
+					role={button ? 'button' : undefined}
+					on:click={click}
 				>
-					{#if button}
-						<button
-							aria-label={aria}
-							on:click={click}
-							class="{getDimensions()} flex-shrink-0 flex-grow-0 text-brand-text text-light-text"
-						>
-							<slot />
-						</button>
-					{:else}
-						<div class="{getDimensions()} flex-shrink-0 flex-grow-0">
-							<slot />
-						</div>
-					{/if}
+					<div class="{getDimensions()} flex-shrink-0 flex-grow-0">
+						<slot />
+					</div>
 				</div>
 			</div>
 			{#if hovering}
