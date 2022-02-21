@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import type { WorkerError } from 'src/utils/types';

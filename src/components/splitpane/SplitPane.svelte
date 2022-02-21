@@ -43,8 +43,9 @@
 	/**
 	 * Memoized data about the mouse event that started a drag.
 	 */
-	let mouseData: {
-		event: MouseEvent;
+	let cursorData: {
+		xPos: number;
+		yPos: number;
 		offset: number;
 		pane1Size: number;
 		pane2Size: number;
@@ -53,35 +54,48 @@
 	/**
 	 * Whether the user is currently dragging the separator.
 	 */
-	let resizing = false;
+	let resizing: boolean = false;
 
 	const dispatch = createEventDispatcher();
 
+	function touchStart(e: TouchEvent) {
+		setCursorData(e.touches[0].clientX, e.touches[0].clientY);
+		if (!window) return;
+		resizing = true;
+		window.addEventListener('touchmove', touchMove);
+		window.addEventListener('touchend', touchEnd);
+		dispatch('resize');
+	}
+
+	function touchMove(e: TouchEvent) {
+		update(e.touches[0].clientX - cursorData.xPos);
+	}
+
+	function touchEnd() {
+		if (!window) return;
+		resizing = false;
+		window.removeEventListener('touchmove', touchMove);
+		window.removeEventListener('touchend', touchEnd);
+	}
+
 	/**
-	 * Called when the user drags the separator.
-	 * @param e The mouse event for this drag.
+	 * Called when the user stops dragging the separator.
+	 * @param e The mouse event for stopping the drag.
 	 */
-	function mouseMove(e: MouseEvent) {
-		e.preventDefault();
-		if (e.button !== 0) return;
+	function mouseUp(e: MouseEvent | undefined) {
+		if (e) {
+			e.preventDefault();
+			if (e.button !== 0) return;
+		}
+		if (!window) return;
+		resizing = false;
+		window.removeEventListener('mousemove', mouseMove);
+		window.removeEventListener('mouseup', mouseUp);
+	}
 
-		/**
-		 * The distance from the original mouse position to the current position.
-		 */
-		const delta = {
-			/**
-			 * The horizontal offset.
-			 */
-			x: e.clientX - mouseData.event.clientX,
-			/**
-			 * The vertical offset.
-			 */
-			y: e.clientY - mouseData.event.clientY
-		};
-
-		delta.x = Math.min(Math.max(delta.x, -mouseData.pane1Size), mouseData.pane2Size);
-
-		const left = ((mouseData.pane1Size + delta.x) / width) * 100;
+	function update(delta: number) {
+		delta = Math.min(Math.max(delta, -cursorData.pane1Size), cursorData.pane2Size);
+		const left = ((cursorData.pane1Size + delta) / width) * 100;
 		const right = 100 - left;
 		pane1Size = left;
 		pane2Size = right;
@@ -90,19 +104,23 @@
 	}
 
 	/**
-	 * Called when the user stops dragging the separator.
-	 * @param e The mouse event for stopping the drag.
+	 * Called when the user drags the separator.
+	 * @param e The mouse event for this drag.
 	 */
-	function mouseUp(e: MouseEvent) {
-		if (e) {
-			e.preventDefault();
-			if (e.button !== 0) return;
-		}
-		if (window) {
-			resizing = false;
-			window.removeEventListener('mousemove', mouseMove);
-			window.removeEventListener('mouseup', mouseUp);
-		}
+	function mouseMove(e: MouseEvent) {
+		e.preventDefault();
+		if (e.button !== 0) return;
+		update(e.clientX - cursorData.xPos);
+	}
+
+	function setCursorData(xPos: number, yPos: number) {
+		cursorData = {
+			xPos: xPos,
+			yPos: yPos,
+			offset: separator.offsetLeft,
+			pane1Size: pane1.offsetWidth,
+			pane2Size: pane2.offsetWidth
+		};
 	}
 
 	/**
@@ -113,18 +131,12 @@
 	function mouseDown(e: MouseEvent) {
 		e.preventDefault();
 		if (e.button !== 0) return;
-		mouseData = {
-			event: e,
-			offset: separator.offsetLeft,
-			pane1Size: pane1.offsetWidth,
-			pane2Size: pane2.offsetWidth
-		};
-		if (window) {
-			resizing = true;
-			window.addEventListener('mousemove', mouseMove);
-			window.addEventListener('mouseup', mouseUp);
-			dispatch('resize');
-		}
+		setCursorData(e.clientX, e.clientY);
+		if (!window) return;
+		resizing = true;
+		window.addEventListener('mousemove', mouseMove);
+		window.addEventListener('mouseup', mouseUp);
+		dispatch('resize');
 	}
 
 	/**
@@ -174,7 +186,13 @@
 	<div bind:this={pane1} class="pane1 overflow-auto h-full">
 		<slot name="pane1" {resizing} />
 	</div>
-	<div bind:this={separator} on:mousedown={mouseDown} on:mouseup={mouseUp}>
+	<div
+		bind:this={separator}
+		on:mousedown={mouseDown}
+		on:mouseup={mouseUp}
+		on:touchstart={touchStart}
+		on:touchend={touchEnd}
+	>
 		<Separator />
 	</div>
 	<div bind:this={pane2} class="pane2 h-full">

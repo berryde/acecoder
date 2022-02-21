@@ -1,75 +1,94 @@
 <script lang="ts">
-	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
-	import { collection, getDocs } from 'firebase/firestore';
-	import { getName } from 'src/utils/auth/auth';
-	import type { Project } from 'src/utils/types';
-	import { onMount } from 'svelte';
-	import { db } from 'src/utils/firebase';
-	import ProjectCard from 'src/components/projects/ProjectCard.svelte';
-	import Navbar from 'src/components/navbar/Navbar.svelte';
-
-	let projects: {
-		id: string;
-		project: Project;
-	}[] = [];
-	let greeting = getGreeting();
-
-	function getGreeting() {
-		var today = new Date();
-		var hour = today.getHours();
-
-		if (hour < 12) {
-			return 'Good morning';
-		} else if (hour < 18) {
-			return 'Good afternoon';
-		} else {
-			return 'Good evening';
-		}
-	}
-
-	async function getProjects() {
-		const snapshot = await getDocs(collection(db, 'projects'));
-		snapshot.forEach((doc) => {
-			projects.push({
-				id: doc.id,
-				project: doc.data() as Project
-			});
-		});
-		projects = projects;
-	}
-
-	onMount(() => {
-		getProjects();
-	});
+	import Button from 'src/components/common/Button.svelte';
+	import Logo from 'src/components/navbar/Logo.svelte';
 </script>
 
 <svelte:head>
-	<title>Svelte Application</title>
+	<title>Acecoder</title>
 </svelte:head>
 
-<PrivateRoute loading={projects.length == 0}>
-	<div
-		class="w-screen min-h-screen bg-brand-editor-background flex flex-col items-center text-brand-text overflow-y-auto"
-	>
-		<Navbar />
-		<div class="flex-grow lg:max-w-5xl h-full p-20 space-y-8">
-			<p class="text-3xl font-bold">{greeting}, {getName()}</p>
-			<div class=" items-center">
-				<p class="text-lg font-bold">Top badges</p>
-				<p>
-					Unlock more badges by completing projects and levelling up. Select a badge to view its
-					unique certificate.
-				</p>
-			</div>
-			<div class=" items-center">
-				<p class="text-lg font-bold">Beginner projects</p>
-				<p>Get started creating eye-catching, responsive websites.</p>
-			</div>
-			<div class="grid grid-cols-3 gap-4">
-				{#each projects as project}
-					<ProjectCard projectID={project.id} project={project.project} />
-				{/each}
+<div class="flex flex-col items-center text-brand-text bg-brand-background relative">
+	<div class="w-full hero flex flex-col items-center py-44">
+		<div class="flex flex-col items-center w-80 space-y-5 ">
+			<Logo variant="light" link={false} size="large" />
+			<p class="text-center">
+				Build, share and learn with interactive web development projects, from the comfort of your
+				browser.
+			</p>
+			<div class="flex space-x-5">
+				<Button
+					text="Sign up"
+					on:click={() => {
+						window.location.href = '/register';
+					}}
+				/>
+				<Button
+					text="Sign in"
+					outline={true}
+					on:click={() => {
+						window.location.href = '/login';
+					}}
+				/>
 			</div>
 		</div>
 	</div>
-</PrivateRoute>
+
+	<div class="max-w-3xl w-full p-20 flex flex-col items-center space-y-10 bg-brand-background">
+		<p class="font-bold text-2xl">What is Acecoder?</p>
+		<div>
+			<p>
+				Acecoder is a platform for completing front-end development projects tightly coupled to
+				real-world scenarios.
+			</p>
+			<br />
+			<p>
+				Pick from a choice of JavaScript framworks and use the in-browser editor to complete each
+				exercise within the project. Submissions are verified by the Acecoder server.
+			</p>
+		</div>
+		<img src="/images/landing/screenshots.png" alt="screenshots of the editor" />
+		<hr class="border-brand-accent w-10" />
+		<p class="font-bold text-2xl">Why complete projects?</p>
+		<div>
+			<p>
+				After completing a project, you will unlock a unique certificate that can be added to your
+				LinkedIn profile and shared with your profiessional network to demonstrate your skills.
+			</p>
+			<br />
+			<p>
+				You can also unlock achievements for reaching various milestones within the application.
+			</p>
+		</div>
+		<img src="/images/landing/certificate.png" alt="example certificate" />
+		<p class="font-bold text-2xl">Who made Acecoder?</p>
+		<div>
+			<p>
+				Acecoder is being developed by Daniel Berry, a student at the University of Southampton, as
+				an assignment for his computer science studies.
+			</p>
+			<br />
+			<p>
+				The application was built with the hope of one day being used in the hiring process for
+				front end software engineers, to create an environment that is grounded in reality and
+				assesses relevant skills.
+			</p>
+			<br />
+			<p>
+				If you want to share your thoughts or find out more, please <a
+					class="text-brand-primary"
+					href="mail:deb1g19@soton.ac.uk">get in touch</a
+				>.
+			</p>
+		</div>
+	</div>
+</div>
+
+<style>
+	.hero {
+		background-image: url('/images/landing/hero-bg.png');
+		background-position-x: center;
+		background-position-y: bottom;
+		background-size: cover;
+		background-repeat: no-repeat;
+	}
+</style>

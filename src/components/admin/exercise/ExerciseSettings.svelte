@@ -6,24 +6,26 @@
 	import Chapters from './Chapters.svelte';
 	import Settings from './Settings.svelte';
 	import Files from './Files.svelte';
+	import Card from 'src/components/common/Card.svelte';
 
 	/**
 	 * Whether these settings are for the creation of a new project.
 	 */
-	export let creating = false;
-	export let projectID: string;
+	export let creating: boolean = false;
+	export let projectID: string = '';
 	export let project: Project;
 	/**
 	 * The ID of the exercise to update.
 	 */
-	export let exerciseID: string = undefined;
+	export let exerciseID: string = '';
 	export let exercise: Exercise = {
 		name: '',
 		description: '',
 		chapters: [],
 		files: {},
 		assessed: true,
-		inherits: true
+		inherits: true,
+		writable: true
 	};
 	/**
 	 * Whether the editing UI should be shown.
@@ -31,22 +33,10 @@
 	let editing = creating;
 
 	let errors: string[] = [];
-	let loading = false;
+	let loading: boolean = false;
 
-	function validate() {
+	function validateChapters(): string[] {
 		const output = [];
-
-		if (exercise.name.length == 0) {
-			output.push('The exercise name is missing.');
-		}
-		if (exercise.description.length == 0) {
-			output.push('The exercise descripton is missing.');
-		}
-		for (const language of project.languages) {
-			if (!exercise.files[language]) {
-				output.push('Files are missing for language "' + language + '"');
-			}
-		}
 		if (exercise.chapters.length == 0) {
 			output.push('At least one chapter is required.');
 		} else {
@@ -56,61 +46,77 @@
 				if (chapter.text.length == 0) {
 					output.push(name + ' is missing text.');
 				}
-				if (exercise.assessed) {
-					if (chapter.spec.length == 0) {
-						output.push(name + ' is missing the test spec name.');
-					}
+				if (exercise.assessed && chapter.spec!.length == 0) {
+					output.push(name + ' is missing the test spec name.');
 				}
 			}
 		}
 		return output;
 	}
 
-	function toggleAssessed() {
-		exercise.assessed = !exercise.assessed;
-		exercise = exercise;
+	function validateFiles(): string[] {
+		const output = [];
+		for (const language of project.languages) {
+			if (!exercise.files[language]) {
+				output.push('Files are missing for language "' + language + '"');
+			}
+		}
+		return output;
+	}
+
+	function validate(): string[] {
+		const output = [];
+
+		if (exercise.name.length == 0) output.push('The exercise name is missing.');
+		if (exercise.description.length == 0) output.push('The exercise descripton is missing.');
+
+		output.concat(validateChapters(), validateFiles());
+		return output;
+	}
+
+	async function createExercise(metadata: ExerciseMetadata) {
+		// Use a batch write to create the exercise.
+		await runTransaction(db, async (transaction) => {
+			// Create or update the exercise metadata.
+			if (creating) {
+				// Fetch the project to determine the new documentID to use
+				const project: Project = (
+					await transaction.get(doc(db, 'projects', projectID))
+				).data() as Project;
+				exerciseID = project.exerciseCount.toString();
+				transaction.set(doc(db, 'projects', projectID, 'exercises', exerciseID), metadata);
+				transaction.update(doc(db, 'projects', projectID), {
+					exerciseCount: increment(1)
+				});
+			} else {
+				transaction.set(doc(db, 'projects', projectID, 'exercises', exerciseID), metadata);
+			}
+
+			// Create the files for each language.
+			for (let language of Object.keys(exercise.files)) {
+				transaction.set(
+					doc(db, 'projects', projectID, 'exercises', exerciseID, 'files', language),
+					exercise.files[language]
+				);
+			}
+		});
 	}
 
 	async function submit() {
 		errors = validate();
 		if (errors.length == 0) {
 			try {
-				const metadata: ExerciseMetadata = {
+				await createExercise({
 					name: exercise.name,
 					description: exercise.description,
 					assessed: exercise.assessed,
 					chapters: exercise.chapters,
-					inherits: exercise.inherits
-				};
-
-				// Use a batch write to create the exercise.
-				await runTransaction(db, async (transaction) => {
-					// Create or update the exercise metadata.
-					if (creating) {
-						// Fetch the project to determine the new documentID to use
-						const project: Project = (
-							await transaction.get(doc(db, 'projects', projectID))
-						).data() as Project;
-						exerciseID = project.exerciseCount.toString();
-						transaction.set(doc(db, 'projects', projectID, 'exercises', exerciseID), metadata);
-						transaction.update(doc(db, 'projects', projectID), {
-							exerciseCount: increment(1)
-						});
-					} else {
-						transaction.set(doc(db, 'projects', projectID, 'exercises', exerciseID), metadata);
-					}
-
-					// Create the files for each language.
-					for (let language of Object.keys(exercise.files)) {
-						transaction.set(
-							doc(db, 'projects', projectID, 'exercises', exerciseID, 'files', language),
-							exercise.files[language]
-						);
-					}
+					inherits: exercise.inherits,
+					writable: exercise.writable
 				});
 
 				if (creating) {
-					window.location.href = `/edit/${projectID}/exercise-${exerciseID}`;
+					window.location.href = `/edit/${projectID}`;
 				} else {
 					toggleEdit();
 				}
@@ -129,16 +135,11 @@
 	}
 </script>
 
-<form class="flex flex-col bg-brand-accent p-8 rounded space-y-5">
-	<Settings
-		{exercise}
-		{editing}
-		on:edit={() => (editing = !editing)}
-		on:toggleAssessed={toggleAssessed}
-	/>
+<Card>
+	<Settings {exercise} {editing} on:edit={() => (editing = !editing)} />
 	<Files {project} {exercise} {editing} />
 	<Chapters {exercise} {editing} />
-</form>
+</Card>
 
 {#if errors.length > 0}
 	<div class="bg-brand-danger-dark bg-opacity-50 p-3 rounded text-brand-danger-light">

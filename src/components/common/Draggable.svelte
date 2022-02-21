@@ -11,7 +11,7 @@
 	export let enabled: boolean = true;
 
 	function start(e: DragEvent) {
-		if (enabled) {
+		if (enabled && e.dataTransfer) {
 			e.dataTransfer.setData('text', data);
 			e.dataTransfer.setData('variant', variant);
 		} else {

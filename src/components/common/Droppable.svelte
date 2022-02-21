@@ -7,7 +7,7 @@
 	 */
 	export let variant: string;
 
-	export let classes: string = undefined;
+	export let classes: string = '';
 
 	let count = 0;
 
@@ -24,7 +24,7 @@
 	}
 
 	function drop(e: DragEvent) {
-		if (e.dataTransfer.getData('variant') == variant) {
+		if (e.dataTransfer && e.dataTransfer.getData('variant') == variant) {
 			dispatch('dropped', e.dataTransfer.getData('text'));
 		}
 		count = 0;

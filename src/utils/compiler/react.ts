@@ -1,5 +1,5 @@
 import type { File } from '../types';
-import type { Plugin } from 'rollup';
+import type { Plugin, RollupWarning } from 'rollup';
 import { transform } from '@babel/standalone';
 import { CDN_URL, resolveRelativePath, fileNotFoundError, isRelativeImport } from './compiler';
 
@@ -22,14 +22,15 @@ export default function reactCompiler(
 		 * @param importer The file importing the resource.
 		 * @returns The resolved filename/URL.
 		 */
-		async resolveId(importee: string, importer: string) {
+		async resolveId(importee, importer) {
 			// Try to resolve this import as a source file
 			if (importee in files) {
 				return importee;
-			} else if (isRelativeImport(importee)) {
+			} else if (isRelativeImport(importee) && importer) {
 				try {
 					return resolveRelativePath(importee, importer, files);
 				} catch (err) {
+					console.error(err);
 					this.warn(fileNotFoundError(importee, importer));
 				}
 			}
@@ -60,7 +61,7 @@ export default function reactCompiler(
 		async load(id) {
 			// Check if the import refers to another source file, else it's a node module.
 			if (/.*\.(j|t)sx?/.test(id)) {
-				return files[id].code;
+				return files[id].value;
 			}
 		},
 
@@ -73,7 +74,11 @@ export default function reactCompiler(
 		 */
 		async transform(code, id) {
 			// Babel transform tsx, ts, js and jsx files.
+
 			if (/.*\.(j|t)x?/.test(id)) {
+				if (!/import\s*React(,\s*{.*}\s*)?\sfrom\s*('|")react('|")\s*;?/.test(code)) {
+					code = "import React from 'react';\n" + code;
+				}
 				const options = {
 					filename: id,
 					presets: ['react', 'typescript']
@@ -85,7 +90,7 @@ export default function reactCompiler(
 						map: transformed.map
 					};
 				} catch (err) {
-					this.warn(err);
+					this.warn(err as RollupWarning);
 					return {
 						code: null,
 						map: null

@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
-	export let value: boolean = undefined;
+	export let value: boolean | undefined = undefined;
 	export let classes: string = '';
-	export let disabled = false;
+	export let disabled: boolean = false;
+	export let aria = '';
 
 	type Variant = 'true-false' | 'default' | 'text';
 	export let variant: Variant = 'default';
@@ -13,7 +14,12 @@
 	function getColour(value: boolean | undefined) {
 		switch (variant) {
 			case 'true-false':
-				return `border-brand-text ${value ? 'bg-green-500' : 'bg-red-500'}`;
+				if (value !== undefined) {
+					return value
+						? 'border-brand-success bg-brand-success'
+						: 'border-brand-danger-light bg-brand-danger-light';
+				}
+				return 'border-brand-text';
 			case 'text':
 				return 'border-brand-text';
 			default:
@@ -34,5 +40,9 @@
 
 <div
 	class="transition-all h-4 w-4 border-2 {classes} rounded {color} flex-shrink-0"
+	role="checkbox"
+	aria-disabled="true"
+	aria-label={aria}
+	checked={value}
 	on:click={handleClick}
 />

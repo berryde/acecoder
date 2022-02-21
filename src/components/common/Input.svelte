@@ -2,11 +2,11 @@
 	import Icon from '../common/Icon.svelte';
 
 	export let placeholder = '';
-	export let icon = false;
+	export let icon: boolean = false;
 	export let type = 'text';
 	export let value: string | number = '';
 	export let name = '';
-	export let expanded = false;
+	export let expanded: boolean = false;
 	type Variant = 'default' | 'dark';
 	export let variant: Variant = 'default';
 
@@ -16,12 +16,8 @@
 	}
 
 	function getStyle() {
-		switch (variant) {
-			case 'dark':
-				return 'bg-brand-background';
-			default:
-				return 'bg-brand-accent';
-		}
+		if (variant == 'dark') return 'bg-brand-background';
+		return 'bg-brand-accent';
 	}
 </script>
 

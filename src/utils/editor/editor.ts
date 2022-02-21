@@ -8,6 +8,8 @@ import { get, writable } from 'svelte/store';
 import { updateFile } from '../filesystem/filesystem';
 import { selectedTab } from 'src/utils/tabs/tabs';
 import { saveTab } from '../tabs/tabs';
+import { exercise, write } from '../exercise/exercise';
+import type { ToastMessage } from '../types';
 
 /**
  * Supported file extensions.
@@ -15,6 +17,8 @@ import { saveTab } from '../tabs/tabs';
 export const supportedExtensions = ['jsx', 'css', 'js', 'ts', 'html', 'tsx', 'json', 'svelte'];
 
 export const contents = writable<string>('');
+
+export const toastMessage = writable<ToastMessage>();
 
 export const format = (value: string, language: string): string => {
 	if (isSupported(language)) {
@@ -25,6 +29,7 @@ export const format = (value: string, language: string): string => {
 				return prettier.format(value, getParser(language));
 			}
 		} catch (err) {
+			console.error(err);
 			console.error('Auto-formatting failed due to a syntax error.');
 		}
 	}
@@ -35,6 +40,7 @@ export const getParser = (
 	language: string
 ): { parser: string; plugins: [{ parsers: { [key: string]: Parser<string> } }] } => {
 	switch (language) {
+		case 'svelte':
 		case 'html':
 			return {
 				parser: 'html',
@@ -55,9 +61,8 @@ export const getParser = (
 				parser: 'typescript',
 				plugins: [parserTypescript]
 			};
-		case 'js':
-		case 'jsx':
-		case 'json':
+
+		default:
 			return {
 				parser: 'babel',
 				plugins: [parserBabel]
@@ -72,13 +77,12 @@ export const getParser = (
  * @returns Whether the language is supported.
  */
 export const isSupported = (language: string): boolean => {
-	const result = supportedExtensions.includes(language);
-	return result;
+	return supportedExtensions.includes(language);
 };
 
-export const save = (): void => {
-	const doc = get(contents);
+export const save = async (projectID: string): Promise<void> => {
 	const tab: string = get(selectedTab);
 	saveTab(tab);
-	updateFile(tab, doc);
+	updateFile(tab, get(contents));
+	if (get(exercise).writable) await write(projectID);
 };

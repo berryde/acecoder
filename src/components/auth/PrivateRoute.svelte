@@ -9,13 +9,13 @@
 	/**
 	 * Whether this is an admin only route.
 	 */
-	export let restricted = false;
-	export let loading = false;
+	export let restricted: boolean = false;
+	export let loading: boolean = false;
 	/**
 	 * Whether the user has the admin claim.
 	 */
 	let admin: boolean;
-	let user: User;
+	let user: User | null;
 
 	const dispatch = createEventDispatcher();
 

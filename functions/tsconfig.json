@@ -6,6 +6,6 @@
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"allowJs": true,
-	},
-
+		"outDir": "build"
+	}
 }

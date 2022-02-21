@@ -3,7 +3,7 @@
 	import Button from '../common/Button.svelte';
 	import Input from '../common/Input.svelte';
 	let loading = false;
-	let message: string;
+	let message: string | undefined;
 	let success: boolean;
 	let uid = '';
 

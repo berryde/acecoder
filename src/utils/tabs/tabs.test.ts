@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import { get } from 'svelte/store';
 import { closeTab, openTab, renameTab, selectedTab, tabs, unsavedTabs } from './tabs';
 
@@ -27,9 +28,9 @@ describe('The tabs library', () => {
 		openTab('index.tsx');
 		expect(get(selectedTab)).toBe('index.tsx');
 		openTab('index.tsx');
-		openTab('anothertab.tsx');
-		expect(get(selectedTab)).toBe('anothertab.tsx');
-		closeTab('anothertab.tsx');
+		openTab('anotherTab.tsx');
+		expect(get(selectedTab)).toBe('anotherTab.tsx');
+		closeTab('anotherTab.tsx');
 		expect(get(selectedTab)).toStrictEqual('index.tsx');
 		closeTab('index.tsx');
 		expect(get(selectedTab)).toStrictEqual('');

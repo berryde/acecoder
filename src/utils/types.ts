@@ -1,15 +1,17 @@
+import type { Timestamp } from 'firebase/firestore';
+
 /**
  * A project file.
  */
 export interface File {
 	/**
-	 * The file source.
+	 * The text content of the file.
 	 */
-	code: string;
+	value: string;
 	/**
-	 * The name of the file.
+	 * Whether this file can be deleted and renamed.
 	 */
-	name: string;
+	modifiable: boolean;
 }
 
 /**
@@ -27,7 +29,7 @@ export type WorkerResponse = {
 	/**
 	 * Any static files.
 	 */
-	public: { [key: string]: string };
+	public?: { [key: string]: string };
 	/**
 	 * The error message, if present
 	 */
@@ -52,20 +54,12 @@ export type UrlMessage = {
 /**
  * A single file.
  */
-export type FSFile = {
+export interface FSFile extends File {
 	/**
 	 * The type of filesystem object.
 	 */
 	type: 'file';
-	/**
-	 * The text content of the file.
-	 */
-	value: string;
-	/**
-	 * Whether this file can be deleted and renamed.
-	 */
-	modifiable: boolean;
-};
+}
 
 /**
  * A single recursively defined folder.
@@ -146,9 +140,25 @@ export type AuthError = {
  * Data to send to the submission server in order to generate a result.
  */
 export type ServerRequest = {
+	/**
+	 * The ID of the project that the exercise belongs to
+	 */
 	projectID: string;
+	/**
+	 * The ID of the exercise being submitted
+	 */
 	exerciseID: string;
+	/**
+	 * The ID of the user creating this submission
+	 */
 	userID: string;
+	chapter: number;
+};
+
+export type Certificate = {
+	issued: Timestamp;
+	name: string;
+	project: string;
 };
 
 /**
@@ -168,36 +178,79 @@ export type ServerResponse = Record<
 	}
 >;
 
-export type ServerError = {
-	status: 403 | 404 | 500;
-	message: string;
-};
-
-export type ExerciseFile = {
-	contents: string;
-	editable: boolean;
-};
-
+/**
+ * A project consists of multiple exercises and represents a single, long task resulting in a final submission that can be downloaded
+ */
 export type Project = {
+	/**
+	 * The name of the project
+	 */
 	name: string;
-	icon: string;
+	/**
+	 * A detailed description of the project
+	 */
 	description: string;
+	/**
+	 * The total number of exercises within this project
+	 */
 	exerciseCount: number;
+	/**
+	 * The languages this project can be completed with
+	 */
 	languages: string[];
+	/**
+	 * The preview image to use for this project
+	 */
+	thumbnail: string;
+	/**
+	 * A brief sentence describing the project
+	 */
+	overview: string;
 };
 
+/**
+ * Generic information about an exercise, without the exercise files
+ */
 export type ExerciseMetadata = {
+	/**
+	 * The name of this exercise
+	 */
 	name: string;
+	/**
+	 * A brief introduction to the exercise
+	 */
 	description: string;
+	/**
+	 * Whether a submission to this exercise will be tested
+	 */
 	assessed: boolean;
+	/**
+	 * The sub-components of this exercise
+	 */
 	chapters: ExerciseChapter[];
+	/**
+	 * Whether this exercise loads the pooled submission for the project
+	 */
 	inherits: boolean;
+	/**
+	 * Whether the user can save their work for this exercise
+	 */
+	writable: boolean;
 };
 
+/**
+ * Exercise metadata and files, for when the exercise actually needs to be loaded
+ */
 export interface Exercise extends ExerciseMetadata {
-	files: Record<string, Record<string, ExerciseFile>>;
+	/**
+	 * A map of language name to file set for a given exercise
+	 */
+	files: Record<string, Record<string, FSFile>>;
 }
 
+/**
+ * A single sub-component of an exercise. {spec} and {hint} should only be provided if the exercise is assessed.
+ */
 export type ExerciseChapter = {
 	/**
 	 * The text content to be displayed for this chapter.
@@ -213,7 +266,94 @@ export type ExerciseChapter = {
 	hint?: string;
 };
 
+/**
+ * User stats for a single project
+ */
 export type ProjectSettings = {
+	/**
+	 * The exercise of the project that the user is currently on
+	 */
 	progress: number;
+	/**
+	 * The language the user is completing the project with
+	 */
 	language: string;
+	/**
+	 * Whether the user has completed all exercises in the project
+	 */
+	completed: boolean;
+};
+
+/**
+ * A single achievement, which can be awarded for meeting various project milestones
+ */
+export type Badge = {
+	/**
+	 * Why this achievement was awarded. This usually starts with 'Awarded for...'
+	 */
+	description: string;
+	/**
+	 * The name of this achievement
+	 */
+	name: string;
+	/**
+	 * The actual achievement icon to show
+	 */
+	image: string;
+	/**
+	 * Conditions that must be met to unlock this achievement
+	 */
+	conditions: Record<string, number>;
+};
+
+/**
+ * Data on a user's profile that shows when they unlocked a badge, and for which project it was awarded
+ */
+export type UserBadge = {
+	/**
+	 * The timestamp at which the badge was awarded
+	 */
+	timestamp: Timestamp;
+	/**
+	 * The id of the project for which this badge was awarded
+	 */
+	projectID: string;
+};
+
+export type UserCertificate = {
+	/**
+	 * The timestamp at which the badge was awarded
+	 */
+	timestamp: Timestamp;
+	/**
+	 * The id of the project for which this badge was awarded
+	 */
+	projectID: string;
+	/**
+	 *
+	 */
+	projectName: string;
+};
+
+export type ToastMessage = {
+	message: string;
+	variant: 'success' | 'warning' | 'danger' | 'info';
+};
+
+/**
+ * Project completion statistics for a user
+ */
+export type UserStats = {
+	/**
+	 * The number of projects that they have completed
+	 */
+	completed: number;
+	/**
+	 * The number of projects that they have completed with react
+	 */
+	react: number;
+	/**
+	 * The number of projects that they have completed with svelte
+	 */
+	svelte: number;
 };

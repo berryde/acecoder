@@ -7,7 +7,7 @@
 
 	let email: string = '';
 	let loading = false;
-	let error: AuthError;
+	let error: AuthError | undefined;
 	let success: boolean;
 
 	async function handleReset() {
@@ -29,14 +29,14 @@
 </script>
 
 <svelte:head>
-	<title>Account Recovery</title>
+	<title>Account Recovery - Acecoder</title>
 </svelte:head>
 
 <div
 	class="w-full h-screen bg-brand-background flex flex-col justify-center items-center text-brand-text"
 >
-	<div class="w-96 flex flex-col">
-		<h1 class="text-3xl font-bold mb-10">Account recovery</h1>
+	<div class="w-96 flex flex-col space-y-3">
+		<h1 class="text-3xl font-bold mb-3">Account recovery</h1>
 		<p class="mb-3 text-xs">
 			Forgotten your password or unable to login? Submit your email address below to recieve a
 			recovery link.
@@ -44,9 +44,7 @@
 		<Input placeholder="Email" type="email" icon={true} bind:value={email}>
 			<IoMdPerson />
 		</Input>
-
 		<Button text="Send recovery email" on:click={() => handleReset()} {loading} />
-
 		{#if error}
 			<div class="bg-red-900 text-red-400 bg-opacity-50 p-3 mt-3 rounded">
 				<p class="font-bold">{error.errorCode}</p>

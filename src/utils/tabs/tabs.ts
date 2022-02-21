@@ -39,8 +39,7 @@ export const renameTabs = (oldDir: string, newDir: string): void => {
 	);
 	selectedTab.update((selected) => {
 		if (selected.startsWith(oldDir + '/')) {
-			const updated = selected.replace(oldDir, newDir);
-			return updated;
+			return selected.replace(oldDir, newDir);
 		}
 		return selected;
 	});

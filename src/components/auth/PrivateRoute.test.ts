@@ -3,7 +3,7 @@ import 'svelte';
 import { render } from '@testing-library/svelte';
 import PrivateRoute from './PrivateRoute.svelte';
 import { auth } from 'src/utils/firebase';
-import type { User } from '@firebase/auth';
+import type { User } from 'firebase/auth';
 
 global.window = Object.create(window);
 const url = 'http://test.com';
@@ -14,14 +14,30 @@ Object.defineProperty(window, 'location', {
 });
 
 jest.mock('src/utils/firebase', () => {
-	let user = {};
-	let authChanged: (user: User) => void;
-
+	let user: User | undefined = {
+		displayName: 'Test User',
+		emailVerified: false,
+		email: 'test@test.com',
+		isAnonymous: false,
+		metadata: {},
+		providerData: [],
+		refreshToken: '',
+		delete: jest.fn(),
+		getIdToken: jest.fn(),
+		getIdTokenResult: jest.fn(),
+		phoneNumber: '2112414',
+		photoURL: '',
+		providerId: 'provider_id',
+		reload: jest.fn(),
+		tenantId: '',
+		toJSON: jest.fn(),
+		uid: 'asdnp125Uuhas'
+	};
+	let authChanged: (user: User | undefined) => void;
 	const signOut = () => {
 		user = undefined;
 		authChanged(undefined);
 	};
-
 	return {
 		auth: {
 			currentUser: user,

@@ -1,22 +1,38 @@
 <script lang="ts">
+	import { getImage as _getImage } from 'src/utils/firebase';
 	import type { Project } from 'src/utils/types';
-	import Photos from 'svelte-icons/io/IoIosPhotos.svelte';
-	import Icon from '../common/Icon.svelte';
+	import { onMount } from 'svelte';
 	export let project: Project;
 	export let projectID: string;
+	export let url = '/project/' + projectID;
 
 	function handleClick() {
-		window.location.href = '/project/' + projectID;
+		window.location.href = url;
 	}
+
+	let image: string;
+
+	async function getImage() {
+		image = await _getImage(project.thumbnail);
+	}
+
+	onMount(() => {
+		getImage();
+	});
 </script>
 
-<div class=" rounded cursor-pointer" on:click={handleClick}>
-	<div class="p-10 rounded-t bg-gradient-to-r from-green-400 to-green-600">
-		<Icon size="xl">
-			<Photos />
-		</Icon>
+{#if image}
+	<div class="bg-brand-accent rounded cursor-pointer " on:click={handleClick}>
+		<img
+			src={image}
+			alt="Project thumbnail"
+			class="rounded-t h-38 bg-cover w-full"
+			tabindex={0}
+			role="link"
+			aria-label={`${project.name} project`}
+		/>
+		<p class="p-3">{project.overview}</p>
 	</div>
-	<div class="bg-brand-accent p-4 rounded-b">
-		<p>{project.name}</p>
-	</div>
-</div>
+{:else}
+	<div class="bg-brand-accent h-42 rounded" />
+{/if}

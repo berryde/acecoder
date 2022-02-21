@@ -1,6 +1,6 @@
-<script context="module">
+<script context="module" lang="ts">
 	/** @type {import('@sveltejs/kit').ErrorLoad} */
-	export function load({ error, status }) {
+	export function load({ error, status }: { error: { message: string }; status: string }) {
 		return {
 			props: {
 				status: status,
@@ -9,10 +9,6 @@
 		};
 	}
 </script>
-
-<svelte:head>
-	<title>Error</title>
-</svelte:head>
 
 <script lang="ts">
 	export let status: number = 404;
@@ -31,6 +27,10 @@
 		}
 	}
 </script>
+
+<svelte:head>
+	<title>Error - Acecoder</title>
+</svelte:head>
 
 <div
 	class="h-screen w-screen flex flex-col justify-center items-center bg-brand-background text-brand-text"

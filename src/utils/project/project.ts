@@ -1,97 +1,60 @@
-import { collection, doc, getDoc, getDocs, runTransaction } from 'firebase/firestore';
+import {
+	collection,
+	doc,
+	DocumentReference,
+	getDoc,
+	getDocs,
+	limit as _limit,
+	query,
+	QueryConstraint,
+	runTransaction,
+	where
+} from 'firebase/firestore';
+import type { DocumentData, QuerySnapshot } from 'firebase/firestore';
 import { result } from '../exercise/exercise';
 import { auth, db } from '../firebase';
 import type {
 	Project,
-	Exercise,
 	ExerciseMetadata,
-	ExerciseFile,
 	ProjectSettings,
-	ServerResponse
+	ServerResponse,
+	Badge,
+	UserStats,
+	UserBadge,
+	Certificate,
+	UserCertificate
 } from '../types';
-
-export const getExerciseAdmin = async (projectID: string,
-	index: string,
-	languages: string[]): Promise<Exercise> => {
-	return await runTransaction(db, async (transaction) => {
-		// Get the exercise metadata
-		const metadata = (
-			await transaction.get(doc(db, 'projects', projectID, 'exercises', index))
-		).data() as ExerciseMetadata;
-
-		// Get the exercise files
-		const files: Record<string, Record<string, ExerciseFile>> = {};
-		for (const language of languages) {
-			files[language] = (
-				await transaction.get(
-					doc(db, 'projects', projectID, 'exercises', index, 'files', language)
-				)
-			).data() as Record<string, ExerciseFile>;
-		}
-		return {
-			...metadata,
-			files: files
-		};
-	})
-
-}
+import { ERR_NO_AUTH } from '../general';
 
 /**
- * Gets exercise metadata and files as an atomic transaction. If a list of languages is provided, the files for each language are provided.
- * @param projectID The ID of the project.
- * @param index The index of the project.
- * @param languages The languages of the project. If not specified, the language is determined based on the user's settings.
+ * Loads the metadata for all available exercise of a project without loading the files, for use on the project overview page.
+ *
+ * @param projectID The project ID.
+ * @returns Metadata for all of the exercises in a project
  */
-export const getExercise = async (
-	projectID: string,
-	index: string,
-	language: string
-): Promise<Exercise> => {
+export const getProjectExercises = async (
+	projectID: string
+): Promise<Record<string, ExerciseMetadata>> => {
+	const snapshot = await getDocs(collection(db, 'projects', projectID, 'exercises'));
+	const result: Record<string, ExerciseMetadata> = {};
 	try {
-		return await runTransaction(db, async (transaction) => {
-			// Get the exercise metadata
-			const metadata = (
-				await transaction.get(doc(db, 'projects', projectID, 'exercises', index))
-			).data() as ExerciseMetadata;
-
-			// Get the exercise files
-			const files: Record<string, Record<string, ExerciseFile>> = {
-				[language]: (
-					await transaction.get(
-						doc(db, 'projects', projectID, 'exercises', index, 'files', language)
-					)
-				).data()
-			};
-
-			// Check if the user has made a submission and download it if so.
-			const submission = await transaction.get(
-				doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid)
-			);
-			if (submission.exists()) {
-				const submissionFiles = submission.data() as Record<string, string>;
-				Object.keys(submissionFiles).forEach((name) => {
-					// Only overwrite files relevant to this exercise.
-					files[language][name] = {
-						contents: submissionFiles[name],
-						editable: ((Object.keys(files[language]).filter(name => files[language][name].editable).includes(name)))
-					};
-				});
-			}
-
-			return {
-				...metadata,
-				files: files
-			};
+		snapshot.forEach((doc) => {
+			result[doc.id] = doc.data() as ExerciseMetadata;
 		});
-	} catch (e) {
-		console.error(`Failed to get exercise ${projectID}[${index}] due to an error`);
-		if (import.meta.env.DEV) {
-			console.error(e);
-		}
+		return result;
+	} catch (err) {
+		throw `Unable to fetch exercises for project ${projectID}`;
 	}
 };
 
+export const getCertificate = async (certificateID: string): Promise<Certificate> => {
+	const snapshot = await getDoc(doc(db, 'certificates', certificateID));
+	if (!snapshot.exists()) throw new Error('No certificate could be found with that ID');
+	return snapshot.data() as Certificate;
+};
+
 export const getResults = async (projectID: string, exerciseID: string): Promise<void> => {
+	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
 	const snapshot = await getDoc(
 		doc(db, 'projects', projectID, 'exercises', exerciseID, 'results', auth.currentUser.uid)
 	);
@@ -109,7 +72,7 @@ export const getResults = async (projectID: string, exerciseID: string): Promise
  */
 export const getExerciseMetadata = async (
 	projectID: string,
-	index?: string
+	index: string
 ): Promise<ExerciseMetadata> => {
 	const snapshot = await getDoc(doc(db, 'projects', projectID, 'exercises', index));
 	if (snapshot.exists()) {
@@ -119,34 +82,14 @@ export const getExerciseMetadata = async (
 	}
 };
 
-/**
- * Loads the metadata for all available exercise of a project without loading the files, for use on the project overview page.
- *
- * @param projectID The project ID.
- * @returns Metadata for all of the exercises in a project
- */
-export const getAllExerciseMetadata = async (
-	projectID: string
-): Promise<Record<string, ExerciseMetadata>> => {
-	const snapshot = await getDocs(collection(db, 'projects', projectID, 'exercises'));
-	const result: Record<string, ExerciseMetadata> = {};
-	try {
-		snapshot.forEach((doc) => {
-			result[doc.id] = doc.data() as ExerciseMetadata;
-		});
-		return result;
-	} catch (err) {
-		throw `Unable to fetch exercises for project ${projectID}`;
-	}
-};
-
-export const getProjectSettings = async (projectID: string): Promise<ProjectSettings> => {
+export const getProjectSettings = async (
+	projectID: string,
+	fallback = 'react'
+): Promise<ProjectSettings> => {
+	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
 	const snapshot = await getDoc(doc(db, 'projects', projectID, 'settings', auth.currentUser.uid));
-	if (snapshot.exists()) {
-		return snapshot.data() as ProjectSettings;
-	} else {
-		throw `User settings on project ${projectID} do not exist for this user`;
-	}
+	if (snapshot.exists()) return snapshot.data() as ProjectSettings;
+	return { progress: 0, language: fallback, completed: false };
 };
 
 /**
@@ -156,9 +99,108 @@ export const getProjectSettings = async (projectID: string): Promise<ProjectSett
  */
 export const getProject = async (projectID: string): Promise<Project> => {
 	const snapshot = await getDoc(doc(db, 'projects', projectID));
-	if (snapshot.exists()) {
-		return snapshot.data() as Project;
-	} else {
-		throw 'Project ' + projectID + ' does not exist';
+	if (snapshot.exists()) return snapshot.data() as Project;
+	throw 'Project ' + projectID + ' does not exist';
+};
+
+export const getBadge = async (badgeID: string): Promise<Badge> => {
+	const snapshot = await getDoc(doc(db, 'badges', badgeID));
+	if (snapshot.exists()) return snapshot.data() as Badge;
+	throw 'Badge ' + badgeID + ' does not exist';
+};
+
+export const getCertificateForProject = async (projectID: string): Promise<string> => {
+	if (!auth.currentUser) throw new Error(ERR_NO_AUTH);
+	const snapshot = await getDocs(
+		query(
+			collection(db, 'stats', auth.currentUser.uid, 'certificates'),
+			where('projectID', '==', projectID)
+		)
+	);
+	if (snapshot.empty) throw new Error('No certificate could be found for that project');
+	return snapshot.docs[0].id;
+};
+
+export const getCertificates = async (uid: string): Promise<Record<string, UserCertificate>> => {
+	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
+	const snapshot = await getDocs(collection(db, 'stats', uid, 'certificates'));
+
+	// Get the user's certificates
+	if (snapshot.empty) return {};
+	return Object.fromEntries(snapshot.docs.map((doc) => [doc.id, doc.data() as UserCertificate]));
+};
+
+export const getBadges = async (
+	uid: string,
+	options: {
+		limit?: number;
+		projectID?: string;
+	} = { limit: undefined, projectID: undefined }
+): Promise<Badge[]> => {
+	const { limit, projectID } = options;
+	const snapshot = await getDocs(collection(db, 'stats', uid, 'badges'));
+
+	if (snapshot.empty) return [];
+	let userBadges = Object.fromEntries(
+		snapshot.docs.map((doc) => [doc.id, doc.data() as UserBadge])
+	);
+
+	if (projectID) {
+		userBadges = Object.fromEntries(
+			Object.entries(userBadges).filter((entry) => entry[1].projectID == projectID)
+		);
+		if (Object.entries(userBadges).length == 0) return [];
 	}
+
+	const constraints: QueryConstraint[] = [];
+	constraints.push(where('__name__', 'in', Object.keys(userBadges)));
+	if (limit) constraints.push(_limit(limit));
+
+	const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(
+		query(collection(db, 'badges'), ...constraints)
+	);
+
+	// Sort the result based on the timestamps
+	return querySnapshot.docs
+		.sort((a, b) => {
+			const aTimestamp = userBadges[a.id].timestamp;
+			const bTimestamp = userBadges[b.id].timestamp;
+			if (aTimestamp < bTimestamp) return -1;
+			if (aTimestamp > bTimestamp) return 1;
+			return 0;
+		})
+		.map((doc) => doc.data() as Badge);
+};
+
+export const getStats = async (): Promise<UserStats> => {
+	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
+	const snapshot = await getDoc(doc(db, 'stats', auth.currentUser.uid));
+	if (snapshot.exists()) {
+		return snapshot.data() as UserStats;
+	} else {
+		return {
+			completed: 0,
+			react: 0,
+			svelte: 0
+		};
+	}
+};
+
+export const restartProject = async (projectID: string): Promise<void> => {
+	const project = await getProject(projectID);
+	await runTransaction(db, async (transaction) => {
+		if (!auth.currentUser) throw Error('You need to be logged in to perform that action');
+		const uid = auth.currentUser.uid;
+
+		const results: DocumentReference[] = [];
+		for (let i = 0; i < project.exerciseCount; i++) {
+			const result = doc(db, 'projects', projectID, 'exercises', i.toString(), 'results', uid);
+			if ((await transaction.get(result)).exists()) results.push(result);
+		}
+
+		for (const result of results) transaction.delete(result);
+
+		transaction.delete(doc(db, 'projects', projectID, 'submissions', uid));
+		transaction.delete(doc(db, 'projects', projectID, 'settings', uid));
+	});
 };

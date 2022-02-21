@@ -3,27 +3,30 @@
 	import Button from 'src/components/common/Button.svelte';
 	import Input from 'src/components/common/Input.svelte';
 	import Checkbox from 'src/components/common/Checkbox.svelte';
-	import { db } from 'src/utils/firebase';
+	import { db, uploadImage } from 'src/utils/firebase';
 	import type { Project } from 'src/utils/types';
 	import { capitalise } from 'src/utils/general';
+	import ImageUploader from './ImageUploader.svelte';
 
 	/**
 	 * Whether these settings are for the creation of a new project.
 	 */
-	export let creating = false;
+	export let creating: boolean = false;
 	let editing = creating;
 	/**
 	 * The ID of the project being updated.
 	 */
-	export let projectID: string = undefined;
+	export let projectID: string | null = null;
 	export let project: Project = {
 		languages: [],
 		name: '',
 		description: '',
 		exerciseCount: 0,
-		icon: ''
+		thumbnail: '',
+		overview: ''
 	};
 	let errors: string[] = [];
+	let file: File;
 	const languages: string[] = ['react', 'svelte'];
 
 	function toggleProjectLanguage(language: string) {
@@ -46,7 +49,18 @@
 		if (project.name.length == 0) {
 			output.push('The project description is missing.');
 		}
+		if (!project.thumbnail && !file) {
+			output.push('A thumbnail is required');
+		}
 		return output;
+	}
+
+	async function uploadThumbnail() {
+		try {
+			project.thumbnail = await uploadImage('thumbnails', file);
+		} catch (err) {
+			errors.push('Unable to upload that image');
+		}
 	}
 
 	let loading = false;
@@ -55,10 +69,11 @@
 		errors = validate();
 		if (errors.length == 0) {
 			try {
+				if (file) await uploadThumbnail();
 				if (creating) {
 					const ref = await addDoc(collection(db, 'projects'), project);
 					window.location.href = '/edit/' + ref.id;
-				} else {
+				} else if (projectID != null) {
 					await updateDoc(doc(db, 'projects', projectID), project);
 					toggleEdit();
 				}
@@ -74,6 +89,10 @@
 	function toggleEdit() {
 		editing = !editing;
 	}
+
+	function handleUploadError() {
+		errors.push('Unable to upload that image');
+	}
 </script>
 
 <form class="flex flex-col bg-brand-accent p-8 rounded space-y-3">
@@ -84,7 +103,7 @@
 		{/if}
 	</div>
 	<div class="space-y-1">
-		<p>Name</p>
+		<p class="font-bold">Name</p>
 		{#if editing}
 			<Input variant="dark" bind:value={project.name} />
 		{:else}
@@ -92,18 +111,24 @@
 		{/if}
 	</div>
 	<div class="space-y-1">
-		<p>Icon</p>
+		<p class="font-bold">Overview</p>
 		{#if editing}
-			<a href="https://svelte-icons-explorer.vercel.app/" class="text-brand-primary text-xs"
-				>Browse icons</a
-			>
-			<Input variant="dark" bind:value={project.icon} />
+			<Input variant="dark" bind:value={project.overview} expanded={true} />
 		{:else}
-			<code class="bg-brand-background p-1 rounded">{project.icon}</code>
+			<p>{project.overview}</p>
 		{/if}
 	</div>
 	<div class="space-y-1">
-		<p>Description</p>
+		<ImageUploader
+			bind:file
+			title="Thumbnail"
+			subtitle="A thumbnail image for this project"
+			{editing}
+			on:error={handleUploadError}
+		/>
+	</div>
+	<div class="space-y-1">
+		<p class="font-bold">Description</p>
 		{#if editing}
 			<textarea
 				class="bg-brand-background rounded p-2 w-full h-28"
@@ -115,7 +140,7 @@
 		{/if}
 	</div>
 	<div class="space-y-1">
-		<p>Language support</p>
+		<p class="font-bold">Language support</p>
 		<fieldset id="language" class="flex flex-col">
 			{#each languages as language}
 				<div class="flex flex-row items-center space-x-3">

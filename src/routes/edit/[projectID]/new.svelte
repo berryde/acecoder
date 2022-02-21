@@ -15,14 +15,14 @@
 </script>
 
 <svelte:head>
-	<title>New exercise</title>
+	<title>New exercise - Acecoder</title>
 </svelte:head>
 
 <PrivateRoute restricted={true} loading={!project}>
 	<div
-		class="max-w-screen min-h-screen bg-brand-editor-background flex justify-center items-center text-brand-text overflow-y-auto"
+		class="max-w-screen min-h-screen bg-brand-background flex justify-center items-center text-brand-text overflow-y-auto"
 	>
-		<div class="flex-grow lg:max-w-5xl h-full p-20 space-y-8">
+		<div class="flex-grow lg:max-w-6xl h-full px-20 py-10 space-y-8">
 			<div class="flex flex-row items-center justify-between">
 				<p class="text-3xl font-bold">New exercise</p>
 				<ProfileMenu />

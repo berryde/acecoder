@@ -1,4 +1,11 @@
-<div class="loader h-5 w-5 border-brand-text" data-testid="loader" />
+<script lang="ts">
+	export let variant: 'dark' | 'light' = 'light';
+</script>
+
+<div
+	class="loader h-5 w-5 {variant == 'light' ? 'border-brand-text' : 'border-brand-background'}"
+	data-testid="loader"
+/>
 
 <style>
 	.loader {

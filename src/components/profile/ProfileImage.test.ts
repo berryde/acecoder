@@ -1,6 +1,6 @@
 import 'svelte';
 import '@testing-library/jest-dom';
-import ProfileImage from './ProfileImage';
+import ProfileImage from './ProfileImage.svelte';
 import { render } from '@testing-library/svelte';
 
 jest.mock('src/utils/firebase', () => ({

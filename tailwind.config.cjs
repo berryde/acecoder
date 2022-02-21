@@ -9,12 +9,13 @@ const config = {
 			colors: {
 				brand: {
 					editor: {
-						background: '#08122A',
+						background: '#060f23',
 						highlight: '#314694'
 					},
-					background: '#0B1633',
+					background: '#0A132E',
 					accent: '#18203D',
-					primary: '#2563EB',
+					primary: '#2463EB',
+					'primary-light': '#4078F2',
 					danger: {
 						light: '#DA4141',
 						dark: '#7f1d1d'

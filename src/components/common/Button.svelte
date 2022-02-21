@@ -4,12 +4,13 @@
 	import CircularProgressIndicator from '../loaders/CircularProgressIndicator.svelte';
 	const dispatch = createEventDispatcher();
 
-	export let text = '';
-	export let icon = false;
-	export let loading = false;
-	export let disabled = false;
-	export let expanded = false;
-	export let outline = false;
+	export let text: string = '';
+	export let icon: boolean = false;
+	export let loading: boolean = false;
+	export let disabled: boolean = false;
+	export let expanded: boolean = false;
+	export let outline: boolean = false;
+	export let link: boolean = false;
 
 	type Variant = 'default' | 'danger' | 'dark' | 'accent' | 'success';
 	export let variant: Variant = 'default';
@@ -17,6 +18,7 @@
 	function onclick() {
 		if (!disabled) {
 			dispatch('click');
+			if (link) loading = true;
 		}
 	}
 
@@ -40,17 +42,19 @@
 					: 'bg-brand-success';
 			default:
 				return outline
-					? 'border-brand-primary text-brand-primary hover:bg-brand-primary'
+					? 'border-brand-primary text-brand-primary-light hover:bg-brand-primary'
 					: 'bg-brand-primary';
 		}
 	}
 </script>
 
 <div
-	class="px-5 py-1 transition-all {getStyle()} {expanded
+	class="px-3 py-1 transition-all {getStyle()} {expanded
 		? 'w-full'
 		: 'w-max'} rounded hover:cursor-pointer {disabled && 'opacity-50'} {outline &&
 		'border-2 hover:text-brand-text'} flex justify-center"
+	role="button"
+	tabindex={0}
 	on:click={() => onclick()}
 >
 	{#if loading}
@@ -61,7 +65,7 @@
 		<div class="flex flex-row items-center">
 			{#if icon}
 				<div class="mr-3">
-					<Icon>
+					<Icon size="large">
 						<slot />
 					</Icon>
 				</div>

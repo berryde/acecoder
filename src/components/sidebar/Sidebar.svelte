@@ -13,10 +13,19 @@
 	import Refresh from 'svelte-icons/io/IoMdRefresh.svelte';
 	import Wand from 'svelte-icons/io/IoIosColorWand.svelte';
 	import { onMount } from 'svelte';
+	import Explorer from '../explorer/Explorer.svelte';
+	import { contents, format, toastMessage } from 'src/utils/editor/editor';
+	import { getExtension } from 'src/utils/filesystem/filesystem';
+	import { selectedTab } from 'src/utils/tabs/tabs';
+	import { page } from '$app/stores';
 
 	function updateChapter() {
 		submissionAttempt += 1;
-		if ($_chapter < $exercise.chapters.length && $result[$_chapter].passed) {
+		if (
+			$_chapter < $exercise.chapters.length &&
+			$_chapter in $result &&
+			$result[$_chapter].passed
+		) {
 			_chapter.update((c) => c + 1);
 			submissionAttempt = 0;
 		}
@@ -26,19 +35,38 @@
 	$: $result && updateChapter();
 
 	onMount(() => {
-		if ($result) {
-			const index = Object.values($result).findIndex((res) => !res.passed);
-			if (index == -1) {
-				_chapter.set($exercise.chapters.length);
-			} else {
-				_chapter.set(index);
-			}
+		if ($result && Object.keys($result).length !== 0) {
+			// Get index of the most recently passed chapter
+			console.log('Running', $result);
+			const index = Math.max(
+				...Object.entries($result)
+					.filter((entry) => entry[1].passed)
+					.map((entry) => parseInt(entry[0]))
+			);
+			_chapter.set(index + 1);
 			submissionAttempt = 0;
 		}
 	});
+
+	function handleFormat() {
+		const formatted = format($contents, getExtension($selectedTab));
+		contents.set(formatted);
+		toastMessage.set({
+			message: 'Code formatted',
+			variant: 'info'
+		});
+	}
+
+	async function handleReset() {
+		await reset($page.params.projectID, $page.params.index);
+		toastMessage.set({
+			message: 'Exercise reset',
+			variant: 'info'
+		});
+	}
 </script>
 
-<div class="bg-brand-background h-full overflow-y-auto sidebar">
+<div class="bg-brand-background h-full overflow-y-auto sidebar overflow-x-hidden">
 	<div class="p-5 space-y-3">
 		<p class="uppercase text-xs">{$project.name}</p>
 		<h1 class="text-xl font-bold">{$exercise.name}</h1>
@@ -46,15 +74,15 @@
 			{@html $exercise.description}
 		</p>
 	</div>
-	<div class="flex flex-row px-5 py-3 pt-0 space-x-3 items-center h-10 justify-end">
-		<Icon label="Reset" button={true} card={true} on:click={() => reset()}>
+	<div class="flex flex-row px-5 py-3 mr-3 pt-0 space-x-3 items-center h-10 justify-end">
+		<Icon label="Reset" button={true} card={true} on:click={handleReset} aria="reset exercise">
 			<Refresh />
 		</Icon>
-		<Icon label="Format" button={true} card={true}>
+		<Icon label="Format" button={true} card={true} aria="format code" on:click={handleFormat}>
 			<Wand />
 		</Icon>
 	</div>
-	<div class="flex flex-row items-center px-5 py-3 space-x-5 bg-brand-accent">
+	<div class="flex flex-row items-center px-3 py-3 space-x-5 bg-brand-accent">
 		{#if $exercise.assessed}
 			<Icon>
 				<Bookmark />
@@ -71,32 +99,37 @@
 		{#each $exercise.chapters as chapter, index}
 			{#if $exercise.assessed}
 				<div
-					class="transition-opacity p-3 flex items-center space-x-5 {index > $_chapter &&
+					class="transition-opacity px-5 py-3 flex items-center space-x-5 {index > $_chapter &&
 						'opacity-40'}"
 				>
 					<Checkbox
 						disabled={true}
-						variant={index <= $_chapter ? 'default' : 'text'}
-						value={$result && index <= $_chapter ? $result[index].passed : undefined}
+						variant={'true-false'}
+						value={$result !== undefined && index in $result ? $result[index].passed : undefined}
 					/>
-					<p>{@html chapter.text}</p>
+					<p class="chapter">{@html chapter.text}</p>
 				</div>
-				{#if $result && !$result[index].passed && chapter.hint && index == $_chapter && submissionAttempt > 0}
+				{#if $result !== undefined && index in $result && !$result[index].passed}
 					<div class="bg-brand-danger-dark bg-opacity-50 p-5 text-brand-danger-light">
 						<p class="hint">{@html chapter.hint}</p>
 					</div>
 				{/if}
+				<hr class="border-brand-accent" />
 			{:else}
 				<div class="p-5">
-					<p>{@html chapter.text}</p>
+					<p class="chapter">{@html chapter.text}</p>
 				</div>
 			{/if}
 		{/each}
 	</div>
+	<Explorer />
 </div>
 
 <style lang="postcss">
 	:global(#description a) {
+		@apply text-brand-primary underline;
+	}
+	:global(.chapter a) {
 		@apply text-brand-primary underline;
 	}
 	:global(.hint a) {
