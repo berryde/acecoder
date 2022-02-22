@@ -22,6 +22,7 @@
 	import Card from 'src/components/common/Card.svelte';
 	import CircularProgressIndicator from 'src/components/loaders/CircularProgressIndicator.svelte';
 	import CertificateLink from 'src/components/projects/CertificateLink.svelte';
+	import { language } from 'src/utils/exercise/exercise';
 
 	let project: Project;
 	let exercises: Record<string, ExerciseMetadata>;
@@ -34,6 +35,7 @@
 		exercises = await getProjectExercises($page.params.projectID);
 		try {
 			settings = await getProjectSettings($page.params.projectID, project.languages[0]);
+			language.set(settings.language);
 		} catch (err) {
 			settings = { progress: 0, language: project.languages[0], completed: false };
 		}

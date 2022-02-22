@@ -1,10 +1,10 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFunctions, httpsCallable } from 'firebase/functions';
-import { getFirestore } from 'firebase/firestore';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import type { Badge } from './types';
 import {
-
+	connectStorageEmulator,
 	getDownloadURL,
 	getStorage,
 	ref,
@@ -45,6 +45,13 @@ export const storage = getStorage(app, 'gs://folio-8b029.appspot.com');
  * The Firebase functions instance.
  */
 const functions = getFunctions(app, 'europe-west2');
+
+if (import.meta.env.DEV) {
+	connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+	connectFirestoreEmulator(db, 'localhost', 8080);
+	connectFunctionsEmulator(functions, 'localhost', 5001);
+	connectStorageEmulator(storage, 'localhost', 9199);
+}
 
 export const setClaim = async (claim: Record<string, unknown>): Promise<boolean> => {
 	try {

@@ -12,4 +12,4 @@ exports.completeProject = completeProject;
 
 exports.startProject = startProject;
 
-export const store = admin.firestore();
+

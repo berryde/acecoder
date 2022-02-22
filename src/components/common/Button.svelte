@@ -49,7 +49,7 @@
 </script>
 
 <div
-	class="px-3 py-1 transition-all {getStyle()} {expanded
+	class="h-9 px-3 transition-all {getStyle()} {expanded
 		? 'w-full'
 		: 'w-max'} rounded hover:cursor-pointer {disabled && 'opacity-50'} {outline &&
 		'border-2 hover:text-brand-text'} flex justify-center"
@@ -58,11 +58,11 @@
 	on:click={() => onclick()}
 >
 	{#if loading}
-		<div class="h-8 flex items-center justify-center">
+		<div class="flex items-center justify-center">
 			<CircularProgressIndicator />
 		</div>
 	{:else}
-		<div class="h-8 flex flex-row items-center">
+		<div class="flex flex-row items-center justify-center">
 			{#if icon}
 				<div class="mr-3">
 					<Icon size="large">

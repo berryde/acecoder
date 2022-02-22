@@ -17,7 +17,7 @@ import type {
 	Project,
 	ExerciseMetadata,
 	ProjectSettings,
-	ServerResponse,
+	ExerciseResults,
 	Badge,
 	UserStats,
 	UserBadge,
@@ -59,7 +59,7 @@ export const getResults = async (projectID: string, exerciseID: string): Promise
 		doc(db, 'projects', projectID, 'exercises', exerciseID, 'results', auth.currentUser.uid)
 	);
 	if (snapshot.exists()) {
-		result.set(snapshot.data() as ServerResponse);
+		result.set(snapshot.data() as ExerciseResults);
 	}
 };
 
@@ -197,6 +197,8 @@ export const restartProject = async (projectID: string): Promise<void> => {
 			const result = doc(db, 'projects', projectID, 'exercises', i.toString(), 'results', uid);
 			if ((await transaction.get(result)).exists()) results.push(result);
 		}
+
+		// User needs to be able to delete their own submissions and project settings
 
 		for (const result of results) transaction.delete(result);
 

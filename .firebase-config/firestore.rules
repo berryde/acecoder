@@ -28,7 +28,7 @@ service cloud.firestore {
       }
       // Allow user settings to be read and updated by that user.
       match /{pid}/settings/{uid} {
-        allow read: if
+        allow read, delete: if
           request.auth != null && request.auth.uid == uid
       }
     }

@@ -164,7 +164,7 @@ export type Certificate = {
 /**
  * Response from the submission server.
  */
-export type ServerResponse = Record<
+export type ExerciseResults = Record<
 	number,
 	{
 		/**

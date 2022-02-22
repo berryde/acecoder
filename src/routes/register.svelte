@@ -13,8 +13,9 @@
 	let password = '';
 	let confirmPassword = '';
 	let error: AuthError;
-
+	let loading = false;
 	async function submit() {
+		loading = true;
 		if (email == '') {
 			error = {
 				errorCode: 'Invalid email',
@@ -35,6 +36,7 @@
 
 			if (result && getErrorMessage(result)) error = getErrorMessage(result)!;
 		}
+		loading = false;
 	}
 </script>
 
@@ -61,7 +63,7 @@
 			<IoMdLock />
 		</Input>
 
-		<Button text="Sign up" on:click={() => submit()} expanded={true} />
+		<Button text="Sign up" on:click={() => submit()} expanded={true} {loading} />
 
 		{#if error}
 			<div class="bg-red-900 text-red-400 bg-opacity-50 p-3 mt-3 rounded">

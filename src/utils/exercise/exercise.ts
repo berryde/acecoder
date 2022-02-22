@@ -2,7 +2,7 @@ import { doc, runTransaction } from 'firebase/firestore';
 import { writable, get } from 'svelte/store';
 import { createFile, filesystem, getAllFiles, getFile } from '../filesystem/filesystem';
 import { auth, db } from '../firebase';
-import type { Exercise, ExerciseMetadata, FSFile, ServerRequest, ServerResponse } from '../types';
+import type { Exercise, ExerciseMetadata, FSFile, ServerRequest, ExerciseResults } from '../types';
 import type { Project } from 'src/utils/types';
 import axios from 'axios';
 import { ERR_NO_AUTH } from '../general';
@@ -23,7 +23,7 @@ export const language = writable<string>();
 /**
  * The result of the latest submission
  */
-export const result = writable<ServerResponse>();
+export const result = writable<ExerciseResults>();
 
 /**
  * Whether the exercise is currently being loaded for the first time
@@ -132,7 +132,7 @@ export const write = async (projectID: string): Promise<void> => {
  *
  * @returns A void promise that resolves when the submission request is completed.
  */
-export const test = async (projectID: string, exerciseID: string): Promise<ServerResponse> => {
+export const test = async (projectID: string, exerciseID: string): Promise<ExerciseResults> => {
 	if (!auth.currentUser) throw new Error(ERR_NO_AUTH);
 	let endpoint: string;
 	if (import.meta.env.DEV) {
@@ -152,7 +152,7 @@ export const test = async (projectID: string, exerciseID: string): Promise<Serve
 		}
 	});
 	if (response.status == 200) {
-		const data = response.data as ServerResponse;
+		const data = response.data as ExerciseResults;
 		result.set(data);
 		return data;
 	} else {

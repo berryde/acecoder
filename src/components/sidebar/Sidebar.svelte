@@ -37,7 +37,6 @@
 	onMount(() => {
 		if ($result && Object.keys($result).length !== 0) {
 			// Get index of the most recently passed chapter
-			console.log('Running', $result);
 			const index = Math.max(
 				...Object.entries($result)
 					.filter((entry) => entry[1].passed)

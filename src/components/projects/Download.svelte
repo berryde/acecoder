@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { loadExercise } from 'src/utils/exercise/exercise';
+	import { page } from '$app/stores';
+	import { exercise, getExercise, language, loadExercise } from 'src/utils/exercise/exercise';
 	import { exportFilesystem } from 'src/utils/filesystem/filesystem';
 
 	import Button from '../common/Button.svelte';
@@ -9,6 +10,7 @@
 
 	async function handleDownload() {
 		loading = true;
+		exercise.set(await getExercise($page.params.projectID, '0', $language, true));
 		await loadExercise();
 		exportFilesystem();
 		loading = false;

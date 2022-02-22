@@ -1,5 +1,4 @@
-import { store } from './index';
-import type admin = require('firebase-admin');
+import admin = require('firebase-admin');
 import type { Badge, UserStats } from './types';
 
 export const calculateBadges = async (
@@ -7,7 +6,7 @@ export const calculateBadges = async (
 	stats: UserStats
 ): Promise<Record<string, Badge>> => {
 	const result: Record<string, Badge> = {};
-
+	const store = admin.firestore();
 	const badges = Object.fromEntries(
 		(await transaction.get(store.collection('badges'))).docs.map((doc) => [
 			doc.id,
