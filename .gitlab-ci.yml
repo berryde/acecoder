@@ -34,5 +34,6 @@ deploy:
   only:
     - master
   script:
-    - pnpm build
-    - npx netlify-cli deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod
+    - pnpm vercel login 06berrydan@gmail.com
+    - pnpm vercel
+    - pnpm vercel logout

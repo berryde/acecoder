@@ -5,10 +5,11 @@ node_modules
 coverage
 static/worker.js
 static/worker.js.map
-.netlify
 *.log
 .firebase-config/service-account.json
 .firebase
 /src/components/preview/template/template.js
 .vscode/settings.json
 firebase-export-*
+.vercel
+.vercel_build_output
