@@ -56,12 +56,12 @@
 				});
 			} else if ($chapter > previousChapter) {
 				toastMessage.set({
-					message: `Task ${previousChapter} passed`,
+					message: `Task ${previousChapter + 1} passed`,
 					variant: 'success'
 				});
 			} else {
 				toastMessage.set({
-					message: `Task ${previousChapter} failed`,
+					message: `Task ${previousChapter + 1} failed`,
 					variant: 'danger'
 				});
 			}

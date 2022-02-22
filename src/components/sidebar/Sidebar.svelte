@@ -94,7 +94,7 @@
 			<p>Notes</p>
 		{/if}
 	</div>
-	<div class="space-y-3">
+	<div>
 		{#each $exercise.chapters as chapter, index}
 			{#if $exercise.assessed}
 				<div
