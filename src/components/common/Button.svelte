@@ -58,7 +58,7 @@
 	on:click={() => onclick()}
 >
 	{#if loading}
-		<div class="h-8z flex items-center justify-center">
+		<div class="h-8 flex items-center justify-center">
 			<CircularProgressIndicator />
 		</div>
 	{:else}
