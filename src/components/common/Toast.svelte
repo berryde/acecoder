@@ -48,7 +48,7 @@
 
 {#if visible}
 	<div
-		class="absolute left-0 right-0 mx-auto max-w-max {getColor()} shadow-xl rounded max-w-min flex z-50"
+		class="absolute left-0 right-0 mx-auto max-w-max {getColor()} shadow-xl rounded max-w-max flex z-50"
 		transition:slide={{ duration: 300 }}
 	>
 		<div class="absolute rounded {getSecondaryColor()} h-full" style="width: {$progress}%" />
