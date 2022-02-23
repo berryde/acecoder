@@ -173,7 +173,7 @@ export const startProject = functions
 
 export const completeProject = functions.region('europe-west2').https.onCall(
 	async (
-		data: { projectID: string; name: string },
+		data: { projectID: string },
 		context
 	): Promise<{
 		badges: Record<string, Badge>;
@@ -188,7 +188,7 @@ export const completeProject = functions.region('europe-west2').https.onCall(
 		}
 
 		// Initialize relevant variables
-		const { projectID, name } = data;
+		const { projectID } = data;
 		const uid = context.auth.uid;
 
 		// Fetch the user's settings
@@ -219,7 +219,7 @@ export const completeProject = functions.region('europe-west2').https.onCall(
 		const certificate: Certificate = {
 			issued: Timestamp.now(),
 			project: project.name,
-			name: name
+			uid: uid
 		};
 
 		// Issue the badge

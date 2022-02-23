@@ -44,7 +44,7 @@
 		method = provider;
 		error = undefined;
 		loading = true;
-		const result = await _signInWith(provider);
+		const result = await _signInWith(provider, false);
 		loading = false;
 		if (result) error = getErrorMessage(result);
 	}

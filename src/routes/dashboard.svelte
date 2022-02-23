@@ -15,6 +15,7 @@
 		project: Project;
 	}[] = [];
 	let greeting = getGreeting();
+	let name = '';
 
 	function getGreeting() {
 		var today = new Date();
@@ -47,9 +48,13 @@
 
 	let loading = true;
 	async function loadUserData() {
+		if (!auth.currentUser) {
+			throw new Error('You need to be logged in to perform that action');
+		}
 		badges = await getBadges(auth.currentUser!.uid, {
 			limit: 4
 		});
+		name = await getName(auth.currentUser.uid);
 		loading = false;
 	}
 </script>
@@ -60,7 +65,7 @@
 
 <PrivateRoute {loading} on:authenticated={loadUserData}>
 	<Page>
-		<p class="text-3xl font-bold">{greeting}, {getName()}</p>
+		<p class="text-3xl font-bold">{greeting}, {name}</p>
 		{#if badges.length > 0}
 			<div class=" items-center">
 				<p class="text-lg font-bold">Recent achievements</p>

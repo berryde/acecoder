@@ -9,11 +9,17 @@
 	import { getCertificate } from 'src/utils/project/project';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
 	import html2canvas from 'html2canvas';
+	import { getName } from 'src/utils/auth/auth';
+	import { auth } from 'src/utils/firebase';
 
+	let loading = true;
 	let certificate: CertificateType;
+	let name: string;
 	onMount(async () => {
 		try {
 			certificate = await getCertificate($page.params.certificateID);
+			name = await getName(certificate.uid, true);
+			loading = false;
 		} catch (err) {
 			window.location.href = '/error/404';
 		}
@@ -38,35 +44,44 @@
 		const url = encodeURIComponent(window.location.href);
 
 		window.location.href = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${
-			certificate.name
+			certificate.project
 		}&organizationId=${organisationID}&issueYear=${date.getFullYear()}&issueMonth=${date.getMonth()}&certUrl=${url}&certId=${
 			$page.params.certificateID
 		}`;
 	}
 </script>
 
-<div class="h-screen bg-brand-background flex flex-col items-center text-brand-text">
-	<Navbar showProfile={false} />
-	{#if certificate}
-		<div class="flex-grow flex flex-col w-full py-10 px-20 max-w-6xl space-y-5 select-none">
-			<p class="text-3xl font-bold">Certificate of Achievement</p>
-			<p>
-				This certificate has been awarded to {certificate.name} to recognise their success in completing
-				a project on Acecoder. A project is a complex, multi-stage assignment that evaluates the user's
-				front-end development skills.
-			</p>
-			<div class="flex items-center justify-center">
-				<Certificate {certificate} />
+{#if loading}
+	<div class="h-screen w-screen bg-brand-background flex justify-center items-center">
+		<OrbitProgressIndicator />
+	</div>
+{:else}
+	<div class="h-screen bg-brand-background flex flex-col items-center text-brand-text">
+		<Navbar showProfile={false} />
+		{#if certificate}
+			<div class="flex-grow flex flex-col w-full py-10 px-20 max-w-6xl space-y-5 select-none">
+				<p class="text-3xl font-bold">Certificate of Achievement</p>
+				<p>
+					This certificate has been awarded to {name} to recognise their success in completing a project
+					on Acecoder. A project is a complex, multi-stage assignment that evaluates the user's front-end
+					development skills.
+				</p>
+				<div class="flex items-center justify-center">
+					<Certificate {certificate} {name} />
+				</div>
+				<div class="flex justify-end space-x-5">
+					{#if auth.currentUser && certificate.uid == auth.currentUser.uid}
+						<Button icon={true} text="Add to profile" on:click={handleShare}>
+							<IoLogoLinkedin />
+						</Button>
+					{/if}
+					<Button text="Download" on:click={handleDownload} />
+				</div>
 			</div>
-			<div class="flex justify-end space-x-5">
-				<div class="bg-brand-accent flex items-center p-2 rounded">{window.location.href}</div>
-				<Button icon={true} text="Add to profile" on:click={handleShare}><IoLogoLinkedin /></Button>
-				<Button text="Download" on:click={handleDownload} />
+		{:else}
+			<div class="flex flex-grow items-center justify-center">
+				<OrbitProgressIndicator />
 			</div>
-		</div>
-	{:else}
-		<div class="flex flex-grow items-center justify-center">
-			<OrbitProgressIndicator />
-		</div>
-	{/if}
-</div>
+		{/if}
+	</div>
+{/if}

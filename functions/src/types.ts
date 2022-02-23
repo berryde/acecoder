@@ -1,4 +1,4 @@
-import type admin = require('firebase-admin');
+import type { Timestamp } from 'firebase-admin/firestore';
 
 export type Settings = { language: string; progress: string; completed: boolean };
 
@@ -37,9 +37,8 @@ export type UserCertificate = {
 	 * The id of the project for which this badge was awarded
 	 */
 	projectID: string;
-	projectName: string
-}
-
+	projectName: string;
+};
 
 export type Exercise = { assessed: boolean };
 
@@ -57,7 +56,7 @@ export type Badge = {
 };
 
 export type UserBadge = {
-	timestamp: admin.firestore.Timestamp;
+	timestamp: Timestamp;
 	projectID: string;
 };
 
@@ -68,7 +67,7 @@ export type UserStats = {
 };
 
 export type Certificate = {
-	issued: admin.firestore.Timestamp;
-	name: string;
+	issued: Timestamp;
 	project: string;
-}
+	uid: string;
+};

@@ -5,6 +5,7 @@
 	import type { Certificate } from 'src/utils/types';
 
 	export let certificate: Certificate;
+	export let name: string;
 
 	function getDateString() {
 		const date: Date = certificate.issued.toDate();
@@ -19,7 +20,7 @@
 	</div>
 	<div class="flex flex-col items-center space-y-2">
 		<p class="text-sm">This is to certify that</p>
-		<p class="text-3xl font-bold pb-2">{certificate.name}</p>
+		<p class="text-3xl font-bold pb-2">{name}</p>
 		<p class="text-sm">has successfully completed the required assessments for the project</p>
 		<p class="text-xl font-bold">{certificate.project}</p>
 	</div>

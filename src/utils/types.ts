@@ -157,10 +157,9 @@ export type ServerRequest = {
 
 export type Certificate = {
 	issued: Timestamp;
-	name: string;
 	project: string;
+	uid: string;
 };
-
 /**
  * Response from the submission server.
  */

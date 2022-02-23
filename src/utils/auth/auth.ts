@@ -11,8 +11,9 @@ import {
 } from 'firebase/auth';
 import { browser } from '$app/env';
 import type { AuthProvider, AuthError as _AuthError } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import type { AuthError } from '../types';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 type AuthFederation = 'google' | 'github';
 const DASHBOARD_URL = '/dashboard';
@@ -26,7 +27,11 @@ const LOGIN_URL = '/login';
 onAuthStateChanged(
 	auth,
 	(user) => {
-		if (browser && !user && !window.location.href.endsWith('login')) {
+		if (
+			browser &&
+			!user &&
+			!window.location.href.match('.+/(login|certificate|profile|register)')
+		) {
 			window.location.href = LOGIN_URL;
 		}
 	},
@@ -40,9 +45,14 @@ onAuthStateChanged(
  * @param password The new user's password
  * @returns An auth error if registering failed
  */
-export const register = async (email: string, password: string): Promise<AuthError | void> => {
+export const register = async (
+	email: string,
+	password: string,
+	name: string
+): Promise<AuthError | void> => {
 	try {
 		await createUserWithEmailAndPassword(auth, email, password);
+		await saveName(name);
 		window.location.href = DASHBOARD_URL;
 	} catch (error) {
 		const err = error as _AuthError;
@@ -51,6 +61,12 @@ export const register = async (email: string, password: string): Promise<AuthErr
 			errorMessage: err.message
 		};
 	}
+};
+
+const saveName = async (name: string): Promise<void> => {
+	if (!auth.currentUser) throw new Error('You need to be logged in to perform that action');
+	if (name.length == 0) throw new Error('Name cannot be empty');
+	await setDoc(doc(db, 'names', auth.currentUser.uid), { name: name });
 };
 
 export const signIn = async (email: string, password: string): Promise<AuthError | void> => {
@@ -66,7 +82,10 @@ export const signIn = async (email: string, password: string): Promise<AuthError
 	}
 };
 
-export const signInWith = async (federation: AuthFederation): Promise<AuthError | void> => {
+export const signInWith = async (
+	federation: AuthFederation,
+	registering = false
+): Promise<AuthError | void> => {
 	// Get the relevant authentication provider.
 	let provider: AuthProvider;
 	switch (federation) {
@@ -81,7 +100,19 @@ export const signInWith = async (federation: AuthFederation): Promise<AuthError 
 	// Trigger the federated sign in popup.
 	try {
 		await signInWithPopup(auth, provider);
-		window.location.href = DASHBOARD_URL;
+		if (auth.currentUser) {
+			if (registering) {
+				let name = '';
+
+				if (auth.currentUser.displayName) {
+					name = auth.currentUser.displayName;
+				} else if (auth.currentUser.email) {
+					name = auth.currentUser.email;
+				}
+				await saveName(name);
+			}
+			window.location.href = DASHBOARD_URL;
+		}
 	} catch (error) {
 		const err = error as _AuthError;
 		return {
@@ -123,12 +154,13 @@ export const resetPassword = async (email: string): Promise<AuthError | void> =>
 	}
 };
 
-export const getName = (full = false): string => {
-	if (!auth.currentUser) return '';
-	else if (auth.currentUser.displayName)
-		return full ? auth.currentUser.displayName : auth.currentUser.displayName.split(' ')[0];
-	else if (auth.currentUser.email) return auth.currentUser.email.split('@')[0];
-	else return '';
+export const getName = async (uid: string, full = false): Promise<string> => {
+	const snapshot = await getDoc(doc(db, 'names', uid));
+	if (snapshot.exists()) {
+		const name = snapshot.data()['name'];
+		return full ? name : name.split(' ')[0];
+	}
+	return '';
 };
 
 export const getErrorMessage = (firebaseError: AuthError): AuthError | undefined => {

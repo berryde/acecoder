@@ -122,7 +122,6 @@ export const getCertificateForProject = async (projectID: string): Promise<strin
 };
 
 export const getCertificates = async (uid: string): Promise<Record<string, UserCertificate>> => {
-	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
 	const snapshot = await getDocs(collection(db, 'stats', uid, 'certificates'));
 
 	// Get the user's certificates

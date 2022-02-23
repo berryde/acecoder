@@ -10,7 +10,7 @@
 	} from 'src/utils/project/project';
 	import { page } from '$app/stores';
 	import type { Project, Badge as BadgeType, ProjectSettings } from 'src/utils/types';
-	import Badge from 'src/components/projects/Badge.svelte';
+	import Badges from 'src/components/profile/Badges.svelte';
 	import { auth, completeProject } from 'src/utils/firebase';
 	import Download from 'src/components/projects/Download.svelte';
 	import { getName } from 'src/utils/auth/auth';
@@ -29,7 +29,8 @@
 		settings = await getProjectSettings($page.params.projectID, project.languages[0]);
 		completed = settings.completed;
 		if (!completed) {
-			const result = await completeProject($page.params.projectID, getName(true));
+			const name = await getName(auth.currentUser!.uid, true);
+			const result = await completeProject($page.params.projectID, name);
 			certificateID = result.certificateID;
 			badges = Object.values(result.badges);
 		} else {
@@ -51,11 +52,7 @@
 				<p class="text-xl font-bold mb-3">
 					{completed ? 'Badges unlocked' : 'New badges unlocked!'}
 				</p>
-				<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-					{#each badges as badge}
-						<Badge {badge} isNew={!completed} />
-					{/each}
-				</div>
+				<Badges {badges} />
 			</div>
 		{/if}
 		<CertificateLink {certificateID} />

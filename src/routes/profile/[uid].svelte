@@ -1,36 +1,45 @@
 <script lang="ts">
 	import { tweened } from 'svelte/motion';
 	import { sineInOut } from 'svelte/easing';
-	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
 	import Page from 'src/components/common/Page.svelte';
 	import { getName } from 'src/utils/auth/auth';
 	import { getBadges, getCertificates } from 'src/utils/project/project';
 	import type { Badge, UserCertificate } from 'src/utils/types';
 	import Badges from 'src/components/profile/Badges.svelte';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
 
 	let badges: Badge[] = [];
 	let certificates: Record<string, UserCertificate> = {};
 	let achievementCount = tweened(0, { duration: 300, easing: sineInOut });
 	let completed = tweened(0, { duration: 300, easing: sineInOut });
+	let name: string;
 
 	let loading = true;
 
+	onMount(() => {
+		loadProfile();
+	});
 	async function loadProfile() {
 		// Get badges for user
 		// Get certificates for user
 		badges = await getBadges($page.params.uid);
 		certificates = await getCertificates($page.params.uid);
-
+		name = await getName($page.params.uid, true);
 		completed.set(Object.keys(certificates).length);
 		achievementCount.set(badges.length);
 		loading = false;
 	}
 </script>
 
-<PrivateRoute on:authenticated={loadProfile} {loading}>
+{#if loading}
+	<div class="h-screen w-screen bg-brand-background flex justify-center items-center">
+		<OrbitProgressIndicator />
+	</div>
+{:else}
 	<Page>
-		<p class="text-3xl font-bold">{getName(true)}'s profile</p>
+		<p class="text-3xl font-bold">{name}'s profile</p>
 		<div class="flex space-x-10">
 			<div>
 				<p class="text-5xl font-light">{parseFloat($completed.toFixed(2))}</p>
@@ -63,4 +72,4 @@
 			<Badges {badges} />
 		</div>
 	</Page>
-</PrivateRoute>
+{/if}

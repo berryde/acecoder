@@ -3,10 +3,6 @@
 	import Card from '../common/Card.svelte';
 
 	export let certificateID: string;
-
-	function openCertificate() {
-		window.location.href = `/certificate/${certificateID}`;
-	}
 </script>
 
 <Card title="Certificate of Completion">
@@ -15,6 +11,8 @@
 		added to your profile and can be viewed at any time.
 	</p>
 	<div class="flex justify-end">
-		<Button text="View certificate" link={true} on:click={openCertificate} />
+		<a href={`/certificate/${certificateID}`}>
+			<Button text="View certificate" link={true} />
+		</a>
 	</div>
 </Card>
