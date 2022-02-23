@@ -17,6 +17,9 @@ export const exercise = writable<Exercise>(undefined);
  * Metadata about the current project
  */
 export const project = writable<Project>();
+/**
+ * The highest chapter in the exercise that the user has reached
+ */
 export const chapter = writable<number>(0);
 export const language = writable<string>();
 
@@ -39,6 +42,14 @@ export const loadExercise = async (): Promise<void> => {
 	for (const [path, value] of Object.entries(source)) {
 		createFile(path, value.value, value.modifiable);
 	}
+};
+
+export const passed = (result: ExerciseResults): boolean => {
+	if (!result) return false;
+	return (
+		Object.keys(result).length == get(exercise).chapters.length &&
+		Object.values(result).every((res) => res.passed)
+	);
 };
 
 /**
@@ -152,9 +163,7 @@ export const test = async (projectID: string, exerciseID: string): Promise<Exerc
 		}
 	});
 	if (response.status == 200) {
-		const data = response.data as ExerciseResults;
-		result.set(data);
-		return data;
+		return response.data;
 	} else {
 		throw 'Submission request failed';
 	}

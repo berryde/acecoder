@@ -2,7 +2,7 @@
 	import SplitPane from 'src/components/splitpane/SplitPane.svelte';
 	import EditorContainer from './EditorContainer.svelte';
 	import PreviewContainer from './PreviewContainer.svelte';
-	import { chapter, exercise, project, test } from 'src/utils/exercise/exercise';
+	import { chapter, exercise, passed, project, result, test } from 'src/utils/exercise/exercise';
 
 	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
 	import Navbar from 'src/components/navbar/Navbar.svelte';
@@ -47,21 +47,33 @@
 		loading = true;
 		try {
 			await save($page.params.projectID);
-			const previousChapter = $chapter;
-			await test($page.params.projectID, $page.params.index);
-			if ($chapter >= $exercise.chapters.length) {
+			const _chapter = $chapter;
+			const _result = await test($page.params.projectID, $page.params.index);
+
+			result.update((result) => ({
+				...result,
+				..._result
+			}));
+			chapter.update((chapter) => {
+				if (chapter < $exercise.chapters.length && chapter in _result && _result[chapter].passed) {
+					return chapter + 1;
+				}
+				return chapter;
+			});
+
+			if (passed(_result)) {
 				toastMessage.set({
 					message: 'Exercise completed!',
 					variant: 'success'
 				});
-			} else if ($chapter > previousChapter) {
+			} else if (_chapter < $chapter) {
 				toastMessage.set({
-					message: `Task ${previousChapter + 1} passed`,
+					message: `Task ${_chapter + 1} passed`,
 					variant: 'success'
 				});
 			} else {
 				toastMessage.set({
-					message: `Task ${previousChapter + 1} failed`,
+					message: `Task failed`,
 					variant: 'danger'
 				});
 			}
@@ -105,7 +117,7 @@
 
 		<p>{index}/{$project.exerciseCount - 1}</p>
 		<div class="flex space-x-5 flex-grow justify-end w-full">
-			{#if $exercise.assessed && $chapter < $exercise.chapters.length}
+			{#if $exercise.assessed && !passed($result)}
 				<Button text="Submit" on:click={handleSubmit} {loading} />
 			{:else if index + 1 == $project.exerciseCount}
 				<Button text="Finish" on:click={handleFinish} link={true} />

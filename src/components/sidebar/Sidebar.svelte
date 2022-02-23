@@ -18,32 +18,14 @@
 	import { getExtension } from 'src/utils/filesystem/filesystem';
 	import { selectedTab } from 'src/utils/tabs/tabs';
 	import { page } from '$app/stores';
-
-	function updateChapter() {
-		submissionAttempt += 1;
-		if (
-			$_chapter < $exercise.chapters.length &&
-			$_chapter in $result &&
-			$result[$_chapter].passed
-		) {
-			_chapter.update((c) => c + 1);
-			submissionAttempt = 0;
-		}
-	}
-
-	let submissionAttempt = 0;
-	$: $result && updateChapter();
+	import type { ExerciseResults } from 'src/utils/types';
 
 	onMount(() => {
 		if ($result && Object.keys($result).length !== 0) {
 			// Get index of the most recently passed chapter
-			const index = Math.max(
-				...Object.entries($result)
-					.filter((entry) => entry[1].passed)
-					.map((entry) => parseInt(entry[0]))
-			);
-			_chapter.set(index + 1);
-			submissionAttempt = 0;
+			let index = Math.max(...Object.entries($result).map((entry) => parseInt(entry[0])));
+			if ($result[index].passed) index += 1;
+			_chapter.set(index);
 		}
 	});
 
@@ -62,6 +44,13 @@
 			message: 'Exercise reset',
 			variant: 'info'
 		});
+	}
+
+	function getResult(result: ExerciseResults, chapter: number): boolean | undefined {
+		if (result && chapter in result) {
+			return result[chapter].passed;
+		}
+		return undefined;
 	}
 </script>
 
@@ -101,14 +90,10 @@
 					class="transition-opacity px-5 py-3 flex items-center space-x-5 {index > $_chapter &&
 						'opacity-40'}"
 				>
-					<Checkbox
-						disabled={true}
-						variant={'true-false'}
-						value={$result !== undefined && index in $result ? $result[index].passed : undefined}
-					/>
+					<Checkbox disabled={true} variant={'true-false'} value={getResult($result, index)} />
 					<p class="chapter">{@html chapter.text}</p>
 				</div>
-				{#if $result !== undefined && index in $result && !$result[index].passed}
+				{#if getResult($result, index) === false}
 					<div class="bg-brand-danger-dark bg-opacity-50 p-5 text-brand-danger-light">
 						<p class="hint">{@html chapter.hint}</p>
 					</div>
