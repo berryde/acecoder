@@ -56,8 +56,14 @@
 	 */
 	let resizing: boolean = false;
 
+	/**
+	 * Event dipatcher
+	 */
 	const dispatch = createEventDispatcher();
 
+	/**
+	 * Called when the user begins a touch event on the separator
+	 */
 	function touchStart(e: TouchEvent) {
 		setCursorData(e.touches[0].clientX, e.touches[0].clientY);
 		if (!window) return;
@@ -67,10 +73,16 @@
 		dispatch('resize');
 	}
 
+	/**
+	 * Called when the user drags the separator as a touch event
+	 */
 	function touchMove(e: TouchEvent) {
 		update(e.touches[0].clientX - cursorData.xPos);
 	}
 
+	/**
+	 * Called when the user ends a touch event on the separator
+	 */
 	function touchEnd() {
 		if (!window) return;
 		resizing = false;
@@ -93,6 +105,10 @@
 		window.removeEventListener('mouseup', mouseUp);
 	}
 
+	/**
+	 * Update the sizes of the panes when the separator is dragged
+	 * @param delta The change in separator X position
+	 */
 	function update(delta: number) {
 		delta = Math.min(Math.max(delta, -cursorData.pane1Size), cursorData.pane2Size);
 		const left = ((cursorData.pane1Size + delta) / width) * 100;
@@ -113,6 +129,12 @@
 		update(e.clientX - cursorData.xPos);
 	}
 
+	/**
+	 * Set the start data of a drag or touch event
+	 *
+	 * @param xPos The X position of the cursor
+	 * @param yPos The Y position of the cursor
+	 */
 	function setCursorData(xPos: number, yPos: number) {
 		cursorData = {
 			xPos: xPos,

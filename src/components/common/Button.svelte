@@ -16,7 +16,7 @@
 	export let variant: Variant = 'default';
 
 	function onclick() {
-		if (!disabled) {
+		if (!disabled && !loading) {
 			dispatch('click');
 			if (link) loading = true;
 		}

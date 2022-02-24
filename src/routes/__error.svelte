@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-	/** @type {import('@sveltejs/kit').ErrorLoad} */
 	export function load({ error, status }: { error: { message: string }; status: string }) {
 		return {
 			props: {
@@ -11,9 +10,19 @@
 </script>
 
 <script lang="ts">
+	/**
+	 * The status code to show
+	 */
 	export let status: number = 404;
+
+	/**
+	 * The message to show, such as a stack trace
+	 */
 	export let message: string = '';
 
+	/**
+	 * Show an error message based on the status code
+	 */
 	function getErrorMessage() {
 		switch (status) {
 			case 403:

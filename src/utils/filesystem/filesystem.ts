@@ -285,6 +285,12 @@ export const getAllFiles = (prefix: string, root: Filesystem): Record<string, FS
 	return files;
 };
 
+/**
+ * Extract a zip file
+ *
+ * @param file The Zip file to extract
+ * @returns A Map of filename to file
+ */
 export const extractZip = async (file: Blob): Promise<Record<string, string>> => {
 	const result: { [filename: string]: string } = {};
 	const zip = await JSZip.loadAsync(file);
@@ -296,6 +302,13 @@ export const extractZip = async (file: Blob): Promise<Record<string, string>> =>
 	return result;
 };
 
+/**
+ * Add the filesystems's files to a JSZip instance
+ *
+ * @param zip The JSZip instance
+ * @param state The filesystem to download
+ * @returns The JSZip instance populated with the filesystem's files
+ */
 const createZip = (zip: JSZip, state: Filesystem) => {
 	// Create a zip from the file system by traversing it.
 	for (const [name, file] of Object.entries(state)) {
@@ -309,6 +322,9 @@ const createZip = (zip: JSZip, state: Filesystem) => {
 	return zip;
 };
 
+/**
+ * Download the entire filesystem as a ZIP
+ */
 export const exportFilesystem = (): void => {
 	const zip = createZip(new JSZip(), get(filesystem));
 

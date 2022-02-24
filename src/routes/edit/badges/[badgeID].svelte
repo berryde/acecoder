@@ -6,8 +6,16 @@
 	import { getBadge } from 'src/utils/project/project';
 	import { page } from '$app/stores';
 
+	/**
+	 * Whether the page is loading
+	 */
 	let loading = true;
+
+	/**
+	 * The badge being edited
+	 */
 	let badge: Badge;
+
 	onMount(async () => {
 		badge = await getBadge($page.params.badgeID);
 		loading = false;

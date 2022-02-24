@@ -3,6 +3,8 @@ import * as rollup from 'rollup/dist/es/rollup.browser.js';
 import type { RollupWarning } from 'rollup';
 import { getDependencies, getPlugins } from './compiler';
 
+const PACKAGE = 'package.json';
+
 /**
  * Returns some error data to the live preview iframe in the application
  *
@@ -25,8 +27,7 @@ const createError = (message: string, name = 'Error', pos = 0, location = ''): W
 	};
 };
 
-const PACKAGE = 'package.json';
-
+// Listen for post events with new files
 self.addEventListener(
 	'message',
 	async (
@@ -78,6 +79,15 @@ self.addEventListener(
 	}
 );
 
+/**
+ * Use Rollup to bundle the provided code with the given configuration
+ *
+ * @param entryPoint The filename of the entry point
+ * @param language The language of the submission
+ * @param filesystem The files of the submission
+ * @param dependencies Any dependencies extracted from `package.json`
+ * @returns
+ */
 const bundle = async (
 	entryPoint: string,
 	language: string,

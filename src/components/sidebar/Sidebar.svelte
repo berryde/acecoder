@@ -29,6 +29,9 @@
 		}
 	});
 
+	/**
+	 * Format the editor contents when the format button is clicked
+	 */
 	function handleFormat() {
 		const formatted = format($contents, getExtension($selectedTab));
 		contents.set(formatted);
@@ -38,6 +41,9 @@
 		});
 	}
 
+	/**
+	 * Reset the exercise when the reset button is clicked
+	 */
 	async function handleReset() {
 		await reset($page.params.projectID, $page.params.index);
 		toastMessage.set({
@@ -46,6 +52,12 @@
 		});
 	}
 
+	/**
+	 * Get the result for a given chapter if it exists
+	 *
+	 * @param result The result object
+	 * @param chapter The current chapter
+	 */
 	function getResult(result: ExerciseResults, chapter: number): boolean | undefined {
 		if (result && chapter in result) {
 			return result[chapter].passed;

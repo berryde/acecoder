@@ -4,10 +4,24 @@
 	import { linear } from 'svelte/easing';
 	import { Tweened, tweened } from 'svelte/motion';
 
+	/**
+	 * Whether the toast is visible
+	 */
 	let visible: boolean = false;
+
+	/**
+	 * How long the toast should be visible for
+	 */
 	const duration = 3000;
+
+	/**
+	 * The progress of the animation
+	 */
 	let progress: Tweened<number>;
 
+	/**
+	 * Make the toast visible for a duration
+	 */
 	function show() {
 		progress = tweened(0, { duration: duration, easing: linear });
 		visible = true;
@@ -17,6 +31,9 @@
 		}, duration);
 	}
 
+	/**
+	 * Get the background color of the toast
+	 */
 	function getColor() {
 		switch ($toastMessage.variant) {
 			case 'warning':
@@ -30,6 +47,9 @@
 		}
 	}
 
+	/**
+	 * Get the text color of the toast
+	 */
 	function getSecondaryColor() {
 		switch ($toastMessage.variant) {
 			case 'warning':

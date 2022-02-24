@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Preview from '../../components/preview/Preview.svelte';
+	import Preview from './Preview.svelte';
 	import { filesystem, getAllFiles } from '../../utils/filesystem/filesystem';
 	import type { WorkerError, WorkerResponse } from '../../utils/types';
 	import { onDestroy, onMount } from 'svelte';
@@ -7,11 +7,20 @@
 	import { compiled } from 'src/utils/compiler/compiler';
 	import { language } from 'src/utils/exercise/exercise';
 
+	/**
+	 * Whether the user is resizing the parent splitpane
+	 */
 	export let resizing: boolean = false;
-	export let selecting: boolean = false;
 
+	/**
+	 * The Rollup worker
+	 */
 	let worker: Worker;
 
+	/**
+	 * Called when the Rollup worker sends a response
+	 * @param event The recieved message
+	 */
 	function onMessage(event: MessageEvent<any>) {
 		const e = event.data.error as WorkerError;
 		if (e) {
@@ -21,6 +30,17 @@
 		}
 	}
 
+	/**
+	 * Refresh the preview by rebuilding the application
+	 */
+	function refresh() {
+		if (worker) {
+			worker.postMessage({
+				language: $language,
+				files: getAllFiles('', $filesystem)
+			});
+		}
+	}
 	onMount(() => {
 		// Import the worker from the absolute path
 		worker = new Worker(new URL('/worker.js', window.location.origin));
@@ -30,15 +50,6 @@
 		refresh();
 	});
 
-	function refresh() {
-		if (worker) {
-			worker.postMessage({
-				language: $language,
-				files: getAllFiles('', $filesystem)
-			});
-		}
-	}
-
 	onDestroy(() => {
 		if (worker) {
 			worker.removeEventListener('message', onMessage);
@@ -47,7 +58,8 @@
 		compiled.set(undefined);
 	});
 
+	// Refresh the preview whenever the filesystem changes
 	$: $filesystem && refresh();
 </script>
 
-<Preview resizing={resizing || selecting} on:refresh={() => refresh()} />
+<Preview {resizing} on:refresh={() => refresh()} />

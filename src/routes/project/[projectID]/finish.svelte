@@ -16,11 +16,34 @@
 	import { getName } from 'src/utils/auth/auth';
 	import CertificateLink from 'src/components/projects/CertificateLink.svelte';
 
+	/**
+	 * The project that has been finished
+	 */
 	let project: Project;
+
+	/**
+	 * Whether the project has been completed before
+	 */
 	let completed: boolean;
+
+	/**
+	 * The badges awarded for completing this project
+	 */
 	let badges: BadgeType[] = [];
+
+	/**
+	 * The user's settings for this project
+	 */
 	let settings: ProjectSettings;
+
+	/**
+	 * Whether the page is loading
+	 */
 	let loading = true;
+
+	/**
+	 * The ID of the certificate awarded for completing this project
+	 */
 	let certificateID: string;
 
 	onMount(async () => {

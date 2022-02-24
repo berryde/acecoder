@@ -5,10 +5,9 @@
 	import type { FSFile } from 'src/utils/types';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/env';
-	import { contents, format } from 'src/utils/editor/editor';
+	import { contents } from 'src/utils/editor/editor';
 	import { save } from 'src/utils/editor/editor';
 	import { page } from '$app/stores';
-	import { formatOnSave } from 'src/utils/settings/settings';
 
 	const TAB_SIZE = 2;
 	const FONT_SIZE = '1rem';
@@ -46,10 +45,10 @@
 		loaded = true;
 	}
 
-	function handleFormat() {
-		setValue(format(editor.getValue(), getExtension($selectedTab)));
-	}
-
+	/**
+	 * Set the contents of the current editor, restoring the cursor position.
+	 * @param value The text to set
+	 */
 	function setValue(value: string) {
 		if (editor) {
 			const pos = editor.getCursorPosition();
@@ -59,12 +58,18 @@
 		}
 	}
 
+	/**
+	 * Save the contents of the editor when the user presses ctrl+s
+	 */
 	function handleSave() {
 		if ($contents == '') return;
-		if ($formatOnSave) handleFormat();
 		save($page.params.projectID);
 	}
 
+	/**
+	 *
+	 * @param e
+	 */
 	function keydownListener(e: KeyboardEvent) {
 		if (e.ctrlKey && e.code == 'KeyS') {
 			e.preventDefault();

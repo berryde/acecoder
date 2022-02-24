@@ -3,6 +3,9 @@
 	export let size: 'regular' | 'large' = 'regular';
 	export let link: boolean = true;
 
+	/**
+	 * Get the size of the logo from the size prop
+	 */
 	function getSize() {
 		if (size == 'regular') return 'h-6';
 		return 'h-12';

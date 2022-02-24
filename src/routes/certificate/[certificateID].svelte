@@ -12,9 +12,21 @@
 	import { getName } from 'src/utils/auth/auth';
 	import { auth } from 'src/utils/firebase';
 
+	/**
+	 * Whether the page is loading
+	 */
 	let loading = true;
+
+	/**
+	 * The certificate to display
+	 */
 	let certificate: CertificateType;
+
+	/**
+	 * The name of the user received this certificate
+	 */
 	let name: string;
+
 	onMount(async () => {
 		try {
 			certificate = await getCertificate($page.params.certificateID);
@@ -25,6 +37,9 @@
 		}
 	});
 
+	/**
+	 * Download the certificate
+	 */
 	async function handleDownload() {
 		const element = document.getElementById('certificate');
 		if (element) {
@@ -38,6 +53,9 @@
 		}
 	}
 
+	/**
+	 * Share the certificate to linkedin
+	 */
 	function handleShare() {
 		const organisationID = 79117149;
 		const date = certificate.issued.toDate();

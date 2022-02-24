@@ -8,16 +8,16 @@
 	import { onMount } from 'svelte';
 	let loading = true;
 
+	/**
+	 * The badges on the system
+	 */
 	let badges: Record<string, BadgeType> = {};
+
 	onMount(async () => {
 		loading = true;
 		badges = await getAllBadges();
 		loading = false;
 	});
-
-	function handleClick(id: string) {
-		window.location.href = `/edit/badges/${id}`;
-	}
 </script>
 
 <svelte:head>
@@ -41,9 +41,11 @@
 		</div>
 		<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 			{#each Object.keys(badges) as id}
-				<div class="cursor-pointer flex-grow" on:click={() => handleClick(id)}>
-					<Badge badge={badges[id]} />
-				</div>
+				<a href={`/edit/badges/${id}`}>
+					<div class="cursor-pointer flex-grow">
+						<Badge badge={badges[id]} />
+					</div></a
+				>
 			{/each}
 		</div>
 	</Page>

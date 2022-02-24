@@ -13,14 +13,20 @@ import { selectedTab } from '../tabs/tabs';
  * The current exercise being completed
  */
 export const exercise = writable<Exercise>(undefined);
+
 /**
  * Metadata about the current project
  */
 export const project = writable<Project>();
+
 /**
  * The highest chapter in the exercise that the user has reached
  */
 export const chapter = writable<number>(0);
+
+/**
+ * The language that the user is completing the exercise in
+ */
 export const language = writable<string>();
 
 /**
@@ -44,6 +50,12 @@ export const loadExercise = async (): Promise<void> => {
 	}
 };
 
+/**
+ * Check if the current exercise has been passed with the given results
+ *
+ * @param result A set of exercise results
+ * @returns Whether the provided results pass the exercise
+ */
 export const passed = (result: ExerciseResults): boolean => {
 	if (!result) return false;
 	return (
@@ -80,8 +92,8 @@ export const getExercise = async (
 			[language]: exerciseFiles
 		};
 
+		// Check if the user has made a submission and download it if so.
 		if (useSubmission) {
-			// Check if the user has made a submission and download it if so.
 			const submission = await transaction.get(
 				doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid)
 			);
@@ -108,6 +120,12 @@ export const getExercise = async (
 	});
 };
 
+/**
+ * Resets the editor state to the project default
+ *
+ * @param projectID The project being completed
+ * @param index The index of the exercise within the project
+ */
 export const reset = async (projectID: string, index: string): Promise<void> => {
 	initialising.set(true);
 	exercise.set(await getExercise(projectID, index, get(language), false));
@@ -117,6 +135,11 @@ export const reset = async (projectID: string, index: string): Promise<void> => 
 	initialising.set(false);
 };
 
+/**
+ * Update the cumulative submission for the project with the current filesystem
+ *
+ * @param projectID The project to write to
+ */
 export const write = async (projectID: string): Promise<void> => {
 	const files = getAllFiles('', get(filesystem));
 	const submission: Record<string, string> = {};

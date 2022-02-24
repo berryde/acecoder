@@ -1,5 +1,5 @@
 <script lang="ts">
-	import IDE from 'src/pages/IDE/IDE.svelte';
+	import IDE from 'src/components/editor/IDE.svelte';
 	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
 	import { getProject, getProjectSettings, getResults } from 'src/utils/project/project';
 	import {
@@ -15,8 +15,14 @@
 	import { getFile } from 'src/utils/filesystem/filesystem';
 	import type { FSFile } from 'src/utils/types';
 
+	/**
+	 * Whether the page is loading
+	 */
 	let loading = true;
 
+	/**
+	 * Load the exercise into the application and set up any required state
+	 */
 	async function initialise() {
 		// Check if the user has unlocked this exercise
 		const settings = await getProjectSettings($page.params.projectID);

@@ -2,6 +2,9 @@
 	import Button from '../common/Button.svelte';
 	import Card from '../common/Card.svelte';
 
+	/**
+	 * The ID of the certificate
+	 */
 	export let certificateID: string;
 </script>
 

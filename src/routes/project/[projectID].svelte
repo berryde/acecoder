@@ -24,10 +24,29 @@
 	import CertificateLink from 'src/components/projects/CertificateLink.svelte';
 	import { language } from 'src/utils/exercise/exercise';
 
+	/**
+	 * The current project
+	 */
 	let project: Project;
+
+	/**
+	 * The exercises within the project
+	 */
 	let exercises: Record<string, ExerciseMetadata>;
+
+	/**
+	 * The user's settings for the project, such as language and progress
+	 */
 	let settings: ProjectSettings;
+
+	/**
+	 * Whether page is loading
+	 */
 	let loading: boolean = true;
+
+	/**
+	 * The ID of the certificate awarded for completing this project, if any
+	 */
 	let certificateID: string;
 
 	onMount(async () => {
@@ -45,7 +64,11 @@
 		loading = false;
 	});
 
-	async function handleClick(index: string | number) {
+	/**
+	 * Start the given exercise
+	 * @param index The index of the exercise
+	 */
+	async function startExercise(index: string | number) {
 		index = index.toString();
 		if (index == '0') {
 			await startProject($page.params.projectID, settings.language);
@@ -53,7 +76,15 @@
 		window.location.href = `/project/${$page.params.projectID}/exercise-${index}`;
 	}
 
+	/**
+	 * Whether the user is pending a restart of the project
+	 */
 	let restarting = false;
+
+	/**
+	 * Restart the project by deleting the user's submission and progress
+	 * @param e The mousevent from clicking on the dropdown
+	 */
 	async function handleRestart(e: MouseEvent) {
 		e.stopPropagation();
 		restarting = true;
@@ -108,7 +139,7 @@
 							variant={settings.progress >= parseInt(index) ? 'default' : 'text'}
 						/>
 						<p
-							on:click={() => handleClick(index)}
+							on:click={() => startExercise(index)}
 							role="link"
 							tabindex={settings.progress >= parseInt(index) ? 0 : undefined}
 							class={settings.progress >= parseInt(index) ? 'cursor-pointer ' : 'cursor-default'}
@@ -141,7 +172,7 @@
 			<div class="flex justify-end">
 				<Button
 					text={settings.progress == 0 ? 'Start' : 'Resume'}
-					on:click={() => handleClick(settings.progress)}
+					on:click={() => startExercise(settings.progress)}
 					link={true}
 				/>
 			</div>

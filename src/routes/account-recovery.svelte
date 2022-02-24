@@ -5,11 +5,29 @@
 	import IoMdPerson from 'svelte-icons/io/IoMdPerson.svelte';
 	import type { AuthError } from 'src/utils/types';
 
+	/**
+	 * The email of the user who's password should be reset
+	 */
 	let email: string = '';
+
+	/**
+	 * Whether the password is currently being reset
+	 */
 	let loading = false;
+
+	/**
+	 * An authentication error thrown if the user was unable to reset their password
+	 */
 	let error: AuthError | undefined;
+
+	/**
+	 * Whether the reset email was sent successfully
+	 */
 	let success: boolean;
 
+	/**
+	 * Reset the user's password
+	 */
 	async function handleReset() {
 		if (email != '') {
 			loading = true;

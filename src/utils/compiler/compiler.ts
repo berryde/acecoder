@@ -147,6 +147,14 @@ export const getDependencies = (packageJSON: {
 	return result;
 };
 
+/**
+ * Resolve the correct rollup plugin from the provided configuration
+ *
+ * @param framework The framework being used
+ * @param files The files submitted
+ * @param dependencies Dependencies extracted from the `package.json`
+ * @returns A rollup plugin
+ */
 export const getPlugins = (
 	framework: string,
 	files: { [key: string]: File },

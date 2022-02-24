@@ -47,12 +47,24 @@ export const getProjectExercises = async (
 	}
 };
 
+/**
+ * Fetch a certificate by its ID
+ *
+ * @param certificateID The ID of the certificate
+ * @returns The certificate
+ */
 export const getCertificate = async (certificateID: string): Promise<Certificate> => {
 	const snapshot = await getDoc(doc(db, 'certificates', certificateID));
 	if (!snapshot.exists()) throw new Error('No certificate could be found with that ID');
 	return snapshot.data() as Certificate;
 };
 
+/**
+ * Gets the results for the current user, updating the state with the resolved value.
+ *
+ * @param projectID The project to get the results for
+ * @param exerciseID The exercise within the project
+ */
 export const getResults = async (projectID: string, exerciseID: string): Promise<void> => {
 	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
 	const snapshot = await getDoc(
@@ -64,7 +76,7 @@ export const getResults = async (projectID: string, exerciseID: string): Promise
 };
 
 /**
- * Retrieves the metadata for an exercise without fetching the files unnecessarily.
+ * Retrieves the metadata for an exercise without fetching the files unnecessarily
  *
  * @param projectID The project id.
  * @param index The index of the exercise within the project.
@@ -82,6 +94,13 @@ export const getExerciseMetadata = async (
 	}
 };
 
+/**
+ * Retrieves the project settings for the current user, such as language choice and progress
+ *
+ * @param projectID The project to get the settings for
+ * @param fallback The fallback language to use if no settings can be found
+ * @returns The project settings for the current user
+ */
 export const getProjectSettings = async (
 	projectID: string,
 	fallback = 'react'
@@ -103,12 +122,24 @@ export const getProject = async (projectID: string): Promise<Project> => {
 	throw 'Project ' + projectID + ' does not exist';
 };
 
+/**
+ * Fetches a badge by its ID
+ *
+ * @param badgeID The ID of the badge
+ * @returns The badge
+ */
 export const getBadge = async (badgeID: string): Promise<Badge> => {
 	const snapshot = await getDoc(doc(db, 'badges', badgeID));
 	if (snapshot.exists()) return snapshot.data() as Badge;
 	throw 'Badge ' + badgeID + ' does not exist';
 };
 
+/**
+ * Fetch the ID of the user's certificate for this project, if it exists
+ *
+ * @param projectID The project to get the certificate for
+ * @returns The ID of the certificate
+ */
 export const getCertificateForProject = async (projectID: string): Promise<string> => {
 	if (!auth.currentUser) throw new Error(ERR_NO_AUTH);
 	const snapshot = await getDocs(
@@ -121,6 +152,12 @@ export const getCertificateForProject = async (projectID: string): Promise<strin
 	return snapshot.docs[0].id;
 };
 
+/**
+ * Fetch all of the certificates for a given user
+ *
+ * @param uid The user ID to get the certificates for
+ * @returns A map of certificate ID to certificate metadata
+ */
 export const getCertificates = async (uid: string): Promise<Record<string, UserCertificate>> => {
 	const snapshot = await getDocs(collection(db, 'stats', uid, 'certificates'));
 
@@ -129,6 +166,13 @@ export const getCertificates = async (uid: string): Promise<Record<string, UserC
 	return Object.fromEntries(snapshot.docs.map((doc) => [doc.id, doc.data() as UserCertificate]));
 };
 
+/**
+ * Fetch the badges for a given user
+ *
+ * @param uid The user ID to get the badges for
+ * @param options Query options
+ * @returns The retrieved badges
+ */
 export const getBadges = async (
 	uid: string,
 	options: {
@@ -139,11 +183,13 @@ export const getBadges = async (
 	const { limit, projectID } = options;
 	const snapshot = await getDocs(collection(db, 'stats', uid, 'badges'));
 
+	// Get the user's badge metadata
 	if (snapshot.empty) return [];
 	let userBadges = Object.fromEntries(
 		snapshot.docs.map((doc) => [doc.id, doc.data() as UserBadge])
 	);
 
+	// Only get the badges for the specified project ID
 	if (projectID) {
 		userBadges = Object.fromEntries(
 			Object.entries(userBadges).filter((entry) => entry[1].projectID == projectID)
@@ -151,6 +197,7 @@ export const getBadges = async (
 		if (Object.entries(userBadges).length == 0) return [];
 	}
 
+	// Limit the number of results if a limit is provided
 	const constraints: QueryConstraint[] = [];
 	constraints.push(where('__name__', 'in', Object.keys(userBadges)));
 	if (limit) constraints.push(_limit(limit));
@@ -171,6 +218,11 @@ export const getBadges = async (
 		.map((doc) => doc.data() as Badge);
 };
 
+/**
+ * Fetch the stats for the current user
+ *
+ * @returns The user's stats
+ */
 export const getStats = async (): Promise<UserStats> => {
 	if (auth.currentUser === null) throw Error(ERR_NO_AUTH);
 	const snapshot = await getDoc(doc(db, 'stats', auth.currentUser.uid));
@@ -185,6 +237,11 @@ export const getStats = async (): Promise<UserStats> => {
 	}
 };
 
+/**
+ * Delete all of the current user's progress for a given project
+ *
+ * @param projectID The ID of the project to restart
+ */
 export const restartProject = async (projectID: string): Promise<void> => {
 	const project = await getProject(projectID);
 	await runTransaction(db, async (transaction) => {

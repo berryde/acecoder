@@ -4,6 +4,9 @@
 	import { auth } from 'src/utils/firebase';
 	let iconUrl: string;
 
+	/**
+	 * Called if the image fails to load
+	 */
 	function handleImageError() {
 		iconUrl = '';
 	}

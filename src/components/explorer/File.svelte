@@ -22,6 +22,9 @@
 	 */
 	export let path: string;
 
+	/**
+	 * Whether this file is modifiable
+	 */
 	export let modifiable: boolean;
 
 	/**

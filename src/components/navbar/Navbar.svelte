@@ -1,7 +1,15 @@
 <script lang="ts">
 	import ProfileMenu from '../profile/ProfileMenu.svelte';
 	import Logo from './Logo.svelte';
+
+	/**
+	 * Whether the profile menu should be shown
+	 */
 	export let showProfile: boolean = true;
+
+	/**
+	 * Whether this navbar should span the width of the screen
+	 */
 	export let expanded: boolean = false;
 </script>
 

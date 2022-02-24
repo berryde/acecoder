@@ -1,12 +1,21 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
 
-	// Props
+	/**
+	 * Reserved filenames which cannot be created
+	 */
 	export let reservedNames: string[] = [];
+
+	/**
+	 * The depth of this input in the filesystem
+	 */
 	export let depth: number = 0;
+
+	/**
+	 * The initial value of the input
+	 */
 	export let initialValue: string = '';
 
-	// Variables
 	/**
 	 * The value bound to the input field.
 	 */

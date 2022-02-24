@@ -3,7 +3,7 @@ import type { File } from '../types';
 import { resolveRelativePath, fileNotFoundError, isRelativeImport, CDN_URL } from './compiler';
 
 /**
- * A browser-based rollup plugin for compiling svelte.
+ * A browser-based rollup plugin for compiling Svelte.
  * @returns A rollup plugin providing CSS support.
  */
 export default function svelteCompiler(
@@ -21,7 +21,7 @@ export default function svelteCompiler(
 		 * @returns
 		 */
 		async resolveId(importee, importer) {
-			// Handle svelte imports
+			// Handle svelte specific imports
 			if (importee === 'svelte' || importee.startsWith('svelte/'))
 				return {
 					id: `${CDN_URL}/${importee}`,

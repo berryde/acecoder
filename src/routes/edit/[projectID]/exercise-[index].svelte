@@ -8,8 +8,19 @@
 	import ProfileMenu from 'src/components/profile/ProfileMenu.svelte';
 	import { getProject } from 'src/utils/project/project';
 
+	/**
+	 * The selected project
+	 */
 	let project: Project;
+
+	/**
+	 * The exercise being edited
+	 */
 	let exercise: Exercise;
+
+	/**
+	 * Whether the page is loading
+	 */
 	let loading = true;
 
 	onMount(async () => {

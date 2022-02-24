@@ -5,13 +5,21 @@
 	import { auth } from 'src/utils/firebase';
 	import { onMount } from 'svelte';
 
+	/**
+	 * The ID of the user to fetch the profile for
+	 */
 	let uid = '';
+
 	onMount(() => {
 		if (auth.currentUser) {
 			uid = auth.currentUser.uid;
 		}
 	});
 
+	/**
+	 * Sign the user out when the logout button is clicked
+	 * @param e The triggering event
+	 */
 	function handleClick(e: MouseEvent) {
 		e.stopPropagation();
 		signOut();

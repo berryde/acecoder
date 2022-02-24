@@ -16,11 +16,18 @@
 	let completed = tweened(0, { duration: 300, easing: sineInOut });
 	let name: string;
 
+	/**
+	 * Whether the page is loading
+	 */
 	let loading = true;
 
 	onMount(() => {
 		loadProfile();
 	});
+
+	/**
+	 * Load the user's profile data
+	 */
 	async function loadProfile() {
 		// Get badges for user
 		// Get certificates for user

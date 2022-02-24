@@ -6,8 +6,14 @@
 	import Button from '../common/Button.svelte';
 	import Card from '../common/Card.svelte';
 
+	/**
+	 * Whether the download is pending
+	 */
 	let loading = false;
 
+	/**
+	 * Download the user's submission for a project
+	 */
 	async function handleDownload() {
 		loading = true;
 		exercise.set(await getExercise($page.params.projectID, '0', $language, true));

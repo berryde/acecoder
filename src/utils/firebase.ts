@@ -39,6 +39,9 @@ export const db = getFirestore(app);
  */
 export const auth = getAuth(app);
 
+/**
+ * The Firebase storage instance
+ */
 export const storage = getStorage(app, 'gs://folio-8b029.appspot.com');
 
 /**
@@ -46,6 +49,7 @@ export const storage = getStorage(app, 'gs://folio-8b029.appspot.com');
  */
 const functions = getFunctions(app, 'europe-west2');
 
+// Use the emulator in the development environment
 if (import.meta.env.DEV) {
 	connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
 	connectFirestoreEmulator(db, 'localhost', 8080);
@@ -53,6 +57,12 @@ if (import.meta.env.DEV) {
 	connectStorageEmulator(storage, 'localhost', 9199);
 }
 
+/**
+ *  Invoke the 'incrementProgress' cloud function to set the claim for a user
+ *
+ * @param claim A JSON document
+ * @returns Whether the claim was set successfully
+ */
 export const setClaim = async (claim: Record<string, unknown>): Promise<boolean> => {
 	try {
 		const result = await httpsCallable<Record<string, unknown>, boolean>(
@@ -65,6 +75,12 @@ export const setClaim = async (claim: Record<string, unknown>): Promise<boolean>
 	}
 };
 
+/**
+ * Invoke the 'incrementProgress' cloud function to move on to the next exercise
+ *
+ * @param projectID The project being completed
+ * @param name The name of the user completing the project as it will appear on the certificate
+ */
 export const completeProject = async (
 	projectID: string,
 	name: string
@@ -89,6 +105,12 @@ export const completeProject = async (
 	).data;
 };
 
+/**
+ * Invoke the 'incrementProgress' cloud function to move on to the next exercise
+ *
+ * @param projectID The project being completed
+ * @param exerciseID The exercise that has been completed
+ */
 export const incrementProgress = async (projectID: string, exerciseID: string): Promise<void> => {
 	await httpsCallable<Record<string, unknown>, boolean>(
 		functions,
@@ -99,6 +121,12 @@ export const incrementProgress = async (projectID: string, exerciseID: string): 
 	});
 };
 
+/**
+ * Invoke the 'startProject' cloud function to start a project
+ *
+ * @param projectID The project to start
+ * @param language The language to start the project in
+ */
 export const startProject = async (projectID: string, language: string): Promise<void> => {
 	await httpsCallable<Record<string, unknown>, void>(
 		functions,
@@ -109,10 +137,23 @@ export const startProject = async (projectID: string, language: string): Promise
 	});
 };
 
+/**
+ * Retrieves an image URL from its Firebase URI
+ *
+ * @param uri The image URI
+ * @returns The image URL
+ */
 export const getImage = async (uri: string): Promise<string> => {
 	return await getDownloadURL(ref(storage, uri));
 };
 
+/**
+ * Uploads a file to Firebase Filestore
+ *
+ * @param folder The folder name
+ * @param file The file name
+ * @returns The URI of the uploaded image
+ */
 export const uploadImage = async (folder: string, file: File): Promise<string> => {
 	const name = `${folder}/${file.name}`;
 	const location = ref(storage, name);

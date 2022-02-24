@@ -1,7 +1,6 @@
 <script lang="ts">
 	import SplitPane from 'src/components/splitpane/SplitPane.svelte';
-	import EditorContainer from './EditorContainer.svelte';
-	import PreviewContainer from './PreviewContainer.svelte';
+	import PreviewContainer from '../../components/preview/PreviewContainer.svelte';
 	import { chapter, exercise, passed, project, result, test } from 'src/utils/exercise/exercise';
 
 	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
@@ -11,38 +10,39 @@
 	import { incrementProgress } from 'src/utils/firebase';
 	import Toast from 'src/components/common/Toast.svelte';
 	import { save, toastMessage } from 'src/utils/editor/editor';
+	import Tabs from 'src/components/tabs/Tabs.svelte';
+	import Editor from 'src/components/editor/Editor.svelte';
 
 	/**
-	 * Whether the user is currently drawing a selection over the editor.
-	 * This allows us to ignore pointer events in the preview iframe.
+	 * The index of the exercise
 	 */
-	let selecting = false;
-
-	/**
-	 * Update the value of whether the user is currently drawing a selection over the editor.
-	 * @param e The triggering event.
-	 */
-	function toggleSelecting(e: CustomEvent<boolean>) {
-		selecting = e.detail;
-	}
 	let index = parseInt($page.params.index);
 
+	/**
+	 * Called when the user clicks the 'next' button
+	 */
 	async function handleNext() {
 		await incrementProgress($page.params.projectID, $page.params.index);
 		window.location.href = `/project/${$page.params.projectID}/exercise-${index + 1}`;
 	}
 
-	async function handleFinish() {
-		window.location.href = `/project/${$page.params.projectID}/finish`;
-	}
-
+	/**
+	 * Called when the user clicks the 'previous' button
+	 */
 	function handlePrevious() {
 		if (index > 0) {
 			window.location.href = `/project/${$page.params.projectID}/exercise-${index - 1}`;
 		}
 	}
 
+	/**
+	 * Whether the submission is pending
+	 */
 	let loading = false;
+
+	/**
+	 * Called when the user submits the exercise for evaluation
+	 */
 	async function handleSubmit() {
 		loading = true;
 		try {
@@ -98,10 +98,11 @@
 		<div slot="pane2" class="h-full flex flex-col">
 			<SplitPane minPane2Size={'10rem'} pane1Size={66} pane2Size={34}>
 				<div slot="pane1" class="h-full">
-					<EditorContainer on:drag={toggleSelecting} />
+					<Tabs />
+					<Editor />
 				</div>
 				<div slot="pane2" class="h-full" let:resizing>
-					<PreviewContainer {resizing} {selecting} />
+					<PreviewContainer {resizing} />
 				</div>
 			</SplitPane>
 		</div>
@@ -114,13 +115,14 @@
 				<Button text="Previous" on:click={handlePrevious} outline={true} link={true} />
 			{/if}
 		</div>
-
 		<p>{index}/{$project.exerciseCount - 1}</p>
 		<div class="flex space-x-5 flex-grow justify-end w-full">
 			{#if $exercise.assessed && !passed($result)}
 				<Button text="Submit" on:click={handleSubmit} {loading} />
 			{:else if index + 1 == $project.exerciseCount}
-				<Button text="Finish" on:click={handleFinish} link={true} />
+				<a href={`/project/${$page.params.projectID}/finish`}
+					><Button text="Finish" link={true} /></a
+				>
 			{:else}
 				{#if $exercise.assessed}
 					<Button text="Re-submit" on:click={handleSubmit} outline={true} {loading} />

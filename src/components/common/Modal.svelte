@@ -4,18 +4,28 @@
 	import Icon from './Icon.svelte';
 
 	const dispatch = createEventDispatcher();
+
+	/**
+	 * A class to show that the modal is open
+	 */
 	const OPEN = 'modal-open';
 
+	/**
+	 * The title of the modal
+	 */
 	export let title: string;
 
-	onMount(() => {
-		document.body.classList.add(OPEN);
-	});
-
+	/**
+	 * Called when the user clicks away from the modal
+	 */
 	function close() {
 		document.body.classList.remove(OPEN);
 		dispatch('close');
 	}
+
+	onMount(() => {
+		document.body.classList.add(OPEN);
+	});
 
 	onDestroy(() => {
 		document.body.classList.remove(OPEN);

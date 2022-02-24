@@ -10,11 +10,18 @@
 	type Variant = 'default' | 'dark';
 	export let variant: Variant = 'default';
 
+	/**
+	 * Update the value whenever the input is changed
+	 * @param e The input event
+	 */
 	function onInput(e: Event) {
 		const element = e.target as HTMLInputElement;
 		value = element.value;
 	}
 
+	/**
+	 * Get the style based on the variant
+	 */
 	function getStyle() {
 		if (variant == 'dark') return 'bg-brand-background';
 		return 'bg-brand-accent';

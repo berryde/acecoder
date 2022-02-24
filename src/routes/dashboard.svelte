@@ -10,13 +10,37 @@
 	import Page from 'src/components/common/Page.svelte';
 	import Badges from 'src/components/profile/Badges.svelte';
 
+	/**
+	 * The projects available to the user
+	 */
 	let projects: {
 		id: string;
 		project: Project;
 	}[] = [];
+
+	/**
+	 * The greeting to show the user, based on the time of day
+	 */
 	let greeting = getGreeting();
+
+	/**
+	 * The user's name
+	 */
 	let name = '';
 
+	/**
+	 * The user's badges
+	 */
+	let badges: BadgeType[] = [];
+
+	/**
+	 * Whether the user data is currently being set
+	 */
+	let loading = true;
+
+	/**
+	 * Get the greeting based on the time of day
+	 */
 	function getGreeting() {
 		var today = new Date();
 		var hour = today.getHours();
@@ -30,6 +54,9 @@
 		}
 	}
 
+	/**
+	 * Get the projects available to the user
+	 */
 	async function getProjects() {
 		const snapshot = await getDocs(collection(db, 'projects'));
 		snapshot.forEach((doc) => {
@@ -41,12 +68,9 @@
 		projects = projects;
 	}
 
-	let badges: BadgeType[] = [];
-	onMount(() => {
-		getProjects();
-	});
-
-	let loading = true;
+	/**
+	 * Fetch the name and badges of the current user
+	 */
 	async function loadUserData() {
 		if (!auth.currentUser) {
 			throw new Error('You need to be logged in to perform that action');
@@ -57,6 +81,10 @@
 		name = await getName(auth.currentUser.uid);
 		loading = false;
 	}
+
+	onMount(() => {
+		getProjects();
+	});
 </script>
 
 <svelte:head>
@@ -80,7 +108,7 @@
 			</div>
 			<div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
 				{#each projects as project}
-					<ProjectCard projectID={project.id} project={project.project} />
+					<ProjectCard project={project.project} url={`/project/${project.id}`} />
 				{/each}
 			</div>
 		</div>

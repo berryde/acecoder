@@ -88,6 +88,9 @@
 		}
 	}
 
+	/**
+	 * Called when the preview window is loaded
+	 */
 	function onLoad() {
 		// Add the URL click interceptor
 		const message: UrlMessage = {
@@ -98,6 +101,10 @@
 		}
 	}
 
+	/**
+	 * Called when the preview window recieves a message
+	 * @param message
+	 */
 	function onMessage(message: MessageEvent) {
 		const msg = message.data as PreviewMessage;
 		if (msg.type == 'system') {

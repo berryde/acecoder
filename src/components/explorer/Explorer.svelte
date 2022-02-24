@@ -20,13 +20,28 @@
 	import Icon from '../common/Icon.svelte';
 	import Droppable from '../common/Droppable.svelte';
 
+	/**
+	 * Whether the user is creating
+	 */
 	let creating = false;
+
+	/**
+	 * Whether the user is creating a file
+	 */
 	let creatingFile = false;
 
+	/**
+	 * Called when the user starts or stops creating a new file
+	 * @param isCreating Whether the user is creating a new file
+	 */
 	function setCreating(isCreating: boolean) {
 		creating = isCreating;
 	}
 
+	/**
+	 * Called when the user submits a new file for creation
+	 * @param name The name of the file to create
+	 */
 	function handleCreate(name: string) {
 		if (creatingFile) {
 			createFile(name);

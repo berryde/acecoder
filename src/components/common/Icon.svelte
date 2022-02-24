@@ -13,16 +13,26 @@
 	 */
 	export let button: boolean = false;
 
+	/**
+	 * The label to show under this icon
+	 */
 	export let label: string | undefined = undefined;
 
+	/**
+	 * An aria role for this element
+	 */
 	export let aria: string | undefined = undefined;
 
+	/**
+	 * Whether this icon should be wrapped with a card
+	 */
 	export let card: boolean = false;
 
 	/**
 	 * The test-id of this icon, so that it can be identified programatically in tests.
 	 */
 	export let testId = '';
+
 	const dispatch = createEventDispatcher();
 
 	/**

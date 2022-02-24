@@ -4,10 +4,24 @@
 	import { onMount } from 'svelte';
 	import Hoverable from '../common/Hoverable.svelte';
 
+	/**
+	 * The badge to display
+	 */
 	export let badge: Badge;
+
+	/**
+	 * Whether this badge has just been unlocked
+	 */
 	export let isNew: boolean = false;
 
+	/**
+	 * The URL of the badge image
+	 */
 	let url: string = '';
+
+	/**
+	 * Load the URL of the badge image from its URI
+	 */
 	async function getBadge() {
 		url = await getImage(badge.image);
 	}

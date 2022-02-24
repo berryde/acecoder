@@ -19,6 +19,9 @@
 	let password: string;
 	let error: AuthError | undefined;
 
+	/**
+	 * Sign in using username and password
+	 */
 	async function signIn() {
 		if (email == '' || !/\S+@\S+\.\S+/.test(email)) {
 			error = {
@@ -40,6 +43,10 @@
 		if (result) error = getErrorMessage(result);
 	}
 
+	/**
+	 * Sign in with some federated authentication provider
+	 * @param provider The provider to sign in with
+	 */
 	async function signInWith(provider: 'github' | 'google') {
 		method = provider;
 		error = undefined;

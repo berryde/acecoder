@@ -8,9 +8,21 @@
 	import type { ExerciseMetadata, Project } from 'src/utils/types';
 	import { getProjectExercises, getProject } from 'src/utils/project/project';
 
+	/**
+	 * The selected project
+	 */
 	let project: Project;
+
+	/**
+	 * Whether the page is loading
+	 */
 	let loading = true;
+
+	/**
+	 * The exercises in the project
+	 */
 	let exercises: Record<string, ExerciseMetadata>;
+
 	onMount(async () => {
 		try {
 			project = await getProject($page.params.projectID);
@@ -20,10 +32,6 @@
 			window.location.href = '/error/404';
 		}
 	});
-
-	function handleClick(index: string) {
-		window.location.href = `/edit/${$page.params.projectID}/exercise-${index}`;
-	}
 </script>
 
 <svelte:head>
@@ -41,12 +49,11 @@
 				<p>Select an exercise to open the exercise editor.</p>
 			</div>
 			{#each Object.entries(exercises) as [exerciseID, exercise]}
-				<div
-					class="bg-brand-background p-3 max-w-max rounded cursor-pointer"
-					on:click={() => handleClick(exerciseID)}
-				>
-					<p>{exercise.name}</p>
-				</div>
+				<a href={`/edit/${$page.params.projectID}/exercise-${exerciseID}`}>
+					<div class="bg-brand-background p-3 max-w-max rounded cursor-pointer">
+						<p>{exercise.name}</p>
+					</div>
+				</a>
 			{/each}
 			<div class="flex justify-end">
 				<Button

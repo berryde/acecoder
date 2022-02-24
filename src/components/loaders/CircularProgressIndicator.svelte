@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * The color of the indicator
+	 */
 	export let variant: 'dark' | 'light' = 'light';
 </script>
 

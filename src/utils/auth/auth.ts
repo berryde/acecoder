@@ -63,12 +63,23 @@ export const register = async (
 	}
 };
 
+/**
+ * Write the user's full name to firebase for certificates
+ * @param name The full name of the user
+ */
 const saveName = async (name: string): Promise<void> => {
 	if (!auth.currentUser) throw new Error('You need to be logged in to perform that action');
 	if (name.length == 0) throw new Error('Name cannot be empty');
 	await setDoc(doc(db, 'names', auth.currentUser.uid), { name: name });
 };
 
+/**
+ * Perform basic email-password sign in
+ *
+ * @param email The user's email
+ * @param password The user's password
+ * @returns An AuthError if authentication fails, else nothing
+ */
 export const signIn = async (email: string, password: string): Promise<AuthError | void> => {
 	try {
 		await signInWithEmailAndPassword(auth, email, password);
@@ -82,6 +93,13 @@ export const signIn = async (email: string, password: string): Promise<AuthError
 	}
 };
 
+/**
+ * Sign the user up or in with a federated login provider
+ *
+ * @param federation The federation to authenticate
+ * @param registering Whether the user is registering or logging in
+ * @returns An AuthError if authentication fails, else nothing
+ */
 export const signInWith = async (
 	federation: AuthFederation,
 	registering = false
@@ -122,6 +140,10 @@ export const signInWith = async (
 	}
 };
 
+/**
+ * Sign the user out
+ * @returns An AuthError if authentication fails, else nothing
+ */
 export const signOut = async (): Promise<AuthError | void> => {
 	try {
 		await _signOut(auth);
@@ -135,6 +157,11 @@ export const signOut = async (): Promise<AuthError | void> => {
 	}
 };
 
+/**
+ * Check if the current user is an admin
+ *
+ * @returns Whether the current user is an admin
+ */
 export const isAdmin = async (): Promise<boolean> => {
 	const user = auth.currentUser;
 	if (!user) return false;
@@ -142,6 +169,12 @@ export const isAdmin = async (): Promise<boolean> => {
 	return !!token.claims.admin;
 };
 
+/**
+ * Send a password reset email to the current user
+ *
+ * @param email The email of the user to reset the password for
+ * @returns  An AuthError if it fails, else nothing
+ */
 export const resetPassword = async (email: string): Promise<AuthError | void> => {
 	try {
 		await sendPasswordResetEmail(auth, email);
@@ -154,6 +187,13 @@ export const resetPassword = async (email: string): Promise<AuthError | void> =>
 	}
 };
 
+/**
+ * Get the name of a user
+ *
+ * @param uid The ID of the user to get the name for
+ * @param full Whether the full name should be retrieved
+ * @returns The name of the user
+ */
 export const getName = async (uid: string, full = false): Promise<string> => {
 	const snapshot = await getDoc(doc(db, 'names', uid));
 	if (snapshot.exists()) {
@@ -163,6 +203,12 @@ export const getName = async (uid: string, full = false): Promise<string> => {
 	return '';
 };
 
+/**
+ * Parse Firebase errors and show a more user friendly message
+ *
+ * @param firebaseError The AuthError to parse
+ * @returns A neater, more readable error
+ */
 export const getErrorMessage = (firebaseError: AuthError): AuthError | undefined => {
 	switch (firebaseError.errorCode) {
 		case 'auth/wrong-password':

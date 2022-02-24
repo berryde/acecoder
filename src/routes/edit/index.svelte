@@ -10,8 +10,16 @@
 	import ProjectCard from 'src/components/projects/ProjectCard.svelte';
 	import Page from 'src/components/common/Page.svelte';
 
+	/**
+	 * The projects on the system
+	 */
 	let projects: { id: string; project: Project }[];
+
+	/**
+	 * Whether the page is loading
+	 */
 	let loading = true;
+
 	onMount(async () => {
 		loading = true;
 		const snapshot = await getDocs(collection(db, 'projects'));
@@ -54,7 +62,7 @@
 		</div>
 		<div class="grid grid-cols-3 gap-4">
 			{#each projects as project}
-				<ProjectCard projectID={project.id} project={project.project} url={`/edit/${project.id}`} />
+				<ProjectCard project={project.project} url={`/edit/${project.id}`} />
 			{/each}
 		</div>
 	</Page>

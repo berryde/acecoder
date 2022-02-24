@@ -16,10 +16,23 @@ import type { ToastMessage } from '../types';
  */
 export const supportedExtensions = ['jsx', 'css', 'js', 'ts', 'html', 'tsx', 'json', 'svelte'];
 
+/**
+ * The unsaved contents of the editor
+ */
 export const contents = writable<string>('');
 
+/**
+ * The toast message to show to the user. It will disappear several seconds after being set
+ */
 export const toastMessage = writable<ToastMessage>();
 
+/**
+ * Use Prettier to format a string
+ *
+ * @param value The text to format
+ * @param language The language of the text
+ * @returns The formatted text
+ */
 export const format = (value: string, language: string): string => {
 	if (isSupported(language)) {
 		try {
@@ -36,6 +49,12 @@ export const format = (value: string, language: string): string => {
 	return value;
 };
 
+/**
+ * Get the Prettier parser for a given language
+ *
+ * @param language The language to get the parser for
+ * @returns A Prettier language parser
+ */
 export const getParser = (
 	language: string
 ): { parser: string; plugins: [{ parsers: { [key: string]: Parser<string> } }] } => {
@@ -80,6 +99,10 @@ export const isSupported = (language: string): boolean => {
 	return supportedExtensions.includes(language);
 };
 
+/**
+ * Write the contents of the editor to the filesystem and optionally write the filesystem to Firebase
+ * @param projectID The project being completed
+ */
 export const save = async (projectID: string): Promise<void> => {
 	const tab: string = get(selectedTab);
 	saveTab(tab);

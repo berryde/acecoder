@@ -10,12 +10,39 @@
 	import type { AuthError } from 'src/utils/types';
 	import Logo from 'src/components/navbar/Logo.svelte';
 
+	/**
+	 * The email address of the user
+	 */
 	let email = '';
+
+	/**
+	 * The password of the user
+	 */
 	let password = '';
+
+	/**
+	 * The name of the user
+	 */
 	let name = '';
+
+	/**
+	 * The password of the user, again
+	 */
 	let confirmPassword = '';
+
+	/**
+	 * An error thrown if authentication fails
+	 */
 	let error: AuthError;
+
+	/**
+	 * Whether the authentication is pending
+	 */
 	let loading = false;
+
+	/**
+	 * Submit the form to register the user
+	 */
 	async function submit() {
 		loading = true;
 		if (email == '') {

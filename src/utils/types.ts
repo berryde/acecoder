@@ -152,14 +152,30 @@ export type ServerRequest = {
 	 * The ID of the user creating this submission
 	 */
 	userID: string;
+	/**
+	 * The current chapter
+	 */
 	chapter: number;
 };
 
+/**
+ * A certificate as displayed in a user profile
+ */
 export type Certificate = {
+	/**
+	 * When the certificate was issued
+	 */
 	issued: Timestamp;
+	/**
+	 * The project the certificate was issued for
+	 */
 	project: string;
+	/**
+	 * The user ID of the user that received this certificate
+	 */
 	uid: string;
 };
+
 /**
  * Response from the submission server.
  */
@@ -319,6 +335,9 @@ export type UserBadge = {
 	projectID: string;
 };
 
+/**
+ * Metadata about a certificate, useful for querying a user's certificate ownership without getting the actual certificates
+ */
 export type UserCertificate = {
 	/**
 	 * The timestamp at which the badge was awarded
@@ -329,13 +348,22 @@ export type UserCertificate = {
 	 */
 	projectID: string;
 	/**
-	 *
+	 * The name of the project
 	 */
 	projectName: string;
 };
 
+/**
+ * A toast message to display to the user
+ */
 export type ToastMessage = {
+	/**
+	 * The message to display
+	 */
 	message: string;
+	/**
+	 * The color of the message
+	 */
 	variant: 'success' | 'warning' | 'danger' | 'info';
 };
 

@@ -8,7 +8,11 @@
 	import ProfileMenu from 'src/components/profile/ProfileMenu.svelte';
 	import type { Project } from 'src/utils/types';
 
+	/**
+	 * The selected project
+	 */
 	let project: Project;
+
 	onMount(async () => {
 		project = await getProject($page.params.projectID);
 	});

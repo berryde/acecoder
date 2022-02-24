@@ -18,6 +18,9 @@
 		hovering = false;
 	}
 
+	/**
+	 * Additional classes
+	 */
 	export let classes = '';
 </script>
 
