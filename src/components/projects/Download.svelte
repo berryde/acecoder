@@ -29,7 +29,6 @@
 		world, or continue working on it.
 	</p>
 	<div class="flex justify-end space-x-3 mt-3">
-		<Button text="Share on LinkedIn" outline={true} />
 		<Button text="Download" on:click={handleDownload} {loading} />
 	</div>
 </Card>

@@ -162,6 +162,11 @@ export const write = async (projectID: string): Promise<void> => {
 };
 
 /**
+ * Whether the application is currently waiting for a test result
+ */
+export const testing = writable(false);
+
+/**
  * Submit the filesystem to generate a mark.
  *
  * @returns A void promise that resolves when the submission request is completed.

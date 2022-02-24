@@ -8,6 +8,7 @@
 	import { contents } from 'src/utils/editor/editor';
 	import { save } from 'src/utils/editor/editor';
 	import { page } from '$app/stores';
+	import { testing } from 'src/utils/exercise/exercise';
 
 	const TAB_SIZE = 2;
 	const FONT_SIZE = '1rem';
@@ -62,7 +63,7 @@
 	 * Save the contents of the editor when the user presses ctrl+s
 	 */
 	function handleSave() {
-		if ($contents == '') return;
+		if ($contents == '' || $testing) return;
 		save($page.params.projectID);
 	}
 

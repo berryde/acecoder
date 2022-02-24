@@ -10,7 +10,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"module": "ES2020",
-		"types": ["svelte", "jest"],
+		"types": ["svelte", "jest", "cypress"],
 		"strict": true
 	},
 	"include": ["src/**/*"],

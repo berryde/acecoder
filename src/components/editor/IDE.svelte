@@ -1,7 +1,15 @@
 <script lang="ts">
 	import SplitPane from 'src/components/splitpane/SplitPane.svelte';
 	import PreviewContainer from '../../components/preview/PreviewContainer.svelte';
-	import { chapter, exercise, passed, project, result, test } from 'src/utils/exercise/exercise';
+	import {
+		chapter,
+		exercise,
+		passed,
+		project,
+		result,
+		test,
+		testing
+	} from 'src/utils/exercise/exercise';
 
 	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
 	import Navbar from 'src/components/navbar/Navbar.svelte';
@@ -48,6 +56,7 @@
 		try {
 			await save($page.params.projectID);
 			const _chapter = $chapter;
+			testing.set(true);
 			const _result = await test($page.params.projectID, $page.params.index);
 
 			result.update((result) => ({
@@ -84,7 +93,7 @@
 				variant: 'danger'
 			});
 		}
-
+		testing.set(false);
 		loading = false;
 	}
 </script>
