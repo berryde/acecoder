@@ -1,5 +1,7 @@
 default:
-  image: node
+  image:
+    name: node
+    entrypoint: ['/usr/bin/env']
   cache:
     key: '$CI_COMMIT_REF_SLUG'
     paths:
@@ -17,12 +19,12 @@ before_script:
 install:
   stage: install
   script:
-    - cd app
+    - cd app/
     - pnpm install
 
 test:
   stage: test
   script:
-    - cd app
+    - cd app/
     - pnpm build
     - pnpm test
