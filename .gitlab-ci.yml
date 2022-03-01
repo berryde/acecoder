@@ -9,7 +9,6 @@ default:
       - node_modules
 
 stages:
-  - install
   - test
 
 before_script:
@@ -17,15 +16,10 @@ before_script:
   - curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm@6
   - pnpm config set store-dir .pnpm-store
 
-install:
-  stage: install
-  script:
-    - cd app/
-    - pnpm install
-
 test:
   stage: test
   script:
     - cd app/
+    - pnpm install
     - pnpm build
     - pnpm test
