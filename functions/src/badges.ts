@@ -1,5 +1,5 @@
 import { Transaction, getFirestore } from 'firebase-admin/firestore';
-import type { Badge, UserStats } from './types';
+import type { Badge, UserStats } from '~shared/types';
 
 export const calculateBadges = async (
 	transaction: Transaction,
@@ -15,10 +15,10 @@ export const calculateBadges = async (
 		])
 	);
 
-	for (let id in badges) {
+	for (const id in badges) {
 		const badge = badges[id];
 		if (!!badge.conditions && badge.conditions != {}) {
-			for (let key of Object.keys(badge.conditions)) {
+			for (const key of Object.keys(badge.conditions)) {
 				if (key in stats && stats[key] == badge.conditions[key]) result[id] = badge;
 			}
 		}

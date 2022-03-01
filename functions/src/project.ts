@@ -1,27 +1,26 @@
 import * as functions from 'firebase-functions';
-import { getFirestore, Timestamp } from 'firebase-admin/firestore';
+import { getFirestore } from 'firebase-admin/firestore';
+import { Timestamp } from 'firebase/firestore';
 import type { DocumentReference } from 'firebase-admin/firestore';
 import type {
 	Badge,
 	Certificate,
 	Exercise,
 	Project,
-	Settings,
+	ProjectSettings,
 	UserBadge,
 	UserCertificate,
 	UserStats
-} from './types';
+} from '~shared/types';
 import { calculateBadges } from './badges';
+import { FAILED_PRECONDITION, REGION, REQUIRE_AUTH } from './constants';
 
 export const incrementProgress = functions
-	.region('europe-west2')
+	.region(REGION)
 	.https.onCall(async (data: { projectID: string; exerciseID: string }, context) => {
 		// Check that the user is authenticated
 		if (!context.auth) {
-			throw new functions.https.HttpsError(
-				'failed-precondition',
-				'The function must be called while authenticated.'
-			);
+			throw new functions.https.HttpsError(FAILED_PRECONDITION, REQUIRE_AUTH);
 		}
 
 		// Initialize relevant variables
@@ -35,16 +34,16 @@ export const incrementProgress = functions
 		// Check if the index is within the range of the project
 		const index = parseInt(exerciseID);
 		if (index >= project.exerciseCount) {
-			throw new functions.https.HttpsError('failed-precondition', `The exercise must exist.`);
+			throw new functions.https.HttpsError(FAILED_PRECONDITION, `The exercise must exist.`);
 		}
 
 		// Fetch the user's settings
 		const settings = await getSettings(projectID, uid);
-		const progress = parseInt(settings.progress);
+		const progress = settings.progress;
 
 		if (progress != index) {
 			throw new functions.https.HttpsError(
-				'failed-precondition',
+				FAILED_PRECONDITION,
 				`Cannot increment a non-current exercise. Trying to increment ${exerciseID} with progress ${settings.progress}.`
 			);
 		}
@@ -53,7 +52,7 @@ export const incrementProgress = functions
 		const snapshot = await getExerciseRef(projectID, exerciseID).get();
 		if (!snapshot.exists) {
 			throw new functions.https.HttpsError(
-				'failed-precondition',
+				FAILED_PRECONDITION,
 				`Exercise ${exerciseID} does not exist in project ${projectID}`
 			);
 		}
@@ -68,7 +67,7 @@ export const incrementProgress = functions
 
 		if (!passed) {
 			throw new functions.https.HttpsError(
-				'failed-precondition',
+				FAILED_PRECONDITION,
 				`The current exercise must be completed`
 			);
 		}
@@ -93,7 +92,7 @@ const getProject = async (projectID: string): Promise<Project> => {
 	const snapshot = await getProjectRef(projectID).get();
 	if (!snapshot.exists) {
 		throw new functions.https.HttpsError(
-			'failed-precondition',
+			FAILED_PRECONDITION,
 			`Project ${projectID} does not exist.`
 		);
 	}
@@ -108,22 +107,22 @@ const getResults = async (
 	const snapshot = await getExerciseRef(projectID, exerciseID).collection('results').doc(uid).get();
 	if (!snapshot.exists) {
 		throw new functions.https.HttpsError(
-			'failed-precondition',
+			FAILED_PRECONDITION,
 			`The user does not have any results for that exercise.`
 		);
 	}
 	return snapshot.data() as Record<number, { passed: boolean }>;
 };
 
-const getSettings = async (projectID: string, uid: string): Promise<Settings> => {
+const getSettings = async (projectID: string, uid: string): Promise<ProjectSettings> => {
 	const snapshot = await getProjectRef(projectID).collection('settings').doc(uid).get();
 	if (!snapshot.exists) {
 		throw new functions.https.HttpsError(
-			'failed-precondition',
+			FAILED_PRECONDITION,
 			`The user does not have any settings for that project.`
 		);
 	}
-	return snapshot.data() as Settings;
+	return snapshot.data() as ProjectSettings;
 };
 
 /**
@@ -150,14 +149,11 @@ const getStats = async (uid: string): Promise<UserStats> => {
 };
 
 export const startProject = functions
-	.region('europe-west2')
+	.region(REGION)
 	.https.onCall((data: { projectID: string; language: string }, context) => {
 		// Check that the user is authenticated
 		if (!context.auth) {
-			throw new functions.https.HttpsError(
-				'failed-precondition',
-				'The function must be called while authenticated.'
-			);
+			throw new functions.https.HttpsError(FAILED_PRECONDITION, REQUIRE_AUTH);
 		}
 
 		// Initialize relevant variables
@@ -171,7 +167,7 @@ export const startProject = functions
 		});
 	});
 
-export const completeProject = functions.region('europe-west2').https.onCall(
+export const completeProject = functions.region(REGION).https.onCall(
 	async (
 		data: { projectID: string },
 		context
@@ -181,10 +177,7 @@ export const completeProject = functions.region('europe-west2').https.onCall(
 	}> => {
 		// Check that the user is authenticated
 		if (!context.auth) {
-			throw new functions.https.HttpsError(
-				'failed-precondition',
-				'The function must be called while authenticated.'
-			);
+			throw new functions.https.HttpsError(FAILED_PRECONDITION, REQUIRE_AUTH);
 		}
 
 		// Initialize relevant variables
@@ -195,17 +188,17 @@ export const completeProject = functions.region('europe-west2').https.onCall(
 		const settings = await getSettings(projectID, uid);
 		if (settings.completed) {
 			throw new functions.https.HttpsError(
-				'failed-precondition',
+				FAILED_PRECONDITION,
 				'The project must not be already completed'
 			);
 		}
 
 		// Fetch the project metadata
 		const project = await getProject(projectID);
-		const progress = parseInt(settings.progress);
+		const progress = settings.progress;
 		if (progress != project.exerciseCount - 1) {
 			throw new functions.https.HttpsError(
-				'failed-precondition',
+				FAILED_PRECONDITION,
 				'All exercises must be completed to finish the project.'
 			);
 		}
@@ -231,7 +224,8 @@ export const completeProject = functions.region('europe-west2').https.onCall(
 		// Issue the certificate
 		const userCertificate: UserCertificate = {
 			projectID: projectID,
-			projectName: project.name
+			projectName: project.name,
+			timestamp: Timestamp.now()
 		};
 
 		const store = getFirestore();

@@ -1,0 +1,22 @@
+{
+	"extends": "@tsconfig/svelte/tsconfig.json",
+	"compilerOptions": {
+		"importsNotUsedAsValues": "error",
+		"isolatedModules": true,
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"baseUrl": ".",
+		"module": "ES2020",
+		"types": ["svelte", "jest", "cypress"],
+		"strict": true,
+		"paths": {
+			"~shared/*": ["../shared/*"]
+		},
+		"rootDirs": ["./src", "../shared"]
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules/*", "src/components/preview/template/*"]
+}

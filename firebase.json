@@ -1,7 +1,7 @@
 {
 	"firestore": {
-		"rules": ".firebase-config/firestore.rules",
-		"indexes": ".firebase-config/firestore.indexes"
+		"rules": "firebase/.firebase-config/firestore.rules",
+		"indexes": "firebase/.firebase-config/firestore.indexes"
 	},
 	"emulators": {
 		"auth": {
@@ -18,7 +18,7 @@
 		}
 	},
 	"storage": {
-		"rules": ".firebase-config/storage.rules"
+		"rules": "firebase/.firebase-config/storage.rules"
 	},
 	"functions": {
 		"runtime": "nodejs14"
