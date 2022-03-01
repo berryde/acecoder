@@ -1,15 +1,10 @@
 {
-  "name": "cypress",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/jest": "^27.4.1",
-    "cypress": "^9.5.1"
-  }
+	"name": "cypress",
+	"version": "1.0.0",
+	"description": "",
+	"author": "Daniel Berry",
+	"license": "UNLICENSED",
+	"devDependencies": {
+		"@types/jest": "^27.4.1"
+	}
 }

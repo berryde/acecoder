@@ -1,9 +1,6 @@
 {
-	"extends": "@tsconfig/svelte/tsconfig.json",
 	"compilerOptions": {
 		"importsNotUsedAsValues": "error",
-		"isolatedModules": true,
-		"resolveJsonModule": true,
 		"sourceMap": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,

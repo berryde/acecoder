@@ -2,7 +2,7 @@
 	import PrivateRoute from 'src/components/auth/PrivateRoute.svelte';
 	import { collection, getDocs } from 'firebase/firestore';
 	import { getName } from 'src/utils/auth/auth';
-	import type { Badge as BadgeType, Project }from '~shared/types';
+	import type { Badge as BadgeType, Project } from '~shared/types';
 	import { onMount } from 'svelte';
 	import { auth, db } from 'src/utils/firebase';
 	import ProjectCard from 'src/components/projects/ProjectCard.svelte';

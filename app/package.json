@@ -8,7 +8,7 @@
 		"preview": "svelte-kit preview",
 		"check": "svelte-check --tsconfig ./tsconfig.json --threshold warning",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier --ignore-path .eslintignore --write --plugin-search-dir=. . && eslint --ignore-path .eslintignore . --fix",
+		"lint": "prettier --ignore-path ../.eslintignore --write --plugin-search-dir=. . && eslint --ignore-path ../.eslintignore . --fix",
 		"emulator": "firebase emulators:start --import=./firebase/.export --export-on-exit=./firebase/.export",
 		"compile": "node scripts/generateTemplate.js && rollup -c",
 		"test": "jest src",

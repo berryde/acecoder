@@ -4,7 +4,7 @@
 	"description": "Shared Acecoder types",
 	"main": "types.ts",
 	"author": "",
-	"license": "ISC",
+	"license": "UNLICENSED",
 	"dependencies": {
 		"firebase": "^9.6.7"
 	}
