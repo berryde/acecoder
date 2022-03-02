@@ -70,7 +70,7 @@
 	 */
 	async function startExercise(index: string | number) {
 		index = index.toString();
-		if (index == '0') {
+		if (index == '0' && settings.progress === 0) {
 			await startProject($page.params.projectID, settings.language);
 		}
 		window.location.href = `/project/${$page.params.projectID}/exercise-${index}`;

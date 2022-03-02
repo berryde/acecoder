@@ -32,7 +32,7 @@
 
 {#if image}
 	<a href={url}>
-		<div class="bg-brand-accent rounded cursor-pointer">
+		<div class="bg-brand-accent rounded cursor-pointer flex flex-col h-full">
 			<img
 				src={image}
 				alt="Project thumbnail"
@@ -41,7 +41,7 @@
 				role="link"
 				aria-label={`${project.name} project`}
 			/>
-			<p class="p-3">{project.overview}</p>
+			<p class="p-3 flex-grow">{project.overview}</p>
 		</div></a
 	>
 {:else}

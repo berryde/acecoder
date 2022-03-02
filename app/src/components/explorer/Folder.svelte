@@ -20,8 +20,7 @@
 		createFile,
 		createFolder,
 		exists,
-		sort,
-		filesystem
+		sort
 	} from '../../utils/filesystem/filesystem';
 	import type { Filesystem } from '~shared/types';
 	import { renameTabs, closeTabs, openTab, renameTab } from '../../utils/tabs/tabs';
@@ -242,7 +241,7 @@
 
 		{#if !collapsed}
 			<div>
-				{#each Object.entries(sort($filesystem)) as [name, object]}
+				{#each Object.entries(sort(children)) as [name, object]}
 					{#if object.type === 'file' && object.modifiable}
 						<File path={path + '/' + name} depth={depth + 1} modifiable={object.modifiable} />
 					{:else if object.type == 'folder'}

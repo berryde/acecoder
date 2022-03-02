@@ -106,7 +106,7 @@
 		</div>
 		<div slot="pane2" class="h-full flex flex-col">
 			<SplitPane minPane2Size={'10rem'} pane1Size={66} pane2Size={34}>
-				<div slot="pane1" class="h-full">
+				<div slot="pane1" class="flex flex-col h-full">
 					<Tabs />
 					<Editor />
 				</div>

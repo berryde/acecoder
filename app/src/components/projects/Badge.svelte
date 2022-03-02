@@ -57,7 +57,7 @@
 		<div
 			class="absolute bg-brand-accent origin-center left-1/2 transform -translate-x-1/2 {hovering
 				? 'opacity-100'
-				: 'opacity-0'} z-30 w-44 transition-opacity rounded p-2 transform text-xs duration-300 drop-shadow-2xl"
+				: 'opacity-0'} z-30 w-44 transition-opacity rounded p-2 transform text-xs duration-300 shadow-2xl border border-brand-background drop-shadow-2xl"
 		>
 			<p class="font-bold uppercase text-sm">{badge.name}</p>
 			{badge.description}
