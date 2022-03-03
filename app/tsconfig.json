@@ -10,7 +10,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"module": "ES2020",
-		"types": ["svelte", "jest", "cypress"],
+		"types": ["svelte", "jest"],
 		"strict": true,
 		"paths": {
 			"~shared/*": ["../shared/*"]

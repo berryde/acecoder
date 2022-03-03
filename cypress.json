@@ -1,3 +1,4 @@
 {
-	"testFiles": "**/*.test.ts"
+	"testFiles": "**/*.test.ts",
+	"experimentalStudio": true
 }

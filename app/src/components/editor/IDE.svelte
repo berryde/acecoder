@@ -17,9 +17,10 @@
 	import { page } from '$app/stores';
 	import { incrementProgress } from 'src/utils/firebase';
 	import Toast from 'src/components/common/Toast.svelte';
-	import { save, toastMessage } from 'src/utils/editor/editor';
+	import { toastMessage } from 'src/utils/editor/editor';
 	import Tabs from 'src/components/tabs/Tabs.svelte';
 	import Editor from 'src/components/editor/Editor.svelte';
+	import { getProjectSettings } from 'src/utils/project/project';
 
 	/**
 	 * The index of the exercise
@@ -30,7 +31,10 @@
 	 * Called when the user clicks the 'next' button
 	 */
 	async function handleNext() {
-		await incrementProgress($page.params.projectID, $page.params.index);
+		const progress = (await getProjectSettings($page.params.projectID)).progress;
+		if (progress == parseInt($page.params.index)) {
+			await incrementProgress($page.params.projectID, $page.params.index);
+		}
 		window.location.href = `/project/${$page.params.projectID}/exercise-${index + 1}`;
 	}
 
@@ -54,7 +58,6 @@
 	async function handleSubmit() {
 		loading = true;
 		try {
-			await save($page.params.projectID);
 			const _chapter = $chapter;
 			testing.set(true);
 			const _result = await test($page.params.projectID, $page.params.index);

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Icon from '../common/Icon.svelte';
 	import Bookmark from 'svelte-icons/io/IoMdBookmark.svelte';
+	import Save from 'svelte-icons/io/IoIosSave.svelte';
 	import Book from 'svelte-icons/io/IoIosJournal.svelte';
 	import {
 		chapter as _chapter,
@@ -14,9 +15,7 @@
 	import Wand from 'svelte-icons/io/IoIosColorWand.svelte';
 	import { onMount } from 'svelte';
 	import Explorer from '../explorer/Explorer.svelte';
-	import { contents, format, toastMessage } from 'src/utils/editor/editor';
-	import { getExtension } from 'src/utils/filesystem/filesystem';
-	import { selectedTab } from 'src/utils/tabs/tabs';
+	import { format, save, toastMessage } from 'src/utils/editor/editor';
 	import { page } from '$app/stores';
 	import type { ExerciseResults } from '~shared/types';
 
@@ -33,12 +32,11 @@
 	 * Format the editor contents when the format button is clicked
 	 */
 	function handleFormat() {
-		const formatted = format($contents, getExtension($selectedTab));
-		contents.set(formatted);
-		toastMessage.set({
-			message: 'Code formatted',
-			variant: 'info'
-		});
+		format.update((format) => format + 1);
+	}
+
+	function handleSave() {
+		save.update((save) => save + 1);
 	}
 
 	/**
@@ -75,6 +73,9 @@
 		</p>
 	</div>
 	<div class="flex flex-row px-5 py-3 mr-3 pt-0 space-x-3 items-center h-10 justify-end">
+		<Icon label="Save" button={true} card={true} on:click={handleSave} aria="save changes">
+			<Save />
+		</Icon>
 		<Icon label="Reset" button={true} card={true} on:click={handleReset} aria="reset exercise">
 			<Refresh />
 		</Icon>

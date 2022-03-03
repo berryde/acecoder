@@ -95,7 +95,7 @@
 		<Input placeholder="Password" type="password" icon={true} bind:value={password}>
 			<IoMdLock />
 		</Input>
-		<Input placeholder="Confifrm password" type="password" icon={true} bind:value={confirmPassword}>
+		<Input placeholder="Confirm password" type="password" icon={true} bind:value={confirmPassword}>
 			<IoMdLock />
 		</Input>
 

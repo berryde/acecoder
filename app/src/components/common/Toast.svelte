@@ -24,11 +24,8 @@
 	 */
 	function show() {
 		progress = tweened(0, { duration: duration, easing: linear });
-		visible = true;
 		progress.set(100);
-		setTimeout(() => {
-			visible = false;
-		}, duration);
+		visible = true;
 	}
 
 	/**
@@ -63,6 +60,7 @@
 		}
 	}
 
+	$: $progress == 100 && (visible = false);
 	$: $toastMessage && show();
 </script>
 

@@ -3,7 +3,6 @@
 	import { isAdmin } from 'src/utils/auth/auth';
 	import { auth } from 'src/utils/firebase';
 	import { createEventDispatcher, onMount } from 'svelte';
-
 	import OrbitProgressIndicator from '../loaders/OrbitProgressIndicator.svelte';
 
 	/**
@@ -30,8 +29,8 @@
 				if (restricted) {
 					admin = await isAdmin();
 				}
+				dispatch('authenticated');
 			}
-			dispatch('authenticated');
 		});
 	});
 

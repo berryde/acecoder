@@ -71,8 +71,7 @@
 	 * Open the preview in a new popup when the popup button is clicked.
 	 */
 	function handlePopup() {
-		if (popup == undefined) return;
-		if (!popup.closed) {
+		if (popup && !popup.closed) {
 			popup.focus();
 		} else {
 			const result = window.open(
@@ -81,6 +80,7 @@
 				`width = ${iframe.clientWidth}, height = ${iframe.clientHeight}, popup, location=no, menu=no, status=no, `
 			);
 			if (result != null) popup = result;
+			if (!popup) return;
 			popup.document.write(previewTemplate);
 			popup.postMessage({
 				type: 'popup'

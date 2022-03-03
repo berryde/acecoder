@@ -6,9 +6,9 @@ import type { Parser } from 'prettier';
 import prettier from 'prettier';
 import { get, writable } from 'svelte/store';
 import { updateFile } from '../filesystem/filesystem';
-import { selectedTab } from 'src/utils/tabs/tabs';
+import { selectedTab, unsavedTabs } from 'src/utils/tabs/tabs';
 import { saveTab } from '../tabs/tabs';
-import { exercise, write } from '../exercise/exercise';
+import { exercise, testing, write } from '../exercise/exercise';
 import type { ToastMessage } from '~shared/types';
 
 /**
@@ -17,14 +17,33 @@ import type { ToastMessage } from '~shared/types';
 export const supportedExtensions = ['jsx', 'css', 'js', 'ts', 'html', 'tsx', 'json', 'svelte'];
 
 /**
- * The unsaved contents of the editor
+ * The number of times that the format button has been pressed
  */
-export const contents = writable<string>('');
+export const format = writable<number>(0);
+export const save = writable<number>(0);
 
 /**
  * The toast message to show to the user. It will disappear several seconds after being set
  */
 export const toastMessage = writable<ToastMessage>();
+
+/**
+ * Write the contents of the editor to the filesystem and optionally write the filesystem to Firebase
+ * @param projectID The project being completed
+ */
+export const handleSave = async (value: string, projectID: string): Promise<void> => {
+	if (value == '' || get(testing)) return;
+	const tab: string = get(selectedTab);
+
+	if (get(unsavedTabs).includes(tab)) {
+		saveTab(tab);
+		updateFile(tab, value);
+		if (get(exercise).writable) await write(projectID);
+		toastMessage.set({ message: 'Saved successfully', variant: 'info' });
+	} else {
+		toastMessage.set({ message: 'Nothing to save', variant: 'info' });
+	}
+};
 
 /**
  * Use Prettier to format a string
@@ -33,18 +52,26 @@ export const toastMessage = writable<ToastMessage>();
  * @param language The language of the text
  * @returns The formatted text
  */
-export const format = (value: string, language: string): string => {
+export const handleFormat = (value: string, language: string): string => {
 	if (isSupported(language)) {
+		let formatted: string;
 		try {
 			if (language == 'json') {
-				return JSON.stringify(JSON.parse(value), null, 2);
+				formatted = JSON.stringify(JSON.parse(value), null, 2);
 			} else {
-				return prettier.format(value, getParser(language));
+				formatted = prettier.format(value, getParser(language));
 			}
 		} catch (err) {
-			console.error(err);
-			console.error('Auto-formatting failed due to a syntax error.');
+			toastMessage.set({ message: 'Auto-formatting failed', variant: 'danger' });
+			return value;
 		}
+		if (formatted == value) {
+			toastMessage.set({ message: 'Already formatted', variant: 'info' });
+		} else {
+			toastMessage.set({ message: 'Formatted successfully', variant: 'info' });
+		}
+
+		return formatted;
 	}
 	return value;
 };
@@ -97,15 +124,4 @@ export const getParser = (
  */
 export const isSupported = (language: string): boolean => {
 	return supportedExtensions.includes(language);
-};
-
-/**
- * Write the contents of the editor to the filesystem and optionally write the filesystem to Firebase
- * @param projectID The project being completed
- */
-export const save = async (projectID: string): Promise<void> => {
-	const tab: string = get(selectedTab);
-	saveTab(tab);
-	updateFile(tab, get(contents));
-	if (get(exercise).writable) await write(projectID);
 };

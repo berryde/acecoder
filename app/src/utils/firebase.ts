@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
-import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { connectFirestoreEmulator, getFirestore, initializeFirestore } from 'firebase/firestore';
 import type { Badge } from '~shared/types';
 import {
 	connectStorageEmulator,
@@ -32,7 +32,7 @@ export const app = initializeApp(firebaseConfig);
 /**
  * The Firebase firestore instance.
  */
-export const db = getFirestore(app);
+export const db = initializeFirestore(app, { experimentalForceLongPolling: import.meta.env.DEV });
 
 /**
  * The Firebase authentication instance.

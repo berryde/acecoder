@@ -1,18 +1,19 @@
 {
 	"compilerOptions": {
 		"importsNotUsedAsValues": "error",
+		"isolatedModules": true,
+		"moduleResolution": "node",
 		"sourceMap": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"module": "ES2020",
-		"types": ["jest", "cypress"],
+		"lib": ["es2016", "dom"],
 		"strict": true,
-		"paths": {
-			"~shared/*": ["../shared/*"]
-		},
-		"rootDirs": ["./integration", "../shared"]
+		"rootDirs": ["./integration"],
+		"types": ["jest", "cypress"]
 	},
-	"include": ["integration/*"]
+	"include": ["integration/*"],
+	"exclude": ["node_modules/*"]
 }

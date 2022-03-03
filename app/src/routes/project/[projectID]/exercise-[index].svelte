@@ -11,9 +11,6 @@
 	} from 'src/utils/exercise/exercise';
 	import { page } from '$app/stores';
 	import { selectedTab, tabs } from 'src/utils/tabs/tabs';
-	import { contents } from 'src/utils/editor/editor';
-	import { getFile } from 'src/utils/filesystem/filesystem';
-	import type { FSFile } from '~shared/types';
 
 	/**
 	 * Whether the page is loading
@@ -45,7 +42,6 @@
 				await getResults($page.params.projectID, $page.params.index);
 				selectedTab.set(editable[0]);
 				await loadExercise();
-				contents.set((getFile($selectedTab) as FSFile).value);
 				loading = false;
 			} catch (err) {
 				console.error(err);

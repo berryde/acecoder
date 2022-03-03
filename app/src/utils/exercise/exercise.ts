@@ -1,6 +1,6 @@
 import { doc, runTransaction } from 'firebase/firestore';
 import { writable, get } from 'svelte/store';
-import { createFile, filesystem, getAllFiles, getFile } from '../filesystem/filesystem';
+import { createFile, filesystem, getAllFiles } from '../filesystem/filesystem';
 import { auth, db } from '../firebase';
 import type {
 	Exercise,
@@ -12,8 +12,6 @@ import type {
 import type { Project } from '~shared/types';
 import axios from 'axios';
 import { ERR_NO_AUTH } from '../general';
-import { contents } from '../editor/editor';
-import { selectedTab } from '../tabs/tabs';
 
 /**
  * The current exercise being completed
@@ -99,7 +97,7 @@ export const getExercise = async (
 		};
 
 		// Check if the user has made a submission and download it if so.
-		if (useSubmission) {
+		if (useSubmission && metadata.writable) {
 			const submission = await transaction.get(
 				doc(db, 'projects', projectID, 'submissions', auth.currentUser.uid)
 			);
@@ -137,7 +135,6 @@ export const reset = async (projectID: string, index: string): Promise<void> => 
 	exercise.set(await getExercise(projectID, index, get(language), false));
 	filesystem.set({});
 	await loadExercise();
-	contents.set((getFile(get(selectedTab)) as FSFile).value);
 	initialising.set(false);
 };
 

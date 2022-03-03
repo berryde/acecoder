@@ -5,10 +5,10 @@
 	import type { FSFile } from '~shared/types';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/env';
-	import { contents } from 'src/utils/editor/editor';
-	import { save } from 'src/utils/editor/editor';
+	import { handleFormat, handleSave, save } from 'src/utils/editor/editor';
+	import { format } from 'src/utils/editor/editor';
 	import { page } from '$app/stores';
-	import { testing } from 'src/utils/exercise/exercise';
+	import { language } from 'src/utils/exercise/exercise';
 
 	const TAB_SIZE = 2;
 	const FONT_SIZE = '1rem';
@@ -17,6 +17,17 @@
 	let editor: Editor;
 	let sessions: Record<string, IEditSession> = {};
 	let loaded = false;
+
+	function updateUnsaved() {
+		if (!$unsavedTabs.includes($selectedTab)) {
+			unsavedTabs.update((tabs) => [...tabs, $selectedTab]);
+		} else if (editor.getValue() === (getFile($selectedTab) as FSFile).value) {
+			unsavedTabs.update((tabs) => {
+				tabs.splice(tabs.indexOf($selectedTab));
+				return tabs;
+			});
+		}
+	}
 
 	async function configureEditor() {
 		await import('brace/mode/javascript');
@@ -33,15 +44,7 @@
 		editor.setShowPrintMargin(false);
 		editor.setOptions({ enableBasicAutocompletion: true, fontSize: FONT_SIZE });
 		editor.on('change', () => {
-			contents.set(editor.getValue());
-			if (!$unsavedTabs.includes($selectedTab)) {
-				unsavedTabs.update((tabs) => [...tabs, $selectedTab]);
-			} else if (editor.getValue() === (getFile($selectedTab) as FSFile).value) {
-				unsavedTabs.update((tabs) => {
-					tabs.splice(tabs.indexOf($selectedTab));
-					return tabs;
-				});
-			}
+			updateUnsaved();
 		});
 		loaded = true;
 	}
@@ -60,21 +63,13 @@
 	}
 
 	/**
-	 * Save the contents of the editor when the user presses ctrl+s
-	 */
-	function handleSave() {
-		if ($contents == '' || $testing) return;
-		save($page.params.projectID);
-	}
-
-	/**
 	 *
 	 * @param e
 	 */
 	function keydownListener(e: KeyboardEvent) {
 		if (e.ctrlKey && e.code == 'KeyS') {
 			e.preventDefault();
-			handleSave();
+			handleSave(editor.getValue(), $page.params.projectID);
 		}
 	}
 
@@ -149,18 +144,11 @@
 		editor.resize();
 	}
 
-	/**
-	 * Update the value of the editor if the contents state changes due to side effects.
-	 */
-	function updateContents() {
-		if (editor) {
-			setValue($contents);
-		}
-	}
-
 	$: loaded && $selectedTab && updateSession();
 	$: clientWidth && editor && handleResize();
-	$: $contents && updateContents();
+	$: $format > 0 && editor && setValue(handleFormat(editor.getValue(), $language));
+	$: $save > 0 && editor && handleSave(editor.getValue(), $page.params.projectID);
+
 	let clientWidth: number;
 </script>
 

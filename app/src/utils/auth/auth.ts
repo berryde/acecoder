@@ -232,9 +232,15 @@ export const getErrorMessage = (firebaseError: AuthError): AuthError | undefined
 				errorCode: 'Invalid email',
 				errorMessage: 'No user could be found with that email address.'
 			};
+		case 'auth/email-already-in-use':
+			return {
+				errorCode: 'Email already exists',
+				errorMessage: 'The provided email is already in use by an existing user.'
+			};
 		case 'auth/popup-closed-by-user':
 			return;
 		default:
+			console.log(firebaseError.errorCode);
 			return {
 				errorCode: 'Unknown error',
 				errorMessage: 'An unknown error occurred. Please try again later.'
