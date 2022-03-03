@@ -41,7 +41,7 @@
 	$: restricted && admin === false && throwError(403);
 </script>
 
-{#if !!user && !loading}
+{#if !!user && !loading && (!restricted || (restricted && admin))}
 	<slot />
 {:else}
 	<div class="h-screen w-screen bg-brand-background flex justify-center items-center">
