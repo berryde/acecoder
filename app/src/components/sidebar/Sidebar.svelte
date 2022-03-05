@@ -15,9 +15,10 @@
 	import Wand from 'svelte-icons/io/IoIosColorWand.svelte';
 	import { onMount } from 'svelte';
 	import Explorer from '../explorer/Explorer.svelte';
-	import { format, save, toastMessage } from 'src/utils/editor/editor';
+	import { format, save, toastMessage, reset as _reset } from 'src/utils/editor/editor';
 	import { page } from '$app/stores';
 	import type { ExerciseResults } from '~shared/types';
+	import { selectedTab, unsavedTabs } from 'src/utils/tabs/tabs';
 
 	onMount(() => {
 		if ($result && Object.keys($result).length !== 0) {
@@ -44,6 +45,8 @@
 	 */
 	async function handleReset() {
 		await reset($page.params.projectID, $page.params.index);
+		_reset.update((reset) => reset + 1);
+		unsavedTabs.set([$selectedTab]);
 		toastMessage.set({
 			message: 'Exercise reset',
 			variant: 'info'

@@ -21,6 +21,7 @@ export const supportedExtensions = ['jsx', 'css', 'js', 'ts', 'html', 'tsx', 'js
  */
 export const format = writable<number>(0);
 export const save = writable<number>(0);
+export const reset = writable<number>(0);
 
 /**
  * The toast message to show to the user. It will disappear several seconds after being set
@@ -32,7 +33,11 @@ export const toastMessage = writable<ToastMessage>();
  * @param projectID The project being completed
  */
 export const handleSave = async (value: string, projectID: string): Promise<void> => {
-	if (value == '' || get(testing)) return;
+	if (value == '') return;
+	if (get(testing)) {
+		toastMessage.set({ message: 'Unable to save while pending submission', variant: 'danger' });
+		return;
+	}
 	const tab: string = get(selectedTab);
 
 	if (get(unsavedTabs).includes(tab)) {
@@ -49,17 +54,17 @@ export const handleSave = async (value: string, projectID: string): Promise<void
  * Use Prettier to format a string
  *
  * @param value The text to format
- * @param language The language of the text
+ * @param language The extension of the file being formatted
  * @returns The formatted text
  */
-export const handleFormat = (value: string, language: string): string => {
-	if (isSupported(language)) {
+export const handleFormat = (value: string, extension: string): string => {
+	if (isSupported(extension)) {
 		let formatted: string;
 		try {
-			if (language == 'json') {
+			if (extension == 'json') {
 				formatted = JSON.stringify(JSON.parse(value), null, 2);
 			} else {
-				formatted = prettier.format(value, getParser(language));
+				formatted = prettier.format(value, getParser(extension));
 			}
 		} catch (err) {
 			toastMessage.set({ message: 'Auto-formatting failed', variant: 'danger' });
@@ -72,6 +77,8 @@ export const handleFormat = (value: string, language: string): string => {
 		}
 
 		return formatted;
+	} else {
+		toastMessage.set({ message: `${extension} files aren't supported`, variant: 'danger' });
 	}
 	return value;
 };

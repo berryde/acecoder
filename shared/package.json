@@ -6,6 +6,7 @@
 	"author": "",
 	"license": "UNLICENSED",
 	"dependencies": {
-		"firebase": "^9.6.7"
+		"firebase": "^9.6.7",
+		"firebase-admin": "^10.0.2"
 	}
 }

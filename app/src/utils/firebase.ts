@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
-import { connectFirestoreEmulator, getFirestore, initializeFirestore } from 'firebase/firestore';
+import { connectFirestoreEmulator, initializeFirestore } from 'firebase/firestore';
 import type { Badge } from '~shared/types';
 import {
 	connectStorageEmulator,
@@ -103,38 +103,6 @@ export const completeProject = async (
 			name: name
 		})
 	).data;
-};
-
-/**
- * Invoke the 'incrementProgress' cloud function to move on to the next exercise
- *
- * @param projectID The project being completed
- * @param exerciseID The exercise that has been completed
- */
-export const incrementProgress = async (projectID: string, exerciseID: string): Promise<void> => {
-	await httpsCallable<Record<string, unknown>, boolean>(
-		functions,
-		'incrementProgress'
-	)({
-		projectID: projectID,
-		exerciseID: exerciseID
-	});
-};
-
-/**
- * Invoke the 'startProject' cloud function to start a project
- *
- * @param projectID The project to start
- * @param language The language to start the project in
- */
-export const startProject = async (projectID: string, language: string): Promise<void> => {
-	await httpsCallable<Record<string, unknown>, void>(
-		functions,
-		'startProject'
-	)({
-		projectID: projectID,
-		language: language
-	});
 };
 
 /**

@@ -8,16 +8,11 @@ service cloud.firestore {
         request.auth != null && request.auth.token.admin == true;
     }
     match /projects {
-      // Allow all nested documents to be read by authenticated users and written by admins.
-      match /{document=**} {
-        allow read: if
-          request.auth != null
-        allow write: if
-          request.auth != null && request.auth.token.admin == true;
-      }
       match /{pid} {
         match /exercises/{eid}/results/{uid} {
           allow read: if
+            request.auth != null && request.auth.uid == uid
+          allow delete: if
             request.auth != null && request.auth.uid == uid
         }
         // Users should only be able to load and change their own submissions.
@@ -25,11 +20,49 @@ service cloud.firestore {
           allow read, write: if
             request.auth != null && request.auth.uid == uid
         }
+        match /settings/{uid} {
+          function getResults() {
+            return get(/databases/$(database)/documents/projects/$(pid)/exercises/$(resource.data.progress)/results/$(uid)).data
+          }
+
+          function getChapterCount() {
+            return string(int(get(/databases/$(database)/documents/projects/$(pid)/exercises/$(resource.data.progress)).data.chapters.size())-1)
+          }
+
+          function getAssessed() {
+            return get(/databases/$(database)/documents/projects/$(pid)/exercises/$(resource.data.progress)).data.assessed
+          }
+
+          function getExerciseCount() {
+            return get(/databases/$(database)/documents/projects/$(pid)).data.exerciseCount
+          }
+
+          allow update: if
+            request.auth != null && request.auth.uid == uid &&
+            (
+              int(request.resource.data.progress) == int(resource.data.progress) + 1 &&
+              (
+                getAssessed() == false ||
+                (
+                  getChapterCount() in getResults() &&
+                  getResults()[getChapterCount()]['passed'] == true
+                )
+              )
+            ) ||
+            (request.resource.data.completed == true && resource.data.progress == getExerciseCount())
+          allow create: if
+            request.auth != null && request.auth.uid == uid &&
+            request.resource.data['progress'] == 0
+          allow read, delete: if
+            request.auth != null && request.auth.uid == uid
+        }
       }
-      // Allow user settings to be read and updated by that user.
-      match /{pid}/settings/{uid} {
-        allow read, delete: if
-          request.auth != null && request.auth.uid == uid
+       // Allow all nested documents to be read by authenticated users and written by admins.
+      match /{document=**} {
+        allow read: if
+          request.auth != null
+        allow write: if
+          request.auth != null && request.auth.token.admin == true;
       }
     }
     // Certificates are public and read only
@@ -38,7 +71,16 @@ service cloud.firestore {
     }
     // Certificates are public and read only
     match /certificates/{certificateID} {
+      function getCompleted(uid, project) {
+        return get(/databases/$(database)/documents/projects/$(project)/setttings/$(uid)).data.completed
+      }
+
       allow read;
+      allow create: if
+        request.auth != null &&
+        request.auth.uid == request.resource.data.uid &&
+        getCompleted(request.auth.uid, request.resource.data.projectID) == true
+
     }
     match /badges/{id} {
       allow read;

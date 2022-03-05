@@ -11,7 +11,7 @@ specifiers:
   '@rollup/plugin-node-resolve': ^13.1.3
   '@rollup/plugin-typescript': ^8.3.0
   '@sveltejs/adapter-vercel': next
-  '@sveltejs/kit': next
+  '@sveltejs/kit': 1.0.0-next.291
   '@testing-library/dom': ^8.11.3
   '@testing-library/jest-dom': ^5.16.2
   '@testing-library/svelte': ^3.0.3
@@ -58,7 +58,7 @@ devDependencies:
   '@rollup/plugin-node-resolve': 13.1.3_rollup@2.68.0
   '@rollup/plugin-typescript': 8.3.1_a95165e8381252b82a64dc91df9f8c73
   '@sveltejs/adapter-vercel': 1.0.0-next.45
-  '@sveltejs/kit': 1.0.0-next.288_svelte@3.46.4
+  '@sveltejs/kit': 1.0.0-next.291_svelte@3.46.4
   '@testing-library/dom': 8.11.3
   '@testing-library/jest-dom': 5.16.2
   '@testing-library/svelte': 3.0.3_svelte@3.46.4
@@ -2172,8 +2172,8 @@ packages:
       esbuild: 0.14.23
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.288_svelte@3.46.4:
-    resolution: {integrity: sha512-6ky4CUFNGKoU1QV+fY2LOIB7atHdUCIMRx3pX21B2g9yZzQzkot0zHBrMMBSKF0/4Wx19PLEWrlGxlhakYmi8Q==}
+  /@sveltejs/kit/1.0.0-next.291_svelte@3.46.4:
+    resolution: {integrity: sha512-mFd1EJbxoyPGiomYwYhZnjNLPYahCC2gHfKvPetguL/7BCHcyUjjYQbwTTmjVxtgBs0oLzKVA9bt45gpr9JqBQ==}
     engines: {node: '>=14.13'}
     hasBin: true
     peerDependencies:

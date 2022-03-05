@@ -5,10 +5,9 @@
 	import type { FSFile } from '~shared/types';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/env';
-	import { handleFormat, handleSave, save } from 'src/utils/editor/editor';
+	import { handleFormat, handleSave, reset, save } from 'src/utils/editor/editor';
 	import { format } from 'src/utils/editor/editor';
 	import { page } from '$app/stores';
-	import { language } from 'src/utils/exercise/exercise';
 
 	const TAB_SIZE = 2;
 	const FONT_SIZE = '1rem';
@@ -144,14 +143,19 @@
 		editor.resize();
 	}
 
+	function handleReset() {
+		setValue((getFile($selectedTab) as FSFile).value);
+	}
+
 	$: loaded && $selectedTab && updateSession();
 	$: clientWidth && editor && handleResize();
-	$: $format > 0 && editor && setValue(handleFormat(editor.getValue(), $language));
+	$: $format > 0 && editor && setValue(handleFormat(editor.getValue(), getExtension($selectedTab)));
 	$: $save > 0 && editor && handleSave(editor.getValue(), $page.params.projectID);
+	$: $reset > 0 && editor && handleReset();
 
 	let clientWidth: number;
 </script>
 
 <div class="h-full w-full pt-3 bg-brand-editor-background" bind:clientWidth>
-	<div bind:this={element} class="h-full w-full" />
+	<div bind:this={element} class="h-full w-full" id="ace-editor" />
 </div>

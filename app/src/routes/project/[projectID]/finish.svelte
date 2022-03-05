@@ -13,8 +13,9 @@
 	import Badges from 'src/components/profile/Badges.svelte';
 	import { auth, completeProject } from 'src/utils/firebase';
 	import Download from 'src/components/projects/Download.svelte';
-	import { getName } from 'src/utils/auth/auth';
 	import CertificateLink from 'src/components/projects/CertificateLink.svelte';
+	import { getName } from 'src/utils/auth/auth';
+	import { ERR_NO_AUTH } from 'src/utils/general';
 
 	/**
 	 * The project that has been finished
@@ -48,12 +49,18 @@
 
 	onMount(async () => {
 		loading = true;
+	});
+
+	async function onAuth() {
+		if (!auth.currentUser) throw new Error(ERR_NO_AUTH);
 		project = await getProject($page.params.projectID);
 		settings = await getProjectSettings($page.params.projectID, project.languages[0]);
 		completed = settings.completed;
 		if (!completed) {
-			const name = await getName(auth.currentUser!.uid, true);
-			const result = await completeProject($page.params.projectID, name);
+			const result = await completeProject(
+				$page.params.projectID,
+				await getName(auth.currentUser.uid, true)
+			);
 			certificateID = result.certificateID;
 			badges = Object.values(result.badges);
 		} else {
@@ -61,10 +68,10 @@
 			certificateID = await getCertificateForProject($page.params.projectID);
 		}
 		loading = false;
-	});
+	}
 </script>
 
-<PrivateRoute {loading}>
+<PrivateRoute {loading} on:authenticated={onAuth}>
 	<Page>
 		<div>
 			<p class="text-3xl font-bold">Project completed</p>

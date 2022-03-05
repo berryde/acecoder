@@ -33,7 +33,8 @@
 			name = await getName(certificate.uid, true);
 			loading = false;
 		} catch (err) {
-			window.location.href = '/error/404';
+			console.error(err);
+			//window.location.href = '/error/404';
 		}
 	});
 
@@ -62,7 +63,7 @@
 		const url = encodeURIComponent(window.location.href);
 
 		window.location.href = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${
-			certificate.project
+			certificate.projectID
 		}&organizationId=${organisationID}&issueYear=${date.getFullYear()}&issueMonth=${date.getMonth()}&certUrl=${url}&certId=${
 			$page.params.certificateID
 		}`;

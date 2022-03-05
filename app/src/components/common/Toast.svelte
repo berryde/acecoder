@@ -23,6 +23,8 @@
 	 * Make the toast visible for a duration
 	 */
 	function show() {
+		primary = getColor();
+		secondary = getSecondaryColor();
 		progress = tweened(0, { duration: duration, easing: linear });
 		progress.set(100);
 		visible = true;
@@ -60,17 +62,19 @@
 		}
 	}
 
+	let primary = '';
+	let secondary = '';
+
 	$: $progress == 100 && (visible = false);
 	$: $toastMessage && show();
 </script>
 
 {#if visible}
 	<div
-		class="absolute left-0 right-0 mx-auto max-w-max {getColor()} shadow-xl rounded max-w-max flex z-50"
+		class="absolute left-0 right-0 mx-auto max-w-max {primary} shadow-xl rounded max-w-max flex z-50"
 		transition:slide={{ duration: 300 }}
 	>
-		<div class="absolute rounded {getSecondaryColor()} h-full" style="width: {$progress}%" />
-
+		<div class="absolute rounded {secondary} h-full" style="width: {$progress}%" />
 		<p class="py-1 px-3 z-10">{$toastMessage.message}</p>
 	</div>
 {/if}

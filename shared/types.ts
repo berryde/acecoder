@@ -1,4 +1,5 @@
 import type { Timestamp } from 'firebase/firestore';
+import type { Timestamp as AdminTimestamp } from 'firebase-admin/firestore';
 
 /**
  * A project file.
@@ -165,11 +166,15 @@ export type Certificate = {
 	/**
 	 * When the certificate was issued
 	 */
-	issued: Timestamp;
+	issued: Timestamp | AdminTimestamp;
 	/**
 	 * The project the certificate was issued for
 	 */
-	project: string;
+	projectName: string;
+	/**
+	 * The ID of the project
+	 */
+	projectID: string;
 	/**
 	 * The user ID of the user that received this certificate
 	 */
@@ -328,7 +333,7 @@ export type UserBadge = {
 	/**
 	 * The timestamp at which the badge was awarded
 	 */
-	timestamp: Timestamp;
+	timestamp: Timestamp | AdminTimestamp;
 	/**
 	 * The id of the project for which this badge was awarded
 	 */
@@ -339,10 +344,6 @@ export type UserBadge = {
  * Metadata about a certificate, useful for querying a user's certificate ownership without getting the actual certificates
  */
 export type UserCertificate = {
-	/**
-	 * The timestamp at which the badge was awarded
-	 */
-	timestamp: Timestamp;
 	/**
 	 * The id of the project for which this badge was awarded
 	 */
@@ -370,17 +371,4 @@ export type ToastMessage = {
 /**
  * Project completion statistics for a user
  */
-export type UserStats = {
-	/**
-	 * The number of projects that they have completed
-	 */
-	completed: number;
-	/**
-	 * The number of projects that they have completed with react
-	 */
-	react: number;
-	/**
-	 * The number of projects that they have completed with svelte
-	 */
-	svelte: number;
-};
+export type UserStats = Record<string, number>;

@@ -197,7 +197,7 @@ export const resetPassword = async (email: string): Promise<AuthError | void> =>
 export const getName = async (uid: string, full = false): Promise<string> => {
 	const snapshot = await getDoc(doc(db, 'names', uid));
 	if (snapshot.exists()) {
-		const name = snapshot.data()['name'];
+		const name = snapshot.data().name;
 		return full ? name : name.split(' ')[0];
 	}
 	return '';
@@ -240,7 +240,6 @@ export const getErrorMessage = (firebaseError: AuthError): AuthError | undefined
 		case 'auth/popup-closed-by-user':
 			return;
 		default:
-			console.log(firebaseError.errorCode);
 			return {
 				errorCode: 'Unknown error',
 				errorMessage: 'An unknown error occurred. Please try again later.'

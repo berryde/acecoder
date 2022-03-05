@@ -22,7 +22,7 @@
 		<p class="text-sm">This is to certify that</p>
 		<p class="text-3xl font-bold pb-2">{name}</p>
 		<p class="text-sm">has successfully completed the required assessments for the project</p>
-		<p class="text-xl font-bold">{certificate.project}</p>
+		<p class="text-xl font-bold">{certificate.projectName}</p>
 	</div>
 
 	<div class="flex items-center w-full text-xs space-x-5">

@@ -5,8 +5,7 @@
 	import More from 'svelte-icons/io/IoIosMore.svelte';
 	import Checkbox from 'src/components/common/Checkbox.svelte';
 	import Page from 'src/components/common/Page.svelte';
-	import { startProject } from 'src/utils/firebase';
-	import { capitalise } from 'src/utils/general';
+	import { capitalise, ERR_NO_AUTH } from 'src/utils/general';
 	import {
 		getProjectExercises,
 		getProject,
@@ -23,6 +22,8 @@
 	import CircularProgressIndicator from 'src/components/loaders/CircularProgressIndicator.svelte';
 	import CertificateLink from 'src/components/projects/CertificateLink.svelte';
 	import { language } from 'src/utils/exercise/exercise';
+	import { doc, setDoc } from 'firebase/firestore';
+	import { auth, db } from 'src/utils/firebase';
 
 	/**
 	 * The current project
@@ -52,6 +53,7 @@
 	onMount(async () => {
 		project = await getProject($page.params.projectID);
 		exercises = await getProjectExercises($page.params.projectID);
+
 		try {
 			settings = await getProjectSettings($page.params.projectID, project.languages[0]);
 			language.set(settings.language);
@@ -61,6 +63,7 @@
 		if (settings.completed) {
 			certificateID = await getCertificateForProject($page.params.projectID);
 		}
+
 		loading = false;
 	});
 
@@ -69,10 +72,21 @@
 	 * @param index The index of the exercise
 	 */
 	async function startExercise(index: string | number) {
+		if (!auth.currentUser) throw new Error(ERR_NO_AUTH);
+
 		index = index.toString();
 		if (index == '0' && settings.progress === 0) {
-			await startProject($page.params.projectID, settings.language);
+			settings = {
+				progress: 0,
+				language: settings.language,
+				completed: false
+			};
+			await setDoc(
+				doc(db, 'projects', $page.params.projectID, 'settings', auth.currentUser.uid),
+				settings
+			);
 		}
+
 		window.location.href = `/project/${$page.params.projectID}/exercise-${index}`;
 	}
 

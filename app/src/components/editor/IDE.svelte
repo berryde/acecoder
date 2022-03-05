@@ -15,17 +15,27 @@
 	import Navbar from 'src/components/navbar/Navbar.svelte';
 	import Button from 'src/components/common/Button.svelte';
 	import { page } from '$app/stores';
-	import { incrementProgress } from 'src/utils/firebase';
+	import { auth, db } from 'src/utils/firebase';
 	import Toast from 'src/components/common/Toast.svelte';
 	import { toastMessage } from 'src/utils/editor/editor';
 	import Tabs from 'src/components/tabs/Tabs.svelte';
 	import Editor from 'src/components/editor/Editor.svelte';
 	import { getProjectSettings } from 'src/utils/project/project';
+	import { doc, updateDoc } from 'firebase/firestore';
+	import { ERR_NO_AUTH } from 'src/utils/general';
+	import { unsavedTabs } from 'src/utils/tabs/tabs';
 
 	/**
 	 * The index of the exercise
 	 */
 	let index = parseInt($page.params.index);
+
+	async function incrementProgress(project: string, progress: number) {
+		if (!auth.currentUser) throw new Error(ERR_NO_AUTH);
+		await updateDoc(doc(db, 'projects', project, 'settings', auth.currentUser.uid), {
+			progress: progress + 1
+		});
+	}
 
 	/**
 	 * Called when the user clicks the 'next' button
@@ -33,7 +43,7 @@
 	async function handleNext() {
 		const progress = (await getProjectSettings($page.params.projectID)).progress;
 		if (progress == parseInt($page.params.index)) {
-			await incrementProgress($page.params.projectID, $page.params.index);
+			await incrementProgress($page.params.projectID, progress);
 		}
 		window.location.href = `/project/${$page.params.projectID}/exercise-${index + 1}`;
 	}
@@ -56,6 +66,14 @@
 	 * Called when the user submits the exercise for evaluation
 	 */
 	async function handleSubmit() {
+		if ($unsavedTabs.length > 0) {
+			toastMessage.set({
+				message: 'Save your changes with CTRL+S before submitting',
+				variant: 'warning'
+			});
+			return;
+		}
+
 		loading = true;
 		try {
 			const _chapter = $chapter;

@@ -16,10 +16,11 @@ describe('Exercises', () => {
 	it('The user can edit the preview', () => {
 		// Add commands with studio
 		cy.visit('http://localhost:3000/project/yPtFSfYJwzTzsjJhch6b/exercise-0');
-		const container = cy.get('.ace_editor');
-		if (!container) throw new Error('The editor could not be found');
-
-		const editor = ace.edit(container);
-		editor.session.setValue('Hello World');
+		cy.contains('import type { FC } from "react";')
+			.get('div#ace-editor')
+			.then((container) => {
+				if (!container) throw new Error('The editor could not be found');
+				console.log(container);
+			});
 	});
 });
