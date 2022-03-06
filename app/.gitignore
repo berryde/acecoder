@@ -1,6 +1,7 @@
 .DS_Store
 /build
-/.svelte-kit
+.svelte-kit/*
+!.svelte-kit/tsconfig.json
 coverage
 static/worker.js
 static/worker.js.map
