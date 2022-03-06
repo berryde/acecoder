@@ -66,7 +66,7 @@
 	 * @param e
 	 */
 	function keydownListener(e: KeyboardEvent) {
-		if (e.ctrlKey && e.code == 'KeyS') {
+		if ((e.ctrlKey || e.metaKey) && e.code == 'KeyS') {
 			e.preventDefault();
 			handleSave(editor.getValue(), $page.params.projectID);
 		}

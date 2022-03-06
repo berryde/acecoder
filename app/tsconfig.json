@@ -20,5 +20,9 @@
 		"rootDirs": ["./src", "../shared"]
 	},
 	"include": ["src/**/*"],
-	"exclude": ["node_modules/*", "src/components/preview/template/*"]
+	"exclude": [
+		"node_modules/*",
+		"src/components/preview/template/template.js",
+		"src/components/editor/AceTheme.js"
+	]
 }

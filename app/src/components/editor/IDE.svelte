@@ -62,13 +62,20 @@
 	 */
 	let loading = false;
 
+	function getKey() {
+		if (window.navigator.platform.match('Mac')) {
+			return '⌘';
+		}
+		return 'ctrl';
+	}
+
 	/**
 	 * Called when the user submits the exercise for evaluation
 	 */
 	async function handleSubmit() {
 		if ($unsavedTabs.length > 0) {
 			toastMessage.set({
-				message: 'Save your changes with CTRL+S before submitting',
+				message: `Save your changes with ${getKey()}+s before submitting`,
 				variant: 'warning'
 			});
 			return;
@@ -78,6 +85,10 @@
 		try {
 			const _chapter = $chapter;
 			testing.set(true);
+			toastMessage.set({
+				message: 'Submitted successfully',
+				variant: 'info'
+			});
 			const _result = await test($page.params.projectID, $page.params.index);
 
 			result.update((result) => ({
