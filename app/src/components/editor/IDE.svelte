@@ -24,6 +24,9 @@
 	import { doc, updateDoc } from 'firebase/firestore';
 	import { ERR_NO_AUTH } from 'src/utils/general';
 	import { unsavedTabs } from 'src/utils/tabs/tabs';
+	import Modal from '../common/Modal.svelte';
+	import Tutorial from '../tutorial/Tutorial.svelte';
+	import { onMount } from 'svelte';
 
 	/**
 	 * The index of the exercise
@@ -121,13 +124,34 @@
 		testing.set(false);
 		loading = false;
 	}
+
+	let tutorial = false;
+	function closeTutorial() {
+		tutorial = false;
+	}
+
+	function openTutorial() {
+		tutorial = true;
+	}
+
+	onMount(() => {
+		if (!window.localStorage['tutorial']) {
+			openTutorial();
+			window.localStorage['tutorial'] = true;
+		}
+	});
 </script>
 
-<div class="h-screen max-h-screen text-brand-text bg-brand-accent flex flex-col">
+<div class="h-screen max-h-screen text-brand-text bg-brand-accent flex flex-col relative">
+	{#if tutorial}
+		<Modal title="Tutorial" on:close={closeTutorial}>
+			<Tutorial on:finish={closeTutorial} />
+		</Modal>
+	{/if}
 	<Navbar expanded={true} />
 	<SplitPane pane1Size={25} pane2Size={75}>
 		<div slot="pane1" class="h-full">
-			<Sidebar />
+			<Sidebar on:tutorial={openTutorial} />
 		</div>
 		<div slot="pane2" class="h-full flex flex-col">
 			<SplitPane minPane2Size={'10rem'} pane1Size={66} pane2Size={34}>

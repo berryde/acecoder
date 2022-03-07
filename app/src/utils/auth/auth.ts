@@ -13,7 +13,7 @@ import { browser } from '$app/env';
 import type { AuthProvider, AuthError as _AuthError } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import type { AuthError } from '~shared/types';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 type AuthFederation = 'google' | 'github';
 const DASHBOARD_URL = '/dashboard';

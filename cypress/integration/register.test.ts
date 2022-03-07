@@ -10,8 +10,8 @@ describe('Registration', () => {
 		register('testtest.com');
 		cy.contains('Invalid email');
 	});
-	it('The user is able to register', () => {
-		register(`test-${uuidv4()}@test.com`);
-		cy.contains('Get started creating eye-catching, responsive websites.');
-	});
+	// it('The user is able to register', () => {
+	// 	register(`test-${uuidv4()}@test.com`);
+	// 	cy.contains('Get started creating eye-catching, responsive websites.');
+	// });
 });

@@ -19,8 +19,9 @@
 			? 'px-5'
 			: 'px-20 lg:max-w-6xl'}"
 	>
-		<div class="flex space-x-5 items-center">
+		<div class="flex space-x-8 items-center">
 			<Logo variant="light" />
+			<a href="/dashboard" class="hover:text-brand-primary-light transition-colors">Dashboard</a>
 		</div>
 		{#if showProfile}
 			<ProfileMenu />

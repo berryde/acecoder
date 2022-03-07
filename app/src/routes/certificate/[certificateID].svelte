@@ -70,6 +70,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Certificate - Acecoder</title>
+</svelte:head>
+
 {#if loading}
 	<div class="h-screen w-screen bg-brand-background flex justify-center items-center">
 		<OrbitProgressIndicator />

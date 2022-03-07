@@ -21,7 +21,8 @@
 	},
 	"include": ["src/**/*"],
 	"exclude": [
-		"node_modules/*",
+		".vercel_build_output",
+		"node_modules",
 		"src/components/preview/template/template.js",
 		"src/components/editor/AceTheme.js"
 	]

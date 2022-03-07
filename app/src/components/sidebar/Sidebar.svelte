@@ -3,6 +3,7 @@
 	import Bookmark from 'svelte-icons/io/IoMdBookmark.svelte';
 	import Save from 'svelte-icons/io/IoIosSave.svelte';
 	import Book from 'svelte-icons/io/IoIosJournal.svelte';
+	import Help from 'svelte-icons/io/IoMdHelp.svelte';
 	import {
 		chapter as _chapter,
 		exercise,
@@ -13,7 +14,7 @@
 	import Checkbox from '../common/Checkbox.svelte';
 	import Refresh from 'svelte-icons/io/IoMdRefresh.svelte';
 	import Wand from 'svelte-icons/io/IoIosColorWand.svelte';
-	import { onMount } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import Explorer from '../explorer/Explorer.svelte';
 	import { format, save, toastMessage, reset as _reset } from 'src/utils/editor/editor';
 	import { page } from '$app/stores';
@@ -63,6 +64,11 @@
 		}
 		return undefined;
 	}
+
+	const dispatch = createEventDispatcher();
+	function openTutorial() {
+		dispatch('tutorial');
+	}
 </script>
 
 <div class="bg-brand-background h-full overflow-y-auto sidebar overflow-x-hidden">
@@ -74,6 +80,9 @@
 		</p>
 	</div>
 	<div class="flex flex-row px-5 py-3 mr-3 pt-0 space-x-3 items-center h-10 justify-end">
+		<Icon label="Tutorial" button={true} card={true} aria="open tutorial" on:click={openTutorial}>
+			<Help />
+		</Icon>
 		<Icon label="Save" button={true} card={true} on:click={handleSave} aria="save changes">
 			<Save />
 		</Icon>

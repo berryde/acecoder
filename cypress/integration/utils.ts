@@ -7,6 +7,7 @@ export const login = (email = EMAIL, password = PASSWORD): void => {
 	cy.get('input[placeholder="Email"]').type(email);
 	cy.get('input[placeholder="Password"]').type(password);
 	cy.contains('Sign in').click();
+	cy.contains('Get started creating eye-catching, responsive websites.');
 };
 
 export const register = (
@@ -21,4 +22,5 @@ export const register = (
 	cy.get('input[placeholder="Password"]').type(password);
 	cy.get('input[placeholder="Confirm password"]').type(confirm);
 	cy.contains('Sign up').click();
+	cy.contains('Get started creating eye-catching, responsive websites.');
 };

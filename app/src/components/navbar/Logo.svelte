@@ -7,7 +7,7 @@
 	 * Get the size of the logo from the size prop
 	 */
 	function getSize() {
-		if (size == 'regular') return 'h-6';
+		if (size == 'regular') return 'h-5';
 		return 'h-12';
 	}
 </script>
