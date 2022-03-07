@@ -62,20 +62,13 @@
 	 */
 	let loading = false;
 
-	function getKey() {
-		if (window.navigator.platform.match('Mac')) {
-			return '⌘';
-		}
-		return 'ctrl';
-	}
-
 	/**
 	 * Called when the user submits the exercise for evaluation
 	 */
 	async function handleSubmit() {
 		if ($unsavedTabs.length > 0) {
 			toastMessage.set({
-				message: `Save your changes with ${getKey()}+s before submitting`,
+				message: `Save your changes with CTRL+S before submitting`,
 				variant: 'warning'
 			});
 			return;

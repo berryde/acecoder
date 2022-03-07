@@ -2,7 +2,8 @@
 	import { toastMessage } from 'src/utils/editor/editor';
 	import { slide } from 'svelte/transition';
 	import { linear } from 'svelte/easing';
-	import { Tweened, tweened } from 'svelte/motion';
+	import { tweened } from 'svelte/motion';
+	import type { Tweened } from 'svelte/motion';
 
 	/**
 	 * Whether the toast is visible

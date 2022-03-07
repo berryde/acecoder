@@ -86,16 +86,22 @@
 			<Logo variant="light" size="large" link={false} />
 		</div>
 		<h1 class="text-3xl font-bold mb-10">Create an account</h1>
-		<Input placeholder="Email" type="email" icon={true} bind:value={email}>
+		<Input placeholder="Email" type="email" icon={true} bind:value={email} expanded={true}>
 			<IoIosMail />
 		</Input>
-		<Input placeholder="Full name" icon={true} bind:value={name}>
+		<Input placeholder="Full name" icon={true} bind:value={name} expanded={true}>
 			<IoMdPerson />
 		</Input>
-		<Input placeholder="Password" type="password" icon={true} bind:value={password}>
+		<Input placeholder="Password" type="password" icon={true} bind:value={password} expanded={true}>
 			<IoMdLock />
 		</Input>
-		<Input placeholder="Confirm password" type="password" icon={true} bind:value={confirmPassword}>
+		<Input
+			placeholder="Confirm password"
+			type="password"
+			icon={true}
+			bind:value={confirmPassword}
+			expanded={true}
+		>
 			<IoMdLock />
 		</Input>
 
@@ -122,7 +128,7 @@
 			variant="accent"
 			expanded={true}
 			on:click={() => {
-				signInWith('google', true);
+				signInWith('google');
 			}}><IoLogoGoogle /></Button
 		>
 		<Button
@@ -131,7 +137,7 @@
 			variant="accent"
 			expanded={true}
 			on:click={() => {
-				signInWith('github', true);
+				signInWith('github');
 			}}><IoLogoGithub /></Button
 		>
 		<span class="mt-3"

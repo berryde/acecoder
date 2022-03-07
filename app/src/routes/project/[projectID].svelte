@@ -22,7 +22,7 @@
 	import CircularProgressIndicator from 'src/components/loaders/CircularProgressIndicator.svelte';
 	import CertificateLink from 'src/components/projects/CertificateLink.svelte';
 	import { language } from 'src/utils/exercise/exercise';
-	import { doc, setDoc } from 'firebase/firestore';
+	import { doc, getDoc, setDoc } from 'firebase/firestore';
 	import { auth, db } from 'src/utils/firebase';
 
 	/**
@@ -54,12 +54,8 @@
 		project = await getProject($page.params.projectID);
 		exercises = await getProjectExercises($page.params.projectID);
 
-		try {
-			settings = await getProjectSettings($page.params.projectID, project.languages[0]);
-			language.set(settings.language);
-		} catch (err) {
-			settings = { progress: 0, language: project.languages[0], completed: false };
-		}
+		settings = await getProjectSettings($page.params.projectID, project.languages[0]);
+		language.set(settings.language);
 		if (settings.completed) {
 			certificateID = await getCertificateForProject($page.params.projectID);
 		}
@@ -75,16 +71,17 @@
 		if (!auth.currentUser) throw new Error(ERR_NO_AUTH);
 
 		index = index.toString();
-		if (index == '0' && settings.progress === 0) {
-			settings = {
-				progress: 0,
-				language: settings.language,
-				completed: false
-			};
-			await setDoc(
-				doc(db, 'projects', $page.params.projectID, 'settings', auth.currentUser.uid),
-				settings
-			);
+		const settingsRef = doc(
+			db,
+			'projects',
+			$page.params.projectID,
+			'settings',
+			auth.currentUser.uid
+		);
+		const created = (await getDoc(settingsRef)).exists();
+
+		if (!created && index == '0' && settings.progress === 0) {
+			await setDoc(settingsRef, settings);
 		}
 
 		window.location.href = `/project/${$page.params.projectID}/exercise-${index}`;

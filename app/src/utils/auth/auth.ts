@@ -13,7 +13,7 @@ import { browser } from '$app/env';
 import type { AuthProvider, AuthError as _AuthError } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import type { AuthError } from '~shared/types';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
 type AuthFederation = 'google' | 'github';
 const DASHBOARD_URL = '/dashboard';
@@ -100,10 +100,7 @@ export const signIn = async (email: string, password: string): Promise<AuthError
  * @param registering Whether the user is registering or logging in
  * @returns An AuthError if authentication fails, else nothing
  */
-export const signInWith = async (
-	federation: AuthFederation,
-	registering = false
-): Promise<AuthError | void> => {
+export const signInWith = async (federation: AuthFederation): Promise<AuthError | void> => {
 	// Get the relevant authentication provider.
 	let provider: AuthProvider;
 	switch (federation) {
@@ -119,16 +116,13 @@ export const signInWith = async (
 	try {
 		await signInWithPopup(auth, provider);
 		if (auth.currentUser) {
-			if (registering) {
-				let name = '';
-
-				if (auth.currentUser.displayName) {
-					name = auth.currentUser.displayName;
-				} else if (auth.currentUser.email) {
-					name = auth.currentUser.email;
-				}
-				await saveName(name);
+			let name = '';
+			if (auth.currentUser.displayName) {
+				name = auth.currentUser.displayName;
+			} else if (auth.currentUser.email) {
+				name = auth.currentUser.email;
 			}
+			await saveName(name);
 			window.location.href = DASHBOARD_URL;
 		}
 	} catch (error) {
@@ -240,6 +234,7 @@ export const getErrorMessage = (firebaseError: AuthError): AuthError | undefined
 		case 'auth/popup-closed-by-user':
 			return;
 		default:
+			console.log(firebaseError);
 			return {
 				errorCode: 'Unknown error',
 				errorMessage: 'An unknown error occurred. Please try again later.'

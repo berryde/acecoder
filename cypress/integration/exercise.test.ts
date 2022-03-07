@@ -13,14 +13,4 @@ describe('Exercises', () => {
 		cy.contains('Notes');
 		cy.contains('Files');
 	});
-	it('The user can edit the preview', () => {
-		// Add commands with studio
-		cy.visit('http://localhost:3000/project/yPtFSfYJwzTzsjJhch6b/exercise-0');
-		cy.contains('import type { FC } from "react";')
-			.get('div#ace-editor')
-			.then((container) => {
-				if (!container) throw new Error('The editor could not be found');
-				console.log(container);
-			});
-	});
 });
