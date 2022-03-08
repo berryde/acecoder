@@ -61,31 +61,18 @@
 		}
 	}
 
-	/**
-	 *
-	 * @param e
-	 */
-	function keydownListener(e: KeyboardEvent) {
-		if ((e.ctrlKey || e.metaKey) && e.code == 'KeyS') {
-			e.preventDefault();
-			handleSave(editor.getValue(), $page.params.projectID);
-		}
-	}
-
 	let ace: { edit: any; EditSession: any; UndoManager: any; default?: any };
 	onMount(async () => {
 		// Brace is imported dynamically since it requires the `window` object to exist.
 		ace = await import('brace');
 		await import('brace/ext/searchbox');
 		configureEditor();
-		window.addEventListener('keydown', keydownListener);
 	});
 
 	onDestroy(() => {
 		if (editor) {
 			editor.destroy();
 		}
-		window.removeEventListener('keydown', keydownListener);
 	});
 
 	/**

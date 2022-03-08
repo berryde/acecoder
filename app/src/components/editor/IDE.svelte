@@ -17,7 +17,7 @@
 	import { page } from '$app/stores';
 	import { auth, db } from 'src/utils/firebase';
 	import Toast from 'src/components/common/Toast.svelte';
-	import { toastMessage } from 'src/utils/editor/editor';
+	import { save, format, toastMessage } from 'src/utils/editor/editor';
 	import Tabs from 'src/components/tabs/Tabs.svelte';
 	import Editor from 'src/components/editor/Editor.svelte';
 	import { getProjectSettings } from 'src/utils/project/project';
@@ -26,7 +26,7 @@
 	import { unsavedTabs } from 'src/utils/tabs/tabs';
 	import Modal from '../common/Modal.svelte';
 	import Tutorial from '../tutorial/Tutorial.svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	/**
 	 * The index of the exercise
@@ -134,11 +134,28 @@
 		tutorial = true;
 	}
 
+	function keydownListener(e: KeyboardEvent) {
+		if (e.ctrlKey || e.metaKey) {
+			if (e.code == 'KeyS') {
+				e.preventDefault();
+				save.update((save) => save + 1);
+			} else if (e.altKey && e.code == 'KeyL') {
+				e.preventDefault();
+				format.update((format) => format + 1);
+			}
+		}
+	}
+
 	onMount(() => {
 		if (!window.localStorage['tutorial']) {
 			openTutorial();
 			window.localStorage['tutorial'] = true;
 		}
+		window.addEventListener('keydown', keydownListener);
+	});
+
+	onDestroy(() => {
+		window.removeEventListener('keydown', keydownListener);
 	});
 </script>
 

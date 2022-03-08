@@ -19,8 +19,8 @@
 			: 'text-brand-text'} font-sans space-x-2"
 		href="/dashboard"
 	>
-		<img src="/images/logo-{variant}.png" class={getSize()} alt="logo" />
+		<img src="/images/logo-{variant}.svg" class={getSize()} alt="logo" />
 	</a>
 {:else}
-	<img src="/images/logo-{variant}.png" class={getSize()} alt="logo" />
+	<img src="/images/logo-{variant}.svg" class={getSize()} alt="logo" />
 {/if}

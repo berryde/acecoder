@@ -30,8 +30,8 @@
 		<Wand />
 	</Icon>
 	<p class="flex-grow">
-		The <strong>format</strong> button can be used to automatically indent and tidy up your code using
-		Prettier.
+		The <strong>format</strong> button can be used to automatically indent and tidy up your code
+		using Prettier. You can also use the <code>CTRL+Alt+L</code> shortcut.
 	</p>
 </div>
 <div class="flex items-center space-x-5">

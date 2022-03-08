@@ -96,7 +96,6 @@
 		on:submit={(e) => handleRename(e.detail)}
 		on:cancelled={() => setRenaming(false)}
 	>
-		<!-- test -->t
 		<Icon>
 			<FileIcon />
 		</Icon>
