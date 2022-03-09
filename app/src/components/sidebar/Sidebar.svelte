@@ -4,20 +4,12 @@
 	import Save from 'svelte-icons/io/IoIosSave.svelte';
 	import Book from 'svelte-icons/io/IoIosJournal.svelte';
 	import Help from 'svelte-icons/io/IoMdHelp.svelte';
-	import {
-		chapter as _chapter,
-		exercise,
-		project,
-		reset,
-		result
-	} from 'src/utils/exercise/exercise';
+	import { chapter as _chapter, exercise, project, result } from 'src/utils/exercise/exercise';
 	import Checkbox from '../common/Checkbox.svelte';
 	import Refresh from 'svelte-icons/io/IoMdRefresh.svelte';
 	import Wand from 'svelte-icons/io/IoIosColorWand.svelte';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import Explorer from '../explorer/Explorer.svelte';
-	import { format, save, toastMessage, reset as _reset } from 'src/utils/editor/editor';
-	import { page } from '$app/stores';
 	import type { ExerciseResults } from '~shared/types';
 
 	onMount(() => {
@@ -33,23 +25,21 @@
 	 * Format the editor contents when the format button is clicked
 	 */
 	function handleFormat() {
-		format.update((format) => format + 1);
+		dispatch('format');
 	}
 
+	/**
+	 * Save the editor contents when the save button is clicked
+	 */
 	function handleSave() {
-		save.update((save) => save + 1);
+		dispatch('save');
 	}
 
 	/**
 	 * Reset the exercise when the reset button is clicked
 	 */
 	async function handleReset() {
-		await reset($page.params.projectID, $page.params.index);
-		_reset.update((reset) => reset + 1);
-		toastMessage.set({
-			message: 'Exercise reset',
-			variant: 'info'
-		});
+		dispatch('reset');
 	}
 
 	/**
@@ -86,9 +76,12 @@
 		<Icon label="Save" button={true} card={true} on:click={handleSave} aria="save changes">
 			<Save />
 		</Icon>
-		<Icon label="Reset" button={true} card={true} on:click={handleReset} aria="reset exercise">
-			<Refresh />
-		</Icon>
+		{#if $exercise.assessed && $exercise.writable}
+			<Icon label="Reset" button={true} card={true} on:click={handleReset} aria="reset exercise">
+				<Refresh />
+			</Icon>
+		{/if}
+
 		<Icon label="Format" button={true} card={true} aria="format code" on:click={handleFormat}>
 			<Wand />
 		</Icon>

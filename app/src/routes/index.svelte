@@ -5,6 +5,19 @@
 
 <svelte:head>
 	<title>Acecoder</title>
+	<meta property="og:title" content="Acecoder" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://acecoder.vercel.app/" />
+	<meta
+		name="description"
+		property="og:description"
+		content="A platform for completing front-end web development projects tightly coupled to
+		real-world scenarios. Build, share and learn, from the comfort of your
+		browser."
+	/>
+	<meta property="og:locale" content="en_GB" />
+	<meta property="og:image" content="https://acecoder.vercel.app/images/landing/screenshots.png" />
+	<meta name="theme-color" content="#0A132E" />
 </svelte:head>
 
 <div class="flex flex-col items-center text-brand-text bg-brand-background relative">
@@ -37,7 +50,7 @@
 		<p class="font-bold text-2xl">What is Acecoder?</p>
 		<div>
 			<p>
-				Acecoder is a platform for completing front-end development projects tightly coupled to
+				Acecoder is a platform for completing front-end web development projects tightly coupled to
 				real-world scenarios.
 			</p>
 			<br />

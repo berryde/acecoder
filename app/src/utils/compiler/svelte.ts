@@ -2,6 +2,8 @@ import type { Plugin } from 'rollup';
 import type { File } from '~shared/types';
 import { resolveRelativePath, fileNotFoundError, isRelativeImport, CDN_URL } from './compiler';
 
+declare const self: ServiceWorkerGlobalScope;
+
 /**
  * A browser-based rollup plugin for compiling Svelte.
  * @returns A rollup plugin providing CSS support.
@@ -11,7 +13,7 @@ export default function svelteCompiler(
 	dependencies: Record<string, string>
 ): Plugin {
 	// Import the svelte compiler from a CDN so that the worker can access it.
-	importScripts(`https://cdn.jsdelivr.net/npm/svelte/compiler.js`);
+	self.importScripts(`https://cdn.jsdelivr.net/npm/svelte/compiler.js`);
 	return {
 		name: 'folio-svelte',
 		/**

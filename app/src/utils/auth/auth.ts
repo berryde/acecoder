@@ -234,7 +234,6 @@ export const getErrorMessage = (firebaseError: AuthError): AuthError | undefined
 		case 'auth/popup-closed-by-user':
 			return;
 		default:
-			console.log(firebaseError);
 			return {
 				errorCode: 'Unknown error',
 				errorMessage: 'An unknown error occurred. Please try again later.'

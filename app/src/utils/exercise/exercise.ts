@@ -12,6 +12,7 @@ import type {
 import type { Project } from '~shared/types';
 import axios from 'axios';
 import { ERR_NO_AUTH } from '../general';
+import { toastMessage } from '../editor/editor';
 
 /**
  * The current exercise being completed
@@ -198,4 +199,50 @@ export const test = async (projectID: string, exerciseID: string): Promise<Exerc
 	} else {
 		throw 'Submission request failed';
 	}
+};
+
+export const submit = async (projectID: string, exerciseID: string): Promise<void> => {
+	const _chapter = get(chapter);
+	testing.set(true);
+	try {
+		const _result = await test(projectID, exerciseID);
+
+		result.update((result) => ({
+			...result,
+			..._result
+		}));
+		chapter.update((chapter) => {
+			if (
+				chapter < get(exercise).chapters.length &&
+				chapter in _result &&
+				_result[chapter].passed
+			) {
+				return chapter + 1;
+			}
+			return chapter;
+		});
+
+		if (passed(_result)) {
+			toastMessage.set({
+				message: 'Exercise completed!',
+				variant: 'success'
+			});
+		} else if (_chapter < get(chapter)) {
+			toastMessage.set({
+				message: `Task ${_chapter + 1} passed`,
+				variant: 'success'
+			});
+		} else {
+			toastMessage.set({
+				message: `Task failed`,
+				variant: 'danger'
+			});
+		}
+	} catch (e) {
+		toastMessage.set({
+			message: 'Unable to submit exercise',
+			variant: 'danger'
+		});
+	}
+	testing.set(false);
 };

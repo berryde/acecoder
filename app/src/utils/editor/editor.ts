@@ -32,7 +32,11 @@ export const toastMessage = writable<ToastMessage>();
  * Write the contents of the editor to the filesystem and optionally write the filesystem to Firebase
  * @param projectID The project being completed
  */
-export const handleSave = async (value: string, projectID: string): Promise<void> => {
+export const handleSave = async (
+	value: string,
+	projectID: string,
+	silent = false
+): Promise<void> => {
 	if (value == '') return;
 	if (get(testing)) {
 		toastMessage.set({ message: 'Unable to save while pending submission', variant: 'danger' });
@@ -44,9 +48,9 @@ export const handleSave = async (value: string, projectID: string): Promise<void
 		saveTab(tab);
 		updateFile(tab, value);
 		if (get(exercise).writable) await write(projectID);
-		toastMessage.set({ message: 'Saved successfully', variant: 'info' });
-	} else {
-		toastMessage.set({ message: 'Nothing to save', variant: 'info' });
+		if (!silent) {
+			toastMessage.set({ message: 'Saved successfully', variant: 'info' });
+		}
 	}
 };
 

@@ -4,7 +4,7 @@ import css from './ace.css';
 ace['define'](
 	'ace/theme/folio',
 	['require', 'exports', 'module', 'ace/lib/dom'],
-	(acequire, exports) => {
+	(_acequire, exports) => {
 		exports.isDark = true;
 		exports.cssClass = 'ace-one-dark';
 		exports.cssText = css;

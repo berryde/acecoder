@@ -8,6 +8,7 @@ import {
 	query,
 	QueryConstraint,
 	runTransaction,
+	updateDoc,
 	where
 } from 'firebase/firestore';
 import type { DocumentData, QuerySnapshot } from 'firebase/firestore';
@@ -109,6 +110,19 @@ export const getProjectSettings = async (
 	const snapshot = await getDoc(doc(db, 'projects', projectID, 'settings', auth.currentUser.uid));
 	if (snapshot.exists()) return snapshot.data() as ProjectSettings;
 	return { progress: 0, language: fallback, completed: false };
+};
+
+/**
+ * Increment the user's progress
+ *
+ * @param project The project ID to increment
+ * @param progress The current progress
+ */
+export const incrementProgress = async (project: string, progress: number): Promise<void> => {
+	if (!auth.currentUser) throw new Error(ERR_NO_AUTH);
+	await updateDoc(doc(db, 'projects', project, 'settings', auth.currentUser.uid), {
+		progress: progress + 1
+	});
 };
 
 /**

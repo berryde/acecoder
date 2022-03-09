@@ -2,43 +2,35 @@
 	import SplitPane from 'src/components/splitpane/SplitPane.svelte';
 	import PreviewContainer from '../../components/preview/PreviewContainer.svelte';
 	import {
-		chapter,
 		exercise,
 		passed,
 		project,
+		reset,
 		result,
-		test,
+		submit,
 		testing
 	} from 'src/utils/exercise/exercise';
-
 	import Sidebar from 'src/components/sidebar/Sidebar.svelte';
 	import Navbar from 'src/components/navbar/Navbar.svelte';
 	import Button from 'src/components/common/Button.svelte';
 	import { page } from '$app/stores';
-	import { auth, db } from 'src/utils/firebase';
 	import Toast from 'src/components/common/Toast.svelte';
-	import { save, format, toastMessage } from 'src/utils/editor/editor';
+	import { handleFormat, handleSave, toastMessage } from 'src/utils/editor/editor';
 	import Tabs from 'src/components/tabs/Tabs.svelte';
 	import Editor from 'src/components/editor/Editor.svelte';
-	import { getProjectSettings } from 'src/utils/project/project';
-	import { doc, updateDoc } from 'firebase/firestore';
-	import { ERR_NO_AUTH } from 'src/utils/general';
-	import { unsavedTabs } from 'src/utils/tabs/tabs';
+	import { getProjectSettings, incrementProgress } from 'src/utils/project/project';
+	import { selectedTab, unsavedTabs } from 'src/utils/tabs/tabs';
 	import Modal from '../common/Modal.svelte';
 	import Tutorial from '../tutorial/Tutorial.svelte';
 	import { onDestroy, onMount } from 'svelte';
+	import { getExtension, getFile } from 'src/utils/filesystem/filesystem';
+	import type { FSFile } from '~shared/types';
+	import SubmissionMessage from './SubmissionMessage.svelte';
 
 	/**
 	 * The index of the exercise
 	 */
 	let index = parseInt($page.params.index);
-
-	async function incrementProgress(project: string, progress: number) {
-		if (!auth.currentUser) throw new Error(ERR_NO_AUTH);
-		await updateDoc(doc(db, 'projects', project, 'settings', auth.currentUser.uid), {
-			progress: progress + 1
-		});
-	}
 
 	/**
 	 * Called when the user clicks the 'next' button
@@ -61,94 +53,89 @@
 	}
 
 	/**
+	 * Format the contents of the editor
+	 */
+	function format() {
+		value = handleFormat(value, getExtension($selectedTab));
+	}
+
+	/**
+	 * Write the contents of the editor to memory
+	 */
+	async function save(silent = false) {
+		await handleSave(value, $page.params.projectID, silent);
+	}
+
+	/**
 	 * Whether the submission is pending
 	 */
 	let loading = false;
+	/**
+	 * The value of the editor
+	 */
+	let value: string = '';
+	/**
+	 * Whether the tutorial is showing
+	 */
+	let tutorial = false;
 
 	/**
 	 * Called when the user submits the exercise for evaluation
 	 */
 	async function handleSubmit() {
-		if ($unsavedTabs.length > 0) {
+		if ($testing) {
 			toastMessage.set({
-				message: `Save your changes with CTRL+S before submitting`,
+				message: 'Please wait for your current submission to finish',
 				variant: 'warning'
 			});
-			return;
-		}
-
-		loading = true;
-		try {
-			const _chapter = $chapter;
-			testing.set(true);
-			toastMessage.set({
-				message: 'Submitted successfully',
-				variant: 'info'
-			});
-			const _result = await test($page.params.projectID, $page.params.index);
-
-			result.update((result) => ({
-				...result,
-				..._result
-			}));
-			chapter.update((chapter) => {
-				if (chapter < $exercise.chapters.length && chapter in _result && _result[chapter].passed) {
-					return chapter + 1;
-				}
-				return chapter;
-			});
-
-			if (passed(_result)) {
-				toastMessage.set({
-					message: 'Exercise completed!',
-					variant: 'success'
-				});
-			} else if (_chapter < $chapter) {
-				toastMessage.set({
-					message: `Task ${_chapter + 1} passed`,
-					variant: 'success'
-				});
-			} else {
-				toastMessage.set({
-					message: `Task failed`,
-					variant: 'danger'
-				});
+		} else {
+			if ($unsavedTabs.length > 0) {
+				await save(true);
 			}
-		} catch (e) {
-			//set toast message
-			toastMessage.set({
-				message: 'Unable to submit exercise',
-				variant: 'danger'
-			});
+
+			loading = true;
+			await submit($page.params.projectID, $page.params.index);
+			loading = false;
 		}
-		testing.set(false);
-		loading = false;
 	}
 
-	let tutorial = false;
-	function closeTutorial() {
-		tutorial = false;
-	}
-
-	function openTutorial() {
-		tutorial = true;
-	}
-
+	/**
+	 * Listen for keyboard events to process keybinds
+	 * @param e The keyboard event
+	 */
 	function keydownListener(e: KeyboardEvent) {
 		if (e.ctrlKey || e.metaKey) {
 			if (e.code == 'KeyS') {
 				e.preventDefault();
-				save.update((save) => save + 1);
+				save();
 			} else if (e.altKey && e.code == 'KeyL') {
 				e.preventDefault();
-				format.update((format) => format + 1);
+				format();
 			}
 		}
 	}
 
+	/**
+	 * Update the value of the editor with the value of the given file.
+	 *
+	 * @param filename The file to get the value for
+	 */
+	function updateEditor(filename: string) {
+		value = (getFile(filename) as FSFile).value;
+	}
+
+	/**
+	 * Reset the exercise
+	 */
+	async function handleReset() {
+		await reset($page.params.projectID, $page.params.index);
+		toastMessage.set({ message: 'Exercise reset', variant: 'info' });
+		updateEditor($selectedTab);
+	}
+
 	onMount(() => {
 		if (!window.localStorage['tutorial']) {
-			openTutorial();
+			tutorial = true;
 			window.localStorage['tutorial'] = true;
 		}
 		window.addEventListener('keydown', keydownListener);
@@ -157,24 +144,33 @@
 	onDestroy(() => {
 		window.removeEventListener('keydown', keydownListener);
 	});
+
+	$: updateEditor($selectedTab);
 </script>
 
-<div class="h-screen max-h-screen text-brand-text bg-brand-accent flex flex-col relative">
+<div
+	class="h-screen max-h-screen text-brand-text bg-brand-accent flex flex-col relative overflow-hidden"
+>
 	{#if tutorial}
-		<Modal title="Tutorial" on:close={closeTutorial}>
-			<Tutorial on:finish={closeTutorial} />
+		<Modal title="Tutorial" on:close={() => (tutorial = false)}>
+			<Tutorial on:finish={() => (tutorial = false)} />
 		</Modal>
 	{/if}
 	<Navbar expanded={true} />
 	<SplitPane pane1Size={25} pane2Size={75}>
 		<div slot="pane1" class="h-full">
-			<Sidebar on:tutorial={openTutorial} />
+			<Sidebar
+				on:tutorial={() => (tutorial = true)}
+				on:reset={handleReset}
+				on:format={format}
+				on:save={() => save()}
+			/>
 		</div>
 		<div slot="pane2" class="h-full flex flex-col">
 			<SplitPane minPane2Size={'10rem'} pane1Size={66} pane2Size={34}>
 				<div slot="pane1" class="flex flex-col h-full">
 					<Tabs />
-					<Editor />
+					<Editor filename={$selectedTab} bind:value on:format={format} />
 				</div>
 				<div slot="pane2" class="h-full" let:resizing>
 					<PreviewContainer {resizing} />
@@ -193,7 +189,12 @@
 		<p>{index}/{$project.exerciseCount - 1}</p>
 		<div class="flex space-x-5 flex-grow justify-end w-full">
 			{#if $exercise.assessed && !passed($result)}
-				<Button text="Submit" on:click={handleSubmit} {loading} />
+				<div class="relative flex flex-row space-x-3">
+					{#if loading}
+						<SubmissionMessage />
+					{/if}
+					<Button text="Submit" on:click={handleSubmit} {loading} />
+				</div>
 			{:else if index + 1 == $project.exerciseCount}
 				<a href={`/project/${$page.params.projectID}/finish`}
 					><Button text="Finish" link={true} /></a

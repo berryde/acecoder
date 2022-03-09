@@ -27,6 +27,7 @@
 		try {
 			project = await getProject($page.params.projectID);
 			exercise = await getExercise($page.params.projectID, $page.params.index, project.languages);
+			console.log(project);
 			loading = false;
 		} catch (err) {
 			console.error(err);
