@@ -4,17 +4,51 @@
 	import CircularProgressIndicator from '../loaders/CircularProgressIndicator.svelte';
 	const dispatch = createEventDispatcher();
 
+	/**
+	 * Text to show on the button
+	 */
 	export let text: string = '';
+
+	/**
+	 * Whether this button has an icon before the text
+	 */
 	export let icon: boolean = false;
+
+	/**
+	 * Whether the button should show a progress indicator
+	 */
 	export let loading: boolean = false;
+
+	/**
+	 * Whether this button is disabled
+	 */
 	export let disabled: boolean = false;
+
+	/**
+	 * Whether this button should fill the parents width
+	 */
 	export let expanded: boolean = false;
+
+	/**
+	 * Whether this is an outline button
+	 */
 	export let outline: boolean = false;
+
+	/**
+	 * Whether this button should show the loading state once clicked
+	 */
 	export let link: boolean = false;
 
 	type Variant = 'default' | 'danger' | 'dark' | 'accent' | 'success';
+
+	/**
+	 * The variant of this button, determining its color
+	 */
 	export let variant: Variant = 'default';
 
+	/**
+	 * Called when the button is clicked
+	 */
 	function onclick() {
 		if (!disabled && !loading) {
 			dispatch('click');
@@ -22,6 +56,9 @@
 		}
 	}
 
+	/**
+	 * Determine the button's color from its variant
+	 */
 	function getStyle() {
 		switch (variant) {
 			case 'dark':

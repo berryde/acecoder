@@ -11,6 +11,7 @@
 	import html2canvas from 'html2canvas';
 	import { getName } from 'src/utils/auth/auth';
 	import { auth } from 'src/utils/firebase';
+	import { ORGANISATION_ID } from '~shared/constants';
 
 	/**
 	 * Whether the page is loading
@@ -58,13 +59,12 @@
 	 * Share the certificate to linkedin
 	 */
 	function handleShare() {
-		const organisationID = 79117149;
 		const date = certificate.issued.toDate();
 		const url = encodeURIComponent(window.location.href);
 
 		window.location.href = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${
 			certificate.projectID
-		}&organizationId=${organisationID}&issueYear=${date.getFullYear()}&issueMonth=${date.getMonth()}&certUrl=${url}&certId=${
+		}&organizationId=${ORGANISATION_ID}&issueYear=${date.getFullYear()}&issueMonth=${date.getMonth()}&certUrl=${url}&certId=${
 			$page.params.certificateID
 		}`;
 	}

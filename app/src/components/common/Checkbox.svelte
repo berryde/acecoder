@@ -1,16 +1,39 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
+	/**
+	 * The state of the checkbox
+	 */
 	export let value: boolean | undefined = undefined;
+
+	/**
+	 * Additional classes to style the checkbox with
+	 */
 	export let classes: string = '';
+
+	/**
+	 * Whether the checkbox is disabled
+	 */
 	export let disabled: boolean = false;
+
+	/**
+	 * The aria roles to use for the checkbox input element
+	 */
 	export let aria = '';
 
 	type Variant = 'true-false' | 'default' | 'text';
+
+	/**
+	 * The variant to use, determining the checkbox's colors
+	 */
 	export let variant: Variant = 'default';
 
 	const dispatch = createEventDispatcher();
 
+	/**
+	 * Get the color based on the variant and state
+	 * @param value The state of the input
+	 */
 	function getColour(value: boolean | undefined) {
 		switch (variant) {
 			case 'true-false':
@@ -29,6 +52,9 @@
 		}
 	}
 
+	/**
+	 * Called when the component is clicked
+	 */
 	function handleClick() {
 		if (!disabled) {
 			dispatch('click');

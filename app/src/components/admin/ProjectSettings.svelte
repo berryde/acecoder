@@ -5,8 +5,9 @@
 	import Checkbox from 'src/components/common/Checkbox.svelte';
 	import { db, uploadImage } from 'src/utils/firebase';
 	import type { Project } from '~shared/types';
-	import { capitalise } from 'src/utils/general';
+	import { capitalise } from '~shared/constants';
 	import ImageUploader from './ImageUploader.svelte';
+	import { LANGUAGES } from '~shared/constants';
 
 	/**
 	 * Whether these settings are for the creation of a new project.
@@ -27,7 +28,6 @@
 	};
 	let errors: string[] = [];
 	let file: File;
-	const languages: string[] = ['react', 'svelte'];
 
 	function toggleProjectLanguage(language: string) {
 		if (project.languages.includes(language)) {
@@ -142,7 +142,7 @@
 	<div class="space-y-1">
 		<p class="font-bold">Language support</p>
 		<fieldset id="language" class="flex flex-col">
-			{#each languages as language}
+			{#each LANGUAGES as language}
 				<div class="flex flex-row items-center space-x-3">
 					<Checkbox
 						disabled={!editing}

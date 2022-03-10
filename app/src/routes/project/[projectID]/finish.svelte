@@ -15,7 +15,7 @@
 	import Download from 'src/components/projects/Download.svelte';
 	import CertificateLink from 'src/components/projects/CertificateLink.svelte';
 	import { getName } from 'src/utils/auth/auth';
-	import { ERR_NO_AUTH } from 'src/utils/general';
+	import { ERR_NO_AUTH } from '~shared/constants';
 
 	/**
 	 * The project that has been finished

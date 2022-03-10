@@ -14,7 +14,8 @@ const config = {
 			resolve: {
 				alias: {
 					$components: resolve('./src/components'),
-					src: resolve('./src')
+					src: resolve('./src'),
+					'~shared': resolve('../shared')
 				}
 			},
 			ssr: {

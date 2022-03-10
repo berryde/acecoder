@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * The title to show on this card
+	 */
 	export let title: string | undefined = undefined;
 </script>
 

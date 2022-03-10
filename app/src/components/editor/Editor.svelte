@@ -4,15 +4,9 @@
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/env';
 	import { updateUnsaved } from 'src/utils/tabs/tabs';
+	import { EDITOR_FONT_SIZE, EDITOR_TAB_SIZE } from '~shared/constants';
 
-	/**
-	 * The default tab size to use
-	 */
-	const TAB_SIZE = 2;
-	/**
-	 * The default font size to use
-	 */
-	const FONT_SIZE = '1rem';
+	const dispatch = createEventDispatcher();
 
 	/**
 	 * The value of the editor
@@ -24,10 +18,39 @@
 	 */
 	export let filename: string;
 
+	/**
+	 * A backup of the editor's content
+	 */
+	let backup = '';
+
+	/**
+	 * A map of filename to editor session for that file
+	 */
 	let sessions: Record<string, IEditSession> = {};
+
+	/**
+	 * The container for the editor
+	 */
 	let element: HTMLElement;
+
+	/**
+	 * The Ace editor instance
+	 */
 	let editor: Editor;
 
+	/**
+	 * The width of the editor
+	 */
+	let clientWidth: number;
+
+	/**
+	 * The ace editor instance
+	 */
+	let ace: { edit: any; EditSession: any; UndoManager: any; default?: any };
+
+	/**
+	 * Set up the editor with the default theme and configuration when the component is rendered.
+	 */
 	async function configureEditor() {
 		await import('brace/mode/javascript');
 		await import('brace/ext/language_tools');
@@ -47,15 +70,18 @@
 
 		editor.setTheme('ace/theme/folio');
 		editor.setShowPrintMargin(false);
-		editor.setOptions({ enableBasicAutocompletion: true, fontSize: FONT_SIZE });
+		editor.setOptions({ enableBasicAutocompletion: true, fontSize: EDITOR_FONT_SIZE });
 		setValue(value);
 
 		editor.on('change', () => {
-			updateUnsaved(filename, value);
 			handleInput();
 		});
 	}
 
+	/**
+	 * Update the editor session when the user selects a different tab
+	 * @param filename The filename of the newly selected tab
+	 */
 	async function updateSession(filename: string) {
 		if (browser && editor) {
 			if (!(filename in sessions)) {
@@ -66,7 +92,7 @@
 					session.setUseWorker(false);
 				}
 				session.setUseWrapMode(true);
-				session.setTabSize(TAB_SIZE);
+				session.setTabSize(EDITOR_TAB_SIZE);
 				sessions[filename] = session;
 			}
 			editor.setSession(sessions[filename]);
@@ -85,21 +111,6 @@
 			editor.clearSelection();
 		}
 	}
-
-	let ace: { edit: any; EditSession: any; UndoManager: any; default?: any };
-	onMount(async () => {
-		// Brace is imported dynamically since it requires the `window` object to exist.
-		ace = await import('brace');
-		await import('brace/ext/searchbox');
-		await configureEditor();
-		updateSession(filename);
-	});
-
-	onDestroy(() => {
-		if (editor) {
-			editor.destroy();
-		}
-	});
 
 	/**
 	 * Dynamically imports the required brace mode. Note that dynamic import strings cannot include variables in order to be resolved by vite.
@@ -140,11 +151,6 @@
 	}
 
 	/**
-	 * A backup of the editor's content
-	 */
-	let backup = '';
-
-	/**
 	 * Update the value of the editor
 	 * @param value The value to use
 	 */
@@ -155,25 +161,33 @@
 		}
 	}
 
-	const dispatch = createEventDispatcher();
-
 	/**
 	 * Called whenever input is added to the editor
 	 */
 	function handleInput() {
 		value = editor.getValue();
 		dispatch('input', value);
+		updateUnsaved(filename, value);
 		backup = value;
 	}
+
+	onMount(async () => {
+		// Brace is imported dynamically since it requires the `window` object to exist.
+		ace = await import('brace');
+		await import('brace/ext/searchbox');
+		await configureEditor();
+		updateSession(filename);
+	});
+
+	onDestroy(() => {
+		if (editor) {
+			editor.destroy();
+		}
+	});
 
 	$: clientWidth && editor && handleResize();
 	$: updateSession(filename);
 	$: updateValue(value);
-
-	/**
-	 * The width of the editor
-	 */
-	let clientWidth: number;
 </script>
 
 <div class="h-full w-full pt-3 bg-brand-editor-background" bind:clientWidth>

@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase-admin/app';
 import functions = require('firebase-functions');
 import { getAuth } from 'firebase-admin/auth';
-import { FAILED_PRECONDITION, REGION, REQUIRE_AUTH } from './constants';
+import { FAILED_PRECONDITION, REGION, REQUIRE_AUTH } from '~shared/constants';
 import { completeProject } from './project';
 
 initializeApp();

@@ -25,7 +25,7 @@ import type {
 	Certificate,
 	UserCertificate
 } from '~shared/types';
-import { ERR_NO_AUTH } from '../general';
+import { ERR_NO_AUTH } from '~shared/constants';
 
 /**
  * Loads the metadata for all available exercise of a project without loading the files, for use on the project overview page.

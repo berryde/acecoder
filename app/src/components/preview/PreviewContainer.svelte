@@ -3,7 +3,6 @@
 	import { filesystem, getAllFiles } from '../../utils/filesystem/filesystem';
 	import type { WorkerError, WorkerResponse } from '~shared/types';
 	import { onDestroy, onMount } from 'svelte';
-
 	import { compiled } from 'src/utils/compiler/compiler';
 	import { language } from 'src/utils/exercise/exercise';
 

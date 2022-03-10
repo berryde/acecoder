@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Logo from 'src/components/navbar/Logo.svelte';
-	import { getMonthString } from 'src/utils/general';
+	import { getMonthString } from '~shared/constants';
 	import type { Certificate } from '~shared/types';
 
 	export let certificate: Certificate;
 	export let name: string;
 
+	/**
+	 * Pretty print the certificate date
+	 */
 	function getDateString() {
 		const date: Date = certificate.issued.toDate();
 		return `${getMonthString(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`;

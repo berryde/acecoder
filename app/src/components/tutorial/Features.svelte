@@ -5,7 +5,7 @@
 	import IoIosTime from 'svelte-icons/io/IoIosTime.svelte';
 	import IoIosBug from 'svelte-icons/io/IoIosBug.svelte';
 	import { language } from 'src/utils/exercise/exercise';
-	import { capitalise } from 'src/utils/general';
+	import { capitalise } from '~shared/constants';
 </script>
 
 <p class="text-lg mb-2">Completing exercises</p>

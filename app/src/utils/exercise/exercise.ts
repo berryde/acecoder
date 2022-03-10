@@ -11,7 +11,7 @@ import type {
 } from '~shared/types';
 import type { Project } from '~shared/types';
 import axios from 'axios';
-import { ERR_NO_AUTH } from '../general';
+import { ERR_NO_AUTH } from '~shared/constants';
 import { toastMessage } from '../editor/editor';
 
 /**
