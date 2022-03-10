@@ -70,7 +70,11 @@
 
 		editor.setTheme('ace/theme/folio');
 		editor.setShowPrintMargin(false);
-		editor.setOptions({ enableBasicAutocompletion: true, fontSize: EDITOR_FONT_SIZE });
+		editor.setOptions({
+			enableBasicAutocompletion: true,
+			enableLiveAutocompletion: true,
+			fontSize: EDITOR_FONT_SIZE
+		});
 		setValue(value);
 
 		editor.on('change', () => {

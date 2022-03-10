@@ -21,8 +21,7 @@
 	import Card from 'src/components/common/Card.svelte';
 	import CircularProgressIndicator from 'src/components/loaders/CircularProgressIndicator.svelte';
 	import CertificateLink from 'src/components/projects/CertificateLink.svelte';
-	import { language } from 'src/utils/exercise/exercise';
-	import { doc, getDoc, setDoc } from 'firebase/firestore';
+	import { doc, setDoc } from 'firebase/firestore';
 	import { auth, db } from 'src/utils/firebase';
 
 	/**
@@ -55,7 +54,7 @@
 		exercises = await getProjectExercises($page.params.projectID);
 
 		settings = await getProjectSettings($page.params.projectID, project.languages[0]);
-		language.set(settings.language);
+
 		if (settings.completed) {
 			certificateID = await getCertificateForProject($page.params.projectID);
 		}
@@ -69,7 +68,6 @@
 	 */
 	async function startExercise(index: string | number) {
 		if (!auth.currentUser) throw new Error(ERR_NO_AUTH);
-
 		index = index.toString();
 		const settingsRef = doc(
 			db,
@@ -78,9 +76,9 @@
 			'settings',
 			auth.currentUser.uid
 		);
-		const created = (await getDoc(settingsRef)).exists();
 
-		if (!created && index == '0' && settings.progress === 0) {
+		if (index == '0' && settings.progress === 0) {
+			console.log(settings);
 			await setDoc(settingsRef, settings);
 		}
 
