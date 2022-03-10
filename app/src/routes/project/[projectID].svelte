@@ -5,7 +5,7 @@
 	import More from 'svelte-icons/io/IoIosMore.svelte';
 	import Checkbox from 'src/components/common/Checkbox.svelte';
 	import Page from 'src/components/common/Page.svelte';
-	import { capitalise, ERR_NO_AUTH } from '~shared/constants';
+	import { capitalise, ERR_NO_AUTH } from 'src/utils/constants';
 	import {
 		getProjectExercises,
 		getProject,

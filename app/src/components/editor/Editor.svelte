@@ -4,7 +4,7 @@
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/env';
 	import { updateUnsaved } from 'src/utils/tabs/tabs';
-	import { EDITOR_FONT_SIZE, EDITOR_TAB_SIZE } from '~shared/constants';
+	import { EDITOR_FONT_SIZE, EDITOR_TAB_SIZE } from 'src/utils/constants';
 
 	const dispatch = createEventDispatcher();
 

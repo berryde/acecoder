@@ -5,9 +5,9 @@
 	import Checkbox from 'src/components/common/Checkbox.svelte';
 	import { db, uploadImage } from 'src/utils/firebase';
 	import type { Project } from '~shared/types';
-	import { capitalise } from '~shared/constants';
+	import { capitalise } from 'src/utils/constants';
 	import ImageUploader from './ImageUploader.svelte';
-	import { LANGUAGES } from '~shared/constants';
+	import { LANGUAGES } from 'src/utils/constants';
 
 	/**
 	 * Whether these settings are for the creation of a new project.

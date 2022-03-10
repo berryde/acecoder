@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
-	import { SUBMISSION_MESSAGES } from '~shared/constants';
+	import { SUBMISSION_MESSAGES } from 'src/utils/constants';
 
 	let progress = 0;
 

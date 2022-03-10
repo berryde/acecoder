@@ -11,7 +11,7 @@
 	import html2canvas from 'html2canvas';
 	import { getName } from 'src/utils/auth/auth';
 	import { auth } from 'src/utils/firebase';
-	import { ORGANISATION_ID } from '~shared/constants';
+	import { ORGANISATION_ID } from 'src/utils/constants';
 
 	/**
 	 * Whether the page is loading

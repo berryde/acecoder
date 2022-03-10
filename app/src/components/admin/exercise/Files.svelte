@@ -4,7 +4,7 @@
 	import Icon from 'src/components/common/Icon.svelte';
 	import Close from 'svelte-icons/io/IoIosClose.svelte';
 	import { extractZip } from 'src/utils/filesystem/filesystem';
-	import { capitalise } from '~shared/constants';
+	import { capitalise } from 'src/utils/constants';
 	import type { Exercise, FSFile, Project } from '~shared/types';
 	import Modal from 'src/components/common/Modal.svelte';
 	import Button from 'src/components/common/Button.svelte';

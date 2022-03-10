@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Logo from 'src/components/navbar/Logo.svelte';
-	import { getMonthString } from '~shared/constants';
+	import { getMonthString } from 'src/utils/constants';
 	import type { Certificate } from '~shared/types';
 
 	export let certificate: Certificate;
