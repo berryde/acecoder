@@ -1,31 +1,32 @@
 <script lang="ts">
 	import type { Editor, IEditSession } from 'brace';
-	import { getExtension, getFile } from 'src/utils/filesystem/filesystem';
-	import { unsavedTabs } from 'src/utils/tabs/tabs';
-	import type { FSFile } from '~shared/types';
+	import { getExtension } from 'src/utils/filesystem/filesystem';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/env';
+	import { updateUnsaved } from 'src/utils/tabs/tabs';
 
+	/**
+	 * The default tab size to use
+	 */
 	const TAB_SIZE = 2;
+	/**
+	 * The default font size to use
+	 */
 	const FONT_SIZE = '1rem';
 
+	/**
+	 * The value of the editor
+	 */
 	export let value: string;
+
+	/**
+	 * The filename of the tab open in this editor
+	 */
 	export let filename: string;
 
 	let sessions: Record<string, IEditSession> = {};
 	let element: HTMLElement;
 	let editor: Editor;
-
-	function updateUnsaved() {
-		if (!$unsavedTabs.includes(filename)) {
-			unsavedTabs.update((tabs) => [...tabs, filename]);
-		} else if (editor.getValue() === (getFile(filename) as FSFile).value) {
-			unsavedTabs.update((tabs) => {
-				tabs.splice(tabs.indexOf(filename));
-				return tabs;
-			});
-		}
-	}
 
 	async function configureEditor() {
 		await import('brace/mode/javascript');
@@ -50,7 +51,7 @@
 		setValue(value);
 
 		editor.on('change', () => {
-			updateUnsaved();
+			updateUnsaved(filename, value);
 			handleInput();
 		});
 	}
@@ -138,11 +139,15 @@
 		editor.resize();
 	}
 
-	// function handleReset() {
-	// 	setValue((getFile(filename) as FSFile).value);
-	// }
-
+	/**
+	 * A backup of the editor's content
+	 */
 	let backup = '';
+
+	/**
+	 * Update the value of the editor
+	 * @param value The value to use
+	 */
 	function updateValue(value: string) {
 		if (backup != value && editor) {
 			setValue(value);
@@ -151,6 +156,10 @@
 	}
 
 	const dispatch = createEventDispatcher();
+
+	/**
+	 * Called whenever input is added to the editor
+	 */
 	function handleInput() {
 		value = editor.getValue();
 		dispatch('input', value);
@@ -158,12 +167,12 @@
 	}
 
 	$: clientWidth && editor && handleResize();
-	// $: $format > 0 && editor && setValue(handleFormat(editor.getValue(), getExtension(filename)));
-	// $: $save > 0 && editor && handleSave(editor.getValue(), $page.params.projectID);
-	// $: $reset > 0 && editor && handleReset();
 	$: updateSession(filename);
 	$: updateValue(value);
 
+	/**
+	 * The width of the editor
+	 */
 	let clientWidth: number;
 </script>
 

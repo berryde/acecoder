@@ -1,4 +1,6 @@
 import { get, writable } from 'svelte/store';
+import type { FSFile } from '~shared/types';
+import { getFile } from '../filesystem/filesystem';
 
 // open editors
 export const tabs = writable<string[]>([]);
@@ -131,4 +133,20 @@ export const rearrange = (target: string, source: string): void => {
 		tabs.splice(targetIndex, 0, source);
 		return tabs;
 	});
+};
+
+/**
+ * Update the list of unsaved tabs with the current tab.
+ *
+ * @param filename The name of the current tab
+ */
+export const updateUnsaved = (filename: string, value: string): void => {
+	if (!get(unsavedTabs).includes(filename)) {
+		unsavedTabs.update((tabs) => [...tabs, filename]);
+	} else if (value === (getFile(filename) as FSFile).value) {
+		unsavedTabs.update((tabs) => {
+			tabs.splice(tabs.indexOf(filename));
+			return tabs;
+		});
+	}
 };

@@ -126,22 +126,19 @@ export const completeProject = functions.region(REGION).https.onCall(
 		const store = getFirestore();
 		return store.runTransaction(async (transaction) => {
 			// Add any awarded badges to the user's stats
-			const badges: Record<string, Badge> = await calculateBadges(transaction, stats);
+			const badges: Record<string, Badge> = await calculateBadges(transaction, stats, uid);
+
+			// Add each of the badges to the user's profile
+			Object.keys(badges).forEach((id) => {
+				transaction.create(
+					store.collection('stats').doc(uid).collection('badges').doc(id),
+					badgeData
+				);
+			});
 
 			// Mark this project as completed so that this method doesn't run again if they resubmit
 			transaction.update(getProjectRef(projectID).collection('settings').doc(uid), {
 				completed: true
-			});
-
-			Object.keys(badges).forEach((id) => {
-				try {
-					transaction.create(
-						store.collection('stats').doc(uid).collection('badges').doc(id),
-						badgeData
-					);
-				} catch (err) {
-					console.error('The user already has that badge');
-				}
 			});
 
 			// Create the certificate

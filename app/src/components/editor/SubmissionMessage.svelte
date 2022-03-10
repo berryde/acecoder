@@ -4,12 +4,15 @@
 
 	let progress = 0;
 	const messages = [
+		'🛰️ Contacting the server',
 		'💾 Downloading submission',
 		'🗄️ Installing dependencies',
 		'🧪 Running tests',
 		'📝 Parsing results',
 		'🧮 Returning scores',
-		'🧹 Tidying up'
+		'🧹 Tidying up',
+		'🏁 Finalising submission',
+		'⏲️ Listening for results'
 	];
 
 	let interval: number;
@@ -23,6 +26,8 @@
 	onDestroy(() => {
 		window.clearInterval(interval);
 	});
+
+	$: progress == messages.length - 1 && window.clearInterval(interval);
 </script>
 
 {#key progress}

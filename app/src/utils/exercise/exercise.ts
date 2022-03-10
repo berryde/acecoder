@@ -137,6 +137,7 @@ export const reset = async (projectID: string, index: string): Promise<void> => 
 	filesystem.set({});
 	await loadExercise();
 	initialising.set(false);
+	toastMessage.set({ message: 'Exercise reset', variant: 'info' });
 };
 
 /**
