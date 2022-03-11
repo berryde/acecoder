@@ -41,7 +41,9 @@
 	<div class="modal bg-brand-accent text-brand-text p-10 rounded space-y-3 z-50">
 		<div class="flex justify-between items-center -mr-2 mb-3">
 			<p class="text-2xl">{title}</p>
-			<Icon size="large" button={true} on:click={close}><IoIosClose /></Icon>
+			<Icon size="large" button={true} on:click={close} aria="Close modal {title}"
+				><IoIosClose /></Icon
+			>
 		</div>
 		<slot />
 	</div>

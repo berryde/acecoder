@@ -98,6 +98,7 @@
 				<button
 					on:click={click}
 					class="{getDimensions()} flex-shrink-0 flex-grow-0 text-brand-text text-light-text"
+					aria-label={aria}
 					data-testid={testId}><slot /></button
 				>
 			{:else}

@@ -78,7 +78,6 @@
 		);
 
 		if (index == '0' && settings.progress === 0) {
-			console.log(settings);
 			await setDoc(settingsRef, settings);
 		}
 

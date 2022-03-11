@@ -3,7 +3,8 @@
 	"version": "0.4",
 	"license": "UNLICENSED",
 	"scripts": {
-		"emulator": "firebase emulators:start --import=./firebase/.export --export-on-exit=./firebase/.export"
+		"emulator": "firebase emulators:start --import=./firebase/backup",
+		"test": "cypress run"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^4.33.0",

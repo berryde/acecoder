@@ -3,14 +3,17 @@ import { login } from './utils';
 describe('Exercises', () => {
 	it('The user can load an exercise', () => {
 		login();
-		cy.visit(`http://localhost:3000/dashboard`);
-
-		// Select the personal portfolio project
-		cy.get('img[aria-label="Personal Portfolio project"]').click();
-		cy.contains('Introduction to portfolio sites').click();
-
-		// Check that the preview is rendering the project
-		cy.contains('Notes');
+		cy.visit(`http://localhost:3000/project/n94gjSZZnypQ4Ptu2W1p/exercise-1`);
+		cy.get('button[aria-label="Close modal Tutorial"').click();
+		cy.contains('Tasks');
 		cy.contains('Files');
+	});
+	it('The user can submit', () => {
+		cy.visit(`http://localhost:3000/project/n94gjSZZnypQ4Ptu2W1p/exercise-1`);
+		cy.get('button[aria-label="Close modal Tutorial"').click();
+		cy.contains('Re-submit').click();
+		cy.contains('Exercise completed!', {
+			timeout: 20000
+		});
 	});
 });

@@ -1,13 +1,13 @@
-const EMAIL = 'test@test.com';
+const EMAIL = 'panda.mountain.574@example.com';
 const PASSWORD = 'securepassword';
-const NAME = 'John Smith';
+const NAME = 'Panda Mountain';
 
 export const login = (email = EMAIL, password = PASSWORD): void => {
 	cy.visit(`http://localhost:3000/login`);
-	cy.get('input[placeholder="Email"]').type(email);
-	cy.get('input[placeholder="Password"]').type(password);
+	cy.wait(500);
+	cy.get('input[placeholder="Email"]').click().type(email);
+	cy.get('input[placeholder="Password"]').click().type(password);
 	cy.contains('Sign in').click();
-	cy.contains('Get started creating eye-catching, responsive websites.');
 };
 
 export const register = (
@@ -17,10 +17,10 @@ export const register = (
 	confirm = PASSWORD
 ): void => {
 	cy.visit(`http://localhost:3000/register`);
-	cy.get('input[placeholder="Email"]').type(email);
-	cy.get('input[placeholder="Full name"]').type(name);
-	cy.get('input[placeholder="Password"]').type(password);
-	cy.get('input[placeholder="Confirm password"]').type(confirm);
+	cy.wait(500);
+	cy.get('input[placeholder="Email"]').click().type(email);
+	cy.get('input[placeholder="Full name"]').click().type(name);
+	cy.get('input[placeholder="Password"]').click().type(password);
+	cy.get('input[placeholder="Confirm password"]').click().type(confirm);
 	cy.contains('Sign up').click();
-	cy.contains('Get started creating eye-catching, responsive websites.');
 };

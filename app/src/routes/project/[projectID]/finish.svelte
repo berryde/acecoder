@@ -53,21 +53,34 @@
 
 	async function onAuth() {
 		if (!auth.currentUser) throw new Error(ERR_NO_AUTH);
-		project = await getProject($page.params.projectID);
+
+		try {
+			project = await getProject($page.params.projectID);
+		} catch (err) {
+			console.error('That project does not exist');
+			window.location.href = '/error/404';
+		}
+		if (!project) return;
+
 		settings = await getProjectSettings($page.params.projectID, project.languages[0]);
+
 		completed = settings.completed;
-		if (!completed) {
+		if (settings.progress < project.exerciseCount - 1) {
+			console.error(`You have not completed the project '${project.name}' yet`);
+			window.location.href = '/error/403';
+		} else if (!completed) {
 			const result = await completeProject(
 				$page.params.projectID,
 				await getName(auth.currentUser.uid, true)
 			);
 			certificateID = result.certificateID;
 			badges = Object.values(result.badges);
+			loading = false;
 		} else {
 			badges = await getBadges(auth.currentUser!.uid, { projectID: $page.params.projectID });
 			certificateID = await getCertificateForProject($page.params.projectID);
+			loading = false;
 		}
-		loading = false;
 	}
 </script>
 
