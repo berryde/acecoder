@@ -207,7 +207,6 @@ export const submit = async (projectID: string, exerciseID: string): Promise<voi
 	testing.set(true);
 	try {
 		const _result = await test(projectID, exerciseID);
-		console.log(_result);
 		result.update((result) => ({
 			...result,
 			..._result
