@@ -44,13 +44,11 @@ export const handleSave = async (
 	}
 	const tab: string = get(selectedTab);
 
-	if (get(unsavedTabs).includes(tab)) {
-		saveTab(tab);
-		updateFile(tab, value);
-		if (get(exercise).writable) await write(projectID);
-		if (!silent) {
-			toastMessage.set({ message: 'Saved successfully', variant: 'info' });
-		}
+	saveTab(tab);
+	updateFile(tab, value);
+	if (get(exercise).writable) await write(projectID);
+	if (!silent) {
+		toastMessage.set({ message: 'Saved successfully', variant: 'info' });
 	}
 };
 

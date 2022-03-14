@@ -89,7 +89,7 @@
 			<p>
 				If you want to share your thoughts or find out more, please <a
 					class="text-brand-primary"
-					href="mail:deb1g19@soton.ac.uk">get in touch</a
+					href="mailto:deb1g19@soton.ac.uk">get in touch</a
 				>.
 			</p>
 		</div>

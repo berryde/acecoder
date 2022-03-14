@@ -81,7 +81,7 @@
 <div class="w-full p-5" role="tree">
 	{#each Object.entries(sort($filesystem)) as [path, object]}
 		{#if object.type === 'file' && object.modifiable}
-			<File {path} modifiable={object.modifiable} />
+			<File {path} />
 		{:else if object.type == 'folder'}
 			<Folder {path} children={object.children} modifiable={object.modifiable} />
 		{/if}

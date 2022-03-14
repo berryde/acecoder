@@ -4,11 +4,26 @@ import { render, screen, fireEvent } from '@testing-library/svelte';
 import type { Filesystem, FSFolder } from '~shared/types';
 import File from './File.svelte';
 import { filesystem, createFile } from '../../utils/filesystem/filesystem';
+import { exercise, language } from 'src/utils/exercise/exercise';
+
+const loadExercise = () => {
+	language.set('react');
+	exercise.set({
+		files: { react: { 'App.jsx': { modifiable: false, type: 'file', value: '' } } },
+		assessed: true,
+		chapters: [],
+		description: '',
+		inherits: false,
+		name: '',
+		writable: true
+	});
+};
 
 describe('The file component', () => {
 	beforeEach(() => {
 		// Clear the filesystem
 		filesystem.update(() => ({}));
+		loadExercise();
 	});
 	it('can be deleted', async () => {
 		// Create a mock filesystem.
@@ -19,8 +34,7 @@ describe('The file component', () => {
 		render(File, {
 			props: {
 				path: 'test',
-				depth: '0',
-				modifiable: true
+				depth: '0'
 			}
 		});
 
@@ -40,8 +54,7 @@ describe('The file component', () => {
 		render(File, {
 			props: {
 				path: 'test',
-				depth: '0',
-				modifiable: true
+				depth: '0'
 			}
 		});
 
@@ -70,8 +83,7 @@ describe('The file component', () => {
 		render(File, {
 			props: {
 				path: 'test',
-				depth: '0',
-				modifiable: true
+				depth: '0'
 			}
 		});
 
@@ -92,18 +104,18 @@ describe('The file component', () => {
 		// Create a mock filesystem.
 		let files: Filesystem = {};
 		filesystem.subscribe((fs) => (files = fs));
-		createFile('App.jsx', '');
+
+		createFile('NewFile.jsx', '');
 
 		render(File, {
 			props: {
-				path: 'App.jsx',
-				depth: '0',
-				modifiable: true
+				path: 'NewFile.jsx',
+				depth: '0'
 			}
 		});
 
 		// Check that the file state is as expected
-		expect(files['App.jsx']).toBeTruthy();
+		expect(files['NewFile.jsx']).toBeTruthy();
 		expect(files['src']).toBeFalsy();
 
 		fireEvent.mouseEnter(screen.getByTestId('hoverable'));
@@ -112,13 +124,13 @@ describe('The file component', () => {
 
 		// Rename the file
 		const input = (await screen.findByTestId('explorer-input')) as HTMLInputElement;
-		fireEvent.input(input, { target: { value: 'src/App.jsx' } });
+		fireEvent.input(input, { target: { value: 'src/NewFile.jsx' } });
 		fireEvent.keyDown(input, { key: 'Enter', code: 'Enter', charCode: 13 });
 
 		// Check that the file state is as expected
-		expect(files['App.jsx']).toBeFalsy();
+		expect(files['NewFile.jsx']).toBeFalsy();
 		expect(files['src']).toBeTruthy();
 		const dir = files['src'] as FSFolder;
-		expect(dir.children['App.jsx']).toBeTruthy();
+		expect(dir.children['NewFile.jsx']).toBeTruthy();
 	});
 });

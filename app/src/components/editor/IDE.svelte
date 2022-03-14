@@ -8,7 +8,7 @@
 	import { handleFormat, handleSave, toastMessage } from 'src/utils/editor/editor';
 	import Tabs from 'src/components/tabs/Tabs.svelte';
 	import Editor from 'src/components/editor/Editor.svelte';
-	import { selectedTab, unsavedTabs } from 'src/utils/tabs/tabs';
+	import { selectedTab } from 'src/utils/tabs/tabs';
 	import Modal from '../common/Modal.svelte';
 	import Tutorial from '../tutorial/Tutorial.svelte';
 	import { onDestroy, onMount } from 'svelte';
@@ -53,9 +53,7 @@
 				variant: 'warning'
 			});
 		} else {
-			if ($unsavedTabs.length > 0) {
-				await save(true);
-			}
+			await save(true);
 			loading = true;
 			await submit($page.params.projectID, $page.params.index);
 			loading = false;

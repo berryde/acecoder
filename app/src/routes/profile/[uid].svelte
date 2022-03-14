@@ -7,8 +7,8 @@
 	import type { Badge, UserCertificate } from '~shared/types';
 	import Badges from 'src/components/profile/Badges.svelte';
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
 	import OrbitProgressIndicator from 'src/components/loaders/OrbitProgressIndicator.svelte';
+	import { onMount } from 'svelte';
 
 	let badges: Badge[] = [];
 	let certificates: Record<string, UserCertificate> = {};
@@ -20,25 +20,40 @@
 	 * Whether the page is loading
 	 */
 	let loading = true;
+	/**
+	 * Whether the component has mounted in the browser
+	 */
+	let mounted = false;
 
 	onMount(() => {
-		loadProfile();
+		mounted = true;
 	});
 
 	/**
 	 * Load the user's profile data
 	 */
 	async function loadProfile() {
+		name = await getName($page.params.uid, true);
+
+		if (name == '') {
+			window.location.href = '/error/404';
+		}
+
 		// Get badges for user
 		// Get certificates for user
 		badges = await getBadges($page.params.uid);
 		certificates = await getCertificates($page.params.uid);
-		name = await getName($page.params.uid, true);
 		completed.set(Object.keys(certificates).length);
 		achievementCount.set(badges.length);
 		loading = false;
 	}
+
+	$: $page && mounted && loadProfile();
 </script>
+
+<svelte:head>
+	<title>Acecoder - Profile</title>
+</svelte:head>
 
 {#if loading}
 	<div class="h-screen w-screen bg-brand-background flex justify-center items-center">

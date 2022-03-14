@@ -11,11 +11,14 @@
 		getParentDir,
 		getExistingFiles,
 		navigateToFile,
-		renameFile
+		renameFile,
+		isExerciseFile
 	} from '../../utils/filesystem/filesystem';
 	import { closeTab, openTab, renameTab } from '../../utils/tabs/tabs';
 	import Icon from '../common/Icon.svelte';
 	import Draggable from '../common/Draggable.svelte';
+	import { exercise, language } from 'src/utils/exercise/exercise';
+	import { onMount } from 'svelte';
 
 	/**
 	 * The full path to this file including the filename.
@@ -25,7 +28,7 @@
 	/**
 	 * Whether this file is modifiable
 	 */
-	export let modifiable: boolean;
+	let modifiable: boolean = false;
 
 	/**
 	 * The depth of this file in the file tree.
@@ -84,6 +87,10 @@
 	function handleClick() {
 		openTab(path);
 	}
+
+	onMount(() => {
+		modifiable = !isExerciseFile(path, $exercise, $language);
+	});
 
 	$: name = tail(path);
 </script>

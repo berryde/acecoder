@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Filesystem, FSFile, FSFolder } from '~shared/types';
+import type { Exercise, Filesystem, FSFile, FSFolder } from '~shared/types';
 import { saveAs } from 'file-saver';
 import { get } from 'svelte/store';
 import JSZip from 'jszip';
@@ -186,6 +186,10 @@ export const getParentDir = (path: string): string => {
  */
 export const getExistingFiles = (dir: Filesystem): string[] => {
 	return Object.keys(dir).map((k) => tail(k));
+};
+
+export const isExerciseFile = (path: string, exercise: Exercise, language: string): boolean => {
+	return path in exercise.files[language];
 };
 
 /**

@@ -243,7 +243,7 @@
 			<div>
 				{#each Object.entries(sort(children)) as [name, object]}
 					{#if object.type === 'file' && object.modifiable}
-						<File path={path + '/' + name} depth={depth + 1} modifiable={object.modifiable} />
+						<File path={path + '/' + name} depth={depth + 1} />
 					{:else if object.type == 'folder'}
 						<svelte:self
 							children={object.children}
