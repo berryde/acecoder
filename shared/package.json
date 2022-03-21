@@ -1,0 +1,12 @@
+{
+	"name": "shared",
+	"version": "1.0.0",
+	"description": "Shared Acecoder types",
+	"main": "types.ts",
+	"author": "",
+	"license": "UNLICENSED",
+	"dependencies": {
+		"firebase": "^9.6.7",
+		"firebase-admin": "^10.0.2"
+	}
+}

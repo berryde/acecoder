@@ -1,9 +1,8 @@
-.svelte-kit
-.netlify
-build
-coverage
-node_modules
-static
-functions
-pnpm-lock.yaml
-src/components/preview/template
+app/.svelte-kit
+app/.vercel_build_output
+app/build
+app/coverage
+app/node_modules
+app/static
+app/pnpm-lock.yaml
+app/src/components/preview/template

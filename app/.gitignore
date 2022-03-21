@@ -1,0 +1,13 @@
+.DS_Store
+/build
+.svelte-kit/*
+!.svelte-kit/tsconfig.json
+coverage
+static/worker.js
+static/worker.js.map
+.firebase-config/service-account.json
+.firebase
+/src/components/preview/template/template.js
+firebase-export-*
+.vercel
+.vercel_build_output

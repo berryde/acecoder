@@ -1,0 +1,33 @@
+{
+	"name": "folio-docker",
+	"version": "1.0.0",
+	"description": "code runner for folio",
+	"main": "src/index.ts",
+	"scripts": {
+		"deploy": "tsc && docker build . -t gcr.io/folio-8b029/submission-server && docker push gcr.io/folio-8b029/submission-server",
+		"start": "node build/index.js",
+		"local:emulator": "export NODE_ENV=development && export PORT=9080 && npx tsc && node build/index.js",
+		"local": "export PORT=9080 && npx tsc && node build/index.js",
+		"container": "sudo docker run -p 9080:8080 5bd830821881"
+	},
+	"author": "",
+	"license": "UNLICENSED",
+	"dependencies": {
+		"ansi-parser": "^3.2.10",
+		"cors": "^2.8.5",
+		"express": "^4.17.1",
+		"firebase-admin": "^10.0.0"
+	},
+	"devDependencies": {
+		"@firebase/app-compat": "^0.1.16",
+		"@firebase/app-types": "^0.7.0",
+		"@types/cors": "^2.8.12",
+		"@types/express": "^4.17.13",
+		"@types/node": "^16.10.2",
+		"@types/uuid": "^8.3.3",
+		"body-parser": "^1.19.1",
+		"eslint": "^8.3.0",
+		"strip-ansi": "^7.0.1",
+		"typescript": "^4.4.3"
+	}
+}

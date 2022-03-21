@@ -6,6 +6,10 @@
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"allowJs": true,
-		"outDir": "build"
+		"outDir": "build",
+		"paths": {
+			"~shared/*": ["../shared/*"]
+		},
+		"rootDirs": ["./src", "../shared"]
 	}
 }
