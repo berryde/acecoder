@@ -9,8 +9,6 @@
 	import { getBadges } from 'src/utils/project/project';
 	import Page from 'src/components/common/Page.svelte';
 	import Badges from 'src/components/profile/Badges.svelte';
-	import Card from 'src/components/common/Card.svelte';
-	import Button from 'src/components/common/Button.svelte';
 
 	/**
 	 * The projects available to the user
@@ -114,20 +112,5 @@
 				{/each}
 			</div>
 		</div>
-		<Card title="Share your thoughts">
-			<p>
-				In order to improve the application for its users, please use this survey to let us know
-				what you think. It's completely anonymous and should only take a few minutes.
-			</p>
-			<p>
-				You should try to complete the 'Personal Portfolio' project before starting the survey, to
-				ensure that you have a strong understanding of the application.
-			</p>
-			<div class="flex justify-end">
-				<a href="https://southampton.qualtrics.com/jfe/form/SV_efBcpn2O3c6kSOO">
-					<Button text="Take the survey" /></a
-				>
-			</div>
-		</Card>
 	</Page>
 </PrivateRoute>

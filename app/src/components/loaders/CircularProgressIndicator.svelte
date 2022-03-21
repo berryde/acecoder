@@ -6,22 +6,21 @@
 </script>
 
 <div
-	class="loader h-5 w-5 {variant == 'light' ? 'border-brand-text' : 'border-brand-background'}"
+	class="loader border-2 border-solid inline-block h-5 w-5 {variant == 'light'
+		? 'border-brand-text'
+		: 'border-brand-background'}"
 	data-testid="loader"
 />
 
 <style>
 	.loader {
-		border-width: 2px;
-		border-style: solid;
 		border-bottom-color: transparent;
 		border-radius: 50%;
-		display: inline-block;
 		box-sizing: border-box;
-		animation: rotation 1s linear infinite;
+		animation: rotate 1s linear infinite;
 	}
 
-	@keyframes rotation {
+	@keyframes rotate {
 		0% {
 			transform: rotate(0deg);
 		}

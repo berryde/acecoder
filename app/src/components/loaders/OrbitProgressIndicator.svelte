@@ -1,16 +1,14 @@
 <!-- Loader adapted from https://cssloaders.github.io/ -->
-<div class="loader" data-testid="loader" />
+<div class="loader block relative" data-testid="loader" />
 
 <style>
 	.loader {
 		width: 24px;
 		height: 24px;
-		display: block;
 		margin: 15px auto;
-		position: relative;
 		color: #f0f0f0;
 		box-sizing: border-box;
-		animation: rotation 1.5s linear infinite;
+		animation: rotate 1.5s linear infinite;
 	}
 	.loader::after,
 	.loader::before {
@@ -31,7 +29,7 @@
 		transform: scale(0.5) translate(-24px, -24px);
 	}
 
-	@keyframes rotation {
+	@keyframes rotate {
 		0% {
 			transform: rotate(0deg);
 		}
