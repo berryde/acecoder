@@ -45,6 +45,6 @@
 		font-family: 'Inter', sans-serif;
 	}
 	.certificate {
-		background-image: url('/images/cert_bg.png');
+		background-image: url('/images/cert_bg.webp');
 	}
 </style>

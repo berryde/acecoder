@@ -16,7 +16,7 @@
 		browser."
 	/>
 	<meta property="og:locale" content="en_GB" />
-	<meta property="og:image" content="https://acecoder.vercel.app/images/landing/screenshots.png" />
+	<meta property="og:image" content="https://acecoder.vercel.app/images/landing/screenshots.webp" />
 	<meta name="theme-color" content="#0A132E" />
 </svelte:head>
 
@@ -59,7 +59,7 @@
 				exercise within the project. Submissions are verified by the Acecoder server.
 			</p>
 		</div>
-		<img src="/images/landing/screenshots.png" alt="screenshots of the editor" />
+		<img src="/images/landing/screenshots.webp" alt="screenshots of the editor" />
 		<hr class="border-brand-accent w-10" />
 		<p class="font-bold text-2xl">Why complete projects?</p>
 		<div>
@@ -72,7 +72,7 @@
 				You can also unlock achievements for reaching various milestones within the application.
 			</p>
 		</div>
-		<img src="/images/landing/certificate.png" alt="example certificate" />
+		<img src="/images/landing/certificate.webp" alt="example certificate" />
 		<p class="font-bold text-2xl">Who made Acecoder?</p>
 		<div>
 			<p>
@@ -98,7 +98,7 @@
 
 <style>
 	.hero {
-		background-image: url('/images/landing/hero-bg.png');
+		background-image: url('/images/landing/hero-bg.webp');
 		background-position-x: center;
 		background-position-y: bottom;
 		background-size: cover;
