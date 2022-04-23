@@ -44,10 +44,9 @@
 
 	/**
 	 * Load the compiled code into the preview.
-	 * @param compiled
+	 * @param compiled The compiled code.
 	 */
 	function build(compiled: WorkerResponse) {
-		// Update 'compiled' in firebase if this is not an exercise
 		const message: ReloadMessage = {
 			compiled: compiled,
 			type: 'reload'
@@ -77,7 +76,7 @@
 			const result = window.open(
 				'',
 				'Preview',
-				`width = ${iframe.clientWidth}, height = ${iframe.clientHeight}, popup, location=no, menu=no, status=no, `
+				`width = ${iframe.clientWidth}, height = ${iframe.clientHeight}, popup, location=no, menu=no, status=no`
 			);
 			if (result != null) popup = result;
 			if (!popup) return;

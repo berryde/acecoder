@@ -86,7 +86,7 @@ self.addEventListener(
  * @param language The language of the submission
  * @param filesystem The files of the submission
  * @param dependencies Any dependencies extracted from `package.json`
- * @returns
+ * @returns The bundled source code as a promise
  */
 const bundle = async (
 	entryPoint: string,
@@ -95,41 +95,34 @@ const bundle = async (
 	dependencies: Record<string, string>
 ): Promise<WorkerResponse> => {
 	let warning: RollupWarning = { message: '' };
-	let error: WorkerError;
 
-	// Bundle the files using rollup.
 	try {
+		// Bundle the files using rollup.
 		const result = await rollup.rollup({
 			input: entryPoint,
 			plugins: getPlugins(language, filesystem, dependencies),
 			inlineDynamicImports: true,
 			onwarn(_warning: RollupWarning) {
+				// Store the warning from rollup to return to the user
 				warning = _warning;
-				throw new Error();
+				throw new Error('Rollup failed to execute');
 			}
 		});
 
 		// Create the bundle and extract the relevant content
 		const bundle = await result.generate({ format: 'esm' });
-		const scripts = bundle.output[0] ? bundle.output[0].code : '';
-		let styles = '';
+
+		// Extract any stylesheets from the bundle
 		const css = bundle.output.find((e: { name: string }) => e.name == 'css');
-		if (css) {
-			styles += css.source + '\n';
-		}
 
 		return {
-			js: scripts,
-			css: styles,
+			js: bundle.output[0] ? bundle.output[0].code : '',
+			css: css ? css.source + '\n' : '',
 			public: getResources(filesystem)
 		};
 	} catch (e) {
-		if (warning.message !== '') {
-			return createError(warning.message, warning.name, warning.pos, warning.id);
-		} else {
-			error = sanitizeError(e as Error, entryPoint);
-			return createError(error.message, error.name, error.pos, error.location);
-		}
+		if (warning.message === '') warning = sanitizeError(e as Error, entryPoint);
+		return createError(warning.message, warning.name, warning.pos, warning.id);
 	}
 };
 

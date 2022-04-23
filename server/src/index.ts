@@ -60,9 +60,10 @@ const test = async (
 	uid: string,
 	chapter: number
 ): Promise<ExerciseResults | ServerError> => {
-	console.log(`Received submission for exercise ${projectID}[${exerciseID}] from ${uid}`);
 	const dir = 'submissions/' + uid;
+	const outputPath = 'testresults.json';
 
+	// Download the submission
 	try {
 		await setupTests(projectID, exerciseID, uid, dir);
 	} catch (err) {
@@ -75,16 +76,19 @@ const test = async (
 
 	try {
 		try {
-			execSync(
-				`cd ${dir} && echo "Installing dependencies" && pnpm install --prefer-offline --silent && echo "Running tests" && pnpm --silent test -- --json --outputFile=testresults.json --maxWorkers=50% --silent --watchAll=false`,
-				{ stdio: 'inherit' }
-			);
+			const navigate = `cd ${dir}`;
+			const install = `pnpm install --prefer-offline --silent`;
+			const tests =
+				`pnpm --silent test -- --json --outputFile=${outputPath}` +
+				` --maxWorkers=50% --silent --watchAll=false`;
+
+			execSync(`${navigate} && ${install} && ${tests}`, { stdio: 'inherit' });
 		} catch (err) {
-			// execSync throws if any tests failed so this error should be caught and ingored
+			console.log('Some tests have failed');
 		}
 
 		// Check if the test results have been created successfully
-		if (!existsSync(`${dir}/testresults.json`)) {
+		if (!existsSync(`${dir}/${outputPath}`)) {
 			return {
 				status: 500,
 				message: 'Could not generate test results'
@@ -93,8 +97,7 @@ const test = async (
 
 		// Parse the tests results
 		console.log('Parsing results');
-
-		const json = JSON.parse(readFileSync(`${dir}/testresults.json`).toString()) as JestResult;
+		const json = JSON.parse(readFileSync(`${dir}/${outputPath}`).toString()) as JestResult;
 
 		// Construct the output
 		const results: {
@@ -102,6 +105,7 @@ const test = async (
 			spec: string;
 		}[] = [];
 
+		// Format the test results
 		json.testResults.forEach((tr) => {
 			tr.assertionResults.forEach((ar) => {
 				results.push({
@@ -111,6 +115,7 @@ const test = async (
 			});
 		});
 
+		// Map the formatted test results to the output structure
 		const mappedResults: Record<
 			number,
 			{
@@ -118,13 +123,12 @@ const test = async (
 				spec: string;
 			}
 		> = {};
-
-		console.log('Returning results');
-
 		for (let i = 0; i <= Math.min(chapter, results.length - 1); i++) {
 			mappedResults[i] = results[i];
 		}
 
+		// Return the results
+		console.log('Returning results');
 		const resultsRef = db
 			.collection('projects')
 			.doc(projectID)
