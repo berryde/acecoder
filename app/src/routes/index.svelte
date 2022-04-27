@@ -16,7 +16,7 @@
 		browser."
 	/>
 	<meta property="og:locale" content="en_GB" />
-	<meta property="og:image" content="https://acecoder.vercel.app/images/landing/screenshots.webp" />
+	<meta property="og:image" content="https://acecoder.vercel.app/images/landing/screenshots.png" />
 	<meta name="theme-color" content="#0A132E" />
 </svelte:head>
 

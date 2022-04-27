@@ -1,6 +1,6 @@
 {
-	"name": "individual-project",
-	"version": "0.0.3",
+	"name": "acecoder",
+	"version": "1.0.0",
 	"license": "UNLICENSED",
 	"scripts": {
 		"dev": "npm run compile && svelte-kit dev",
