@@ -3,14 +3,6 @@ import { render } from '@testing-library/svelte';
 import Preview from './Preview.svelte';
 import { compiled } from 'src/utils/compiler/compiler';
 
-global.window = Object.create(window);
-const url = 'http://test.com';
-Object.defineProperty(window, 'location', {
-	value: {
-		href: url
-	}
-});
-
 describe('The Preview component', () => {
 	it('renders', async () => {
 		compiled.set({

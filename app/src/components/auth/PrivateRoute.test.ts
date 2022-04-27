@@ -5,14 +5,6 @@ import PrivateRoute from './PrivateRoute.svelte';
 import { auth } from 'src/utils/firebase';
 import type { User } from 'firebase/auth';
 
-global.window = Object.create(window);
-const url = 'http://test.com';
-Object.defineProperty(window, 'location', {
-	value: {
-		href: url
-	}
-});
-
 jest.mock('src/utils/firebase', () => {
 	let user: User | undefined = {
 		displayName: 'Test User',
@@ -45,6 +37,15 @@ jest.mock('src/utils/firebase', () => {
 			signOut: signOut
 		}
 	};
+});
+
+const assignMock = jest.fn();
+
+delete window.location;
+window.location = { assign: assignMock as unknown } as Location;
+
+afterEach(() => {
+	assignMock.mockClear();
 });
 
 describe('The PrivateRoute component', () => {

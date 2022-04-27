@@ -4,14 +4,6 @@ import Explorer from './Explorer.svelte';
 import { filesystem, createFile } from '../../utils/filesystem/filesystem';
 import { exercise, initialising, language } from 'src/utils/exercise/exercise';
 
-global.window = Object.create(window);
-const url = 'http://test.com';
-Object.defineProperty(window, 'location', {
-	value: {
-		href: url
-	}
-});
-
 const loadExercise = () => {
 	language.set('react');
 	exercise.set({
