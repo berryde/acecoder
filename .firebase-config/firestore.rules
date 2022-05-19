@@ -39,6 +39,7 @@ service cloud.firestore {
 
           allow update: if
             request.auth != null && request.auth.uid == uid &&
+            (request.resource.data.progress == 0 ) ||
             (
               int(request.resource.data.progress) == int(resource.data.progress) + 1 &&
               (
@@ -52,7 +53,7 @@ service cloud.firestore {
             (request.resource.data.completed == true && resource.data.progress == getExerciseCount())
           allow create: if
             request.auth != null && request.auth.uid == uid &&
-            request.resource.data['progress'] == 0
+            request.resource.data.progress == 0
           allow read, delete: if
             request.auth != null && request.auth.uid == uid
         }
